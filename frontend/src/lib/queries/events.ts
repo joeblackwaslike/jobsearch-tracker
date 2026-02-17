@@ -15,6 +15,14 @@ type Event = Tables<"events">;
 type EventInsert = TablesInsert<"events">;
 type EventUpdate = TablesUpdate<"events">;
 
+export type EventWithApplication = Event & {
+  application: {
+    id: string;
+    position: string;
+    company: { id: string; name: string };
+  };
+};
+
 export type { Event };
 
 // ---------------------------------------------------------------------------
@@ -58,6 +66,49 @@ export function eventsQueryOptions(applicationId: string) {
 
 export function useEvents(applicationId: string) {
   return useQuery(eventsQueryOptions(applicationId));
+}
+
+export function useUpcomingInterviews() {
+  const supabase = createClient();
+
+  return useQuery({
+    queryKey: ["interviews", "upcoming"],
+    queryFn: async () => {
+      const now = new Date().toISOString();
+      const { data, error } = await supabase
+        .from("events")
+        .select(
+          "*, application:applications(id, position, company:companies(id, name))"
+        )
+        .in("type", INTERVIEW_TYPES as unknown as string[])
+        .or(`scheduled_at.gt.${now},scheduled_at.is.null`)
+        .order("scheduled_at", { ascending: true, nullsFirst: false });
+      if (error) throw error;
+      return data as unknown as EventWithApplication[];
+    },
+  });
+}
+
+export function usePastInterviews() {
+  const supabase = createClient();
+
+  return useQuery({
+    queryKey: ["interviews", "past"],
+    queryFn: async () => {
+      const now = new Date().toISOString();
+      const { data, error } = await supabase
+        .from("events")
+        .select(
+          "*, application:applications(id, position, company:companies(id, name))"
+        )
+        .in("type", INTERVIEW_TYPES as unknown as string[])
+        .lte("scheduled_at", now)
+        .not("scheduled_at", "is", null)
+        .order("scheduled_at", { ascending: false });
+      if (error) throw error;
+      return data as unknown as EventWithApplication[];
+    },
+  });
 }
 
 // ---------------------------------------------------------------------------
