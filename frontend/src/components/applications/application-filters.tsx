@@ -183,7 +183,7 @@ export function ApplicationFilters({
   return (
     <div className="flex flex-wrap items-center gap-2">
       {/* Search */}
-      <div className="relative w-64">
+      <div className="relative w-full sm:w-64">
         <SearchIcon className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           placeholder="Search applications..."

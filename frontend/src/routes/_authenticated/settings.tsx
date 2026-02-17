@@ -48,7 +48,7 @@ function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
           <p className="text-muted-foreground">
@@ -61,11 +61,11 @@ function SettingsPage() {
       </div>
 
       <Tabs value={tab} onValueChange={handleTabChange}>
-        <TabsList>
-          <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="data">Data</TabsTrigger>
-          <TabsTrigger value="integrations">Integrations</TabsTrigger>
-          <TabsTrigger value="about">About</TabsTrigger>
+        <TabsList className="w-full sm:w-auto">
+          <TabsTrigger value="general" className="flex-1 sm:flex-initial">General</TabsTrigger>
+          <TabsTrigger value="data" className="flex-1 sm:flex-initial">Data</TabsTrigger>
+          <TabsTrigger value="integrations" className="flex-1 sm:flex-initial">Integrations</TabsTrigger>
+          <TabsTrigger value="about" className="flex-1 sm:flex-initial">About</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general">
