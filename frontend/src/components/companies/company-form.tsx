@@ -27,6 +27,7 @@ import {
   useUpdateCompany,
   type Company,
 } from "@/lib/queries/companies";
+import { CompanyContacts } from "./company-contacts";
 
 // ---------------------------------------------------------------------------
 // Schema
@@ -527,6 +528,14 @@ export function CompanyForm({
                       Researched
                     </Label>
                   </div>
+                </fieldset>
+
+                {/* Contacts */}
+                <fieldset className="space-y-4">
+                  <legend className="text-sm font-semibold text-muted-foreground">
+                    Contacts
+                  </legend>
+                  <CompanyContacts companyId={company!.id} />
                 </fieldset>
               </div>
             </ScrollArea>
