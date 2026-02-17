@@ -18,6 +18,7 @@ import { Route as AuthenticatedDocumentsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCompaniesRouteImport } from './routes/_authenticated/companies'
 import { Route as AuthenticatedApplicationsRouteImport } from './routes/_authenticated/applications'
+import { Route as AuthenticatedApplicationsApplicationIdRouteImport } from './routes/_authenticated/applications/$applicationId'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -64,38 +65,47 @@ const AuthenticatedApplicationsRoute =
     path: '/applications',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedApplicationsApplicationIdRoute =
+  AuthenticatedApplicationsApplicationIdRouteImport.update({
+    id: '/$applicationId',
+    path: '/$applicationId',
+    getParentRoute: () => AuthenticatedApplicationsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/applications': typeof AuthenticatedApplicationsRoute
+  '/applications': typeof AuthenticatedApplicationsRouteWithChildren
   '/companies': typeof AuthenticatedCompaniesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/documents': typeof AuthenticatedDocumentsRoute
   '/interviews': typeof AuthenticatedInterviewsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/applications/$applicationId': typeof AuthenticatedApplicationsApplicationIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/applications': typeof AuthenticatedApplicationsRoute
+  '/applications': typeof AuthenticatedApplicationsRouteWithChildren
   '/companies': typeof AuthenticatedCompaniesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/documents': typeof AuthenticatedDocumentsRoute
   '/interviews': typeof AuthenticatedInterviewsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/applications/$applicationId': typeof AuthenticatedApplicationsApplicationIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
-  '/_authenticated/applications': typeof AuthenticatedApplicationsRoute
+  '/_authenticated/applications': typeof AuthenticatedApplicationsRouteWithChildren
   '/_authenticated/companies': typeof AuthenticatedCompaniesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/documents': typeof AuthenticatedDocumentsRoute
   '/_authenticated/interviews': typeof AuthenticatedInterviewsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/applications/$applicationId': typeof AuthenticatedApplicationsApplicationIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/documents'
     | '/interviews'
     | '/settings'
+    | '/applications/$applicationId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/documents'
     | '/interviews'
     | '/settings'
+    | '/applications/$applicationId'
   id:
     | '__root__'
     | '/'
@@ -129,6 +141,7 @@ export interface FileRouteTypes {
     | '/_authenticated/documents'
     | '/_authenticated/interviews'
     | '/_authenticated/settings'
+    | '/_authenticated/applications/$applicationId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -202,11 +215,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedApplicationsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/applications/$applicationId': {
+      id: '/_authenticated/applications/$applicationId'
+      path: '/$applicationId'
+      fullPath: '/applications/$applicationId'
+      preLoaderRoute: typeof AuthenticatedApplicationsApplicationIdRouteImport
+      parentRoute: typeof AuthenticatedApplicationsRoute
+    }
   }
 }
 
+interface AuthenticatedApplicationsRouteChildren {
+  AuthenticatedApplicationsApplicationIdRoute: typeof AuthenticatedApplicationsApplicationIdRoute
+}
+
+const AuthenticatedApplicationsRouteChildren: AuthenticatedApplicationsRouteChildren =
+  {
+    AuthenticatedApplicationsApplicationIdRoute:
+      AuthenticatedApplicationsApplicationIdRoute,
+  }
+
+const AuthenticatedApplicationsRouteWithChildren =
+  AuthenticatedApplicationsRoute._addFileChildren(
+    AuthenticatedApplicationsRouteChildren,
+  )
+
 interface AuthenticatedRouteChildren {
-  AuthenticatedApplicationsRoute: typeof AuthenticatedApplicationsRoute
+  AuthenticatedApplicationsRoute: typeof AuthenticatedApplicationsRouteWithChildren
   AuthenticatedCompaniesRoute: typeof AuthenticatedCompaniesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDocumentsRoute: typeof AuthenticatedDocumentsRoute
@@ -215,7 +250,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
-  AuthenticatedApplicationsRoute: AuthenticatedApplicationsRoute,
+  AuthenticatedApplicationsRoute: AuthenticatedApplicationsRouteWithChildren,
   AuthenticatedCompaniesRoute: AuthenticatedCompaniesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDocumentsRoute: AuthenticatedDocumentsRoute,
