@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -25,6 +25,13 @@ import {
   useUpdateEvent,
   type Event,
 } from "@/lib/queries/events";
+import {
+  useEventContacts,
+  useAddInterviewer,
+  useRemoveInterviewer,
+} from "@/lib/queries/event-contacts";
+import { type Contact } from "@/lib/queries/contacts";
+import { InterviewerCombobox } from "@/components/interviews/interviewer-combobox";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -76,6 +83,7 @@ interface AddEventDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   applicationId: string;
+  companyId?: string;
   mode: "create" | "edit";
   event?: Event | null;
   onSuccess?: () => void;
@@ -141,12 +149,25 @@ export function AddEventDialog({
   open,
   onOpenChange,
   applicationId,
+  companyId,
   mode,
   event,
   onSuccess,
 }: AddEventDialogProps) {
   const createEvent = useCreateEvent();
   const updateEvent = useUpdateEvent();
+  const addInterviewer = useAddInterviewer();
+  const removeInterviewer = useRemoveInterviewer();
+
+  // For create mode: track interviewers locally until event is created
+  const [selectedInterviewers, setSelectedInterviewers] = useState<
+    Pick<Contact, "id" | "name">[]
+  >([]);
+
+  // For edit mode: load existing interviewers from the server
+  const { data: existingInterviewers } = useEventContacts(
+    event?.id ?? ""
+  );
 
   const {
     register,
@@ -185,9 +206,26 @@ export function AddEventDialog({
           url: "",
           description: "",
         });
+        setSelectedInterviewers([]);
       }
     }
   }, [open, mode, event, reset]);
+
+  const handleAddInterviewer = (contact: Pick<Contact, "id" | "name">) => {
+    if (mode === "edit" && event) {
+      addInterviewer.mutateAsync({ eventId: event.id, contactId: contact.id });
+    } else {
+      setSelectedInterviewers((prev) => [...prev, contact]);
+    }
+  };
+
+  const handleRemoveInterviewer = (contactId: string) => {
+    if (mode === "edit" && event) {
+      removeInterviewer.mutateAsync({ eventId: event.id, contactId });
+    } else {
+      setSelectedInterviewers((prev) => prev.filter((c) => c.id !== contactId));
+    }
+  };
 
   const onSubmit = async (values: EventFormValues) => {
     const payload = formValuesToPayload(values);
@@ -199,10 +237,22 @@ export function AddEventDialog({
         ...payload,
       });
     } else {
-      await createEvent.mutateAsync({
+      const newEvent = await createEvent.mutateAsync({
         application_id: applicationId,
         ...payload,
       });
+
+      // Link selected interviewers to the newly created event
+      if (selectedInterviewers.length > 0 && newEvent?.id) {
+        await Promise.all(
+          selectedInterviewers.map((c) =>
+            addInterviewer.mutateAsync({
+              eventId: newEvent.id,
+              contactId: c.id,
+            })
+          )
+        );
+      }
     }
 
     onSuccess?.();
@@ -333,6 +383,31 @@ export function AddEventDialog({
                 {...register("description")}
               />
             </div>
+
+            {/* Interviewers */}
+            {companyId && (
+              <div className="space-y-2">
+                <Label>Interviewers</Label>
+                <InterviewerCombobox
+                  companyId={companyId}
+                  selectedContactIds={
+                    mode === "edit"
+                      ? (existingInterviewers?.map((ec) => ec.contact.id) ?? [])
+                      : selectedInterviewers.map((c) => c.id)
+                  }
+                  selectedContacts={
+                    mode === "edit"
+                      ? (existingInterviewers?.map((ec) => ({
+                          id: ec.contact.id,
+                          name: ec.contact.name,
+                        })) ?? [])
+                      : selectedInterviewers
+                  }
+                  onAdd={handleAddInterviewer}
+                  onRemove={handleRemoveInterviewer}
+                />
+              </div>
+            )}
           </div>
 
           <DialogFooter>

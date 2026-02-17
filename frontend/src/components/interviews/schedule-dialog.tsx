@@ -37,6 +37,9 @@ import {
 import { cn } from "@/lib/utils";
 import { useApplications, type ApplicationListItem } from "@/lib/queries/applications";
 import { useCreateEvent } from "@/lib/queries/events";
+import { useAddInterviewer } from "@/lib/queries/event-contacts";
+import { type Contact } from "@/lib/queries/contacts";
+import { InterviewerCombobox } from "@/components/interviews/interviewer-combobox";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -99,8 +102,12 @@ export function ScheduleDialog({
   onSuccess,
 }: ScheduleDialogProps) {
   const createEvent = useCreateEvent();
+  const addInterviewer = useAddInterviewer();
   const [appSearch, setAppSearch] = useState("");
   const [comboboxOpen, setComboboxOpen] = useState(false);
+  const [selectedInterviewers, setSelectedInterviewers] = useState<
+    Pick<Contact, "id" | "name">[]
+  >([]);
 
   const { data: applicationsData } = useApplications({
     search: appSearch || undefined,
@@ -135,6 +142,15 @@ export function ScheduleDialog({
   const selectedApp = applications.find(
     (a: ApplicationListItem) => a.id === selectedAppId
   );
+  const companyId = selectedApp?.company_id ?? "";
+
+  const handleAddInterviewer = (contact: Pick<Contact, "id" | "name">) => {
+    setSelectedInterviewers((prev) => [...prev, contact]);
+  };
+
+  const handleRemoveInterviewer = (contactId: string) => {
+    setSelectedInterviewers((prev) => prev.filter((c) => c.id !== contactId));
+  };
 
   const onSubmit = async (values: ScheduleFormValues) => {
     let scheduled_at: string | null = null;
@@ -150,7 +166,7 @@ export function ScheduleDialog({
       }
     }
 
-    await createEvent.mutateAsync({
+    const newEvent = await createEvent.mutateAsync({
       application_id: values.application_id,
       type: values.type,
       status: values.status,
@@ -161,13 +177,29 @@ export function ScheduleDialog({
       duration_minutes: values.duration_minutes || null,
     });
 
+    // Link selected interviewers to the newly created event
+    if (selectedInterviewers.length > 0 && newEvent?.id) {
+      await Promise.all(
+        selectedInterviewers.map((c) =>
+          addInterviewer.mutateAsync({
+            eventId: newEvent.id,
+            contactId: c.id,
+          })
+        )
+      );
+    }
+
     reset();
+    setSelectedInterviewers([]);
     onSuccess?.();
     onOpenChange(false);
   };
 
   const handleOpenChange = (newOpen: boolean) => {
-    if (!newOpen) reset();
+    if (!newOpen) {
+      reset();
+      setSelectedInterviewers([]);
+    }
     onOpenChange(newOpen);
   };
 
@@ -354,6 +386,20 @@ export function ScheduleDialog({
                 {...register("description")}
               />
             </div>
+
+            {/* Interviewers */}
+            {companyId && (
+              <div className="space-y-2">
+                <Label>Interviewers</Label>
+                <InterviewerCombobox
+                  companyId={companyId}
+                  selectedContactIds={selectedInterviewers.map((c) => c.id)}
+                  selectedContacts={selectedInterviewers}
+                  onAdd={handleAddInterviewer}
+                  onRemove={handleRemoveInterviewer}
+                />
+              </div>
+            )}
           </div>
 
           <DialogFooter>

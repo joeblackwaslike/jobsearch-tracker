@@ -323,6 +323,7 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
         open={addEventOpen}
         onOpenChange={setAddEventOpen}
         applicationId={application.id}
+        companyId={application.company_id}
         mode="create"
       />
     </div>
