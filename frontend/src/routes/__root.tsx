@@ -6,6 +6,8 @@ import {
   HeadContent,
   Scripts,
 } from '@tanstack/react-router'
+import { ThemeProvider } from '@/components/layout/theme-provider'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import '@/styles/globals.css'
 
 export const Route = createRootRoute({
@@ -39,9 +41,18 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
     <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('thrive-theme');if(t==='light')document.documentElement.classList.remove('dark');else document.documentElement.classList.add('dark')}catch(e){}})()`,
+          }}
+        />
       </head>
       <body className="min-h-screen bg-background font-sans antialiased">
-        {children}
+        <ThemeProvider>
+          <TooltipProvider>
+            {children}
+          </TooltipProvider>
+        </ThemeProvider>
         <Scripts />
       </body>
     </html>

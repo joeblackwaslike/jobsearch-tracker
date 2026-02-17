@@ -1,6 +1,8 @@
 import { createFileRoute, redirect, Outlet } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { NavBar } from "@/components/layout/nav-bar";
+import { PageShell } from "@/components/layout/page-shell";
 
 const getUser = createServerFn({ method: "GET" }).handler(async () => {
   const supabase = createServerSupabaseClient();
@@ -22,5 +24,12 @@ export const Route = createFileRoute("/_authenticated")({
 });
 
 function AuthenticatedLayout() {
-  return <Outlet />;
+  return (
+    <div className="flex min-h-screen flex-col">
+      <NavBar />
+      <PageShell>
+        <Outlet />
+      </PageShell>
+    </div>
+  );
 }
