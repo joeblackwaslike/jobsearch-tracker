@@ -19,6 +19,7 @@ import { CompanyForm } from "@/components/companies/company-form";
 import { ArchiveDialog } from "./archive-dialog";
 import { AddEventDialog } from "./add-event-dialog";
 import { EventTimeline } from "./event-timeline";
+import { ApplicationDocuments } from "./application-documents";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -284,6 +285,9 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
           </Card>
         )}
       </div>
+
+      {/* Documents */}
+      <ApplicationDocuments applicationId={application.id} />
 
       <Separator />
 
