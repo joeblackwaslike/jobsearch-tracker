@@ -61,7 +61,7 @@ describe("DocumentPicker", () => {
 
     await user.click(screen.getByText("My Resume"));
 
-    expect(onSelect).toHaveBeenCalledWith("d1");
+    expect(onSelect).toHaveBeenCalledWith("d1", "My Resume");
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 

@@ -266,7 +266,7 @@ export function ApplicationForm({
     setValue("company_name", company.name);
   };
 
-  const handlePickDocument = async (documentId: string) => {
+  const handlePickDocument = async (documentId: string, documentName: string) => {
     if (mode === "edit" && application) {
       await snapshotDocument.mutateAsync({
         applicationId: application.id,
@@ -274,6 +274,7 @@ export function ApplicationForm({
       });
     } else {
       setPendingDocIds((prev) => [...prev, documentId]);
+      setPendingDocs((prev) => [...prev, { id: documentId, name: documentName }]);
     }
   };
 

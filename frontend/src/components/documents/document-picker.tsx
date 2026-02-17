@@ -14,7 +14,7 @@ import {
 interface DocumentPickerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSelect: (documentId: string) => void;
+  onSelect: (documentId: string, documentName: string) => void;
   excludeIds: string[];
 }
 
@@ -67,8 +67,8 @@ export function DocumentPicker({
     }));
   }, [filtered]);
 
-  function handleSelect(documentId: string) {
-    onSelect(documentId);
+  function handleSelect(documentId: string, documentName: string) {
+    onSelect(documentId, documentName);
     onOpenChange(false);
   }
 
@@ -99,7 +99,7 @@ export function DocumentPicker({
                     <button
                       type="button"
                       className="w-full text-left rounded-md px-3 py-2 text-sm hover:bg-accent transition-colors"
-                      onClick={() => handleSelect(doc.id)}
+                      onClick={() => handleSelect(doc.id, doc.name)}
                     >
                       {doc.name}
                     </button>

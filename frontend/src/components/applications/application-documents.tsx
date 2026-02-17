@@ -68,7 +68,7 @@ export function ApplicationDocuments({ applicationId }: ApplicationDocumentsProp
     .map((d) => d.document_id)
     .filter((id): id is string => id != null);
 
-  async function handleAttach(documentId: string) {
+  async function handleAttach(documentId: string, _documentName: string) {
     await snapshot.mutateAsync({ applicationId, documentId });
   }
 
