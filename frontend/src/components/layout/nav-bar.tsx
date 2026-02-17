@@ -52,7 +52,7 @@ export function NavBar() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" asChild>
-                <Link to="/settings" aria-label="Settings">
+                <Link to="/settings" search={{ tab: "general" }} aria-label="Settings">
                   <Settings className="size-5" />
                 </Link>
               </Button>
