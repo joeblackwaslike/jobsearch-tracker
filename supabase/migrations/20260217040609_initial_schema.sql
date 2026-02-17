@@ -235,10 +235,11 @@ CREATE POLICY "update_own" ON user_settings FOR UPDATE USING (user_id = auth.uid
 CREATE OR REPLACE FUNCTION create_user_settings()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO user_settings (user_id) VALUES (NEW.id);
+  INSERT INTO public.user_settings (user_id) VALUES (NEW.id);
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER
+SET search_path = public;
 
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
