@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -21,6 +21,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
+import { X } from "lucide-react";
 import { CompanyCombobox } from "./company-combobox";
 import {
   useCreateApplication,
@@ -28,6 +30,12 @@ import {
   type ApplicationWithCompany,
 } from "@/lib/queries/applications";
 import type { Company } from "@/lib/queries/companies";
+import {
+  useApplicationDocuments,
+  useDetachDocument,
+} from "@/lib/queries/application-documents";
+import { useSnapshotDocument } from "@/lib/queries/documents";
+import { DocumentPicker } from "@/components/documents/document-picker";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -184,6 +192,17 @@ export function ApplicationForm({
   const createApplication = useCreateApplication();
   const updateApplication = useUpdateApplication();
 
+  // Document attachment state
+  const [pendingDocIds, setPendingDocIds] = useState<string[]>([]);
+  const [pendingDocs, setPendingDocs] = useState<{ id: string; name: string }[]>([]);
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  const { data: attachedDocs = [] } = useApplicationDocuments(
+    mode === "edit" && application ? application.id : ""
+  );
+  const detachDocument = useDetachDocument();
+  const snapshotDocument = useSnapshotDocument();
+
   const {
     register,
     handleSubmit,
@@ -232,6 +251,8 @@ export function ApplicationForm({
           source: "",
           tags: "",
         });
+        setPendingDocIds([]);
+        setPendingDocs([]);
       }
     }
   }, [open, mode, application, reset, prefill]);
@@ -245,6 +266,17 @@ export function ApplicationForm({
     setValue("company_name", company.name);
   };
 
+  const handlePickDocument = async (documentId: string) => {
+    if (mode === "edit" && application) {
+      await snapshotDocument.mutateAsync({
+        applicationId: application.id,
+        documentId,
+      });
+    } else {
+      setPendingDocIds((prev) => [...prev, documentId]);
+    }
+  };
+
   const onSubmit = async (values: ApplicationFormValues) => {
     const payload = formValuesToPayload(values);
 
@@ -254,7 +286,17 @@ export function ApplicationForm({
         ...payload,
       });
     } else {
-      await createApplication.mutateAsync(payload);
+      const newApp = await createApplication.mutateAsync(payload);
+      if (pendingDocIds.length > 0 && newApp?.id) {
+        await Promise.all(
+          pendingDocIds.map((docId) =>
+            snapshotDocument.mutateAsync({
+              applicationId: newApp.id,
+              documentId: docId,
+            })
+          )
+        );
+      }
     }
 
     onSuccess?.();
@@ -318,6 +360,41 @@ export function ApplicationForm({
                   placeholder="https://..."
                   {...register("url")}
                 />
+              </div>
+
+              {/* Documents */}
+              <div className="space-y-2">
+                <Label>Documents</Label>
+                {pendingDocs.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {pendingDocs.map((doc) => (
+                      <Badge key={doc.id} variant="secondary" className="gap-1">
+                        {doc.name}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setPendingDocIds((prev) =>
+                              prev.filter((id) => id !== doc.id)
+                            );
+                            setPendingDocs((prev) =>
+                              prev.filter((d) => d.id !== doc.id)
+                            );
+                          }}
+                        >
+                          <X className="size-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPickerOpen(true)}
+                >
+                  Attach
+                </Button>
               </div>
             </div>
           ) : (
@@ -539,6 +616,45 @@ export function ApplicationForm({
                     />
                   </div>
                 </fieldset>
+
+                {/* Documents */}
+                <fieldset className="space-y-4">
+                  <legend className="text-sm font-semibold text-muted-foreground">
+                    Documents
+                  </legend>
+                  {attachedDocs.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {attachedDocs.map((doc) => (
+                        <Badge
+                          key={doc.id}
+                          variant="secondary"
+                          className="gap-1"
+                        >
+                          {doc.name}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              detachDocument.mutateAsync({
+                                id: doc.id,
+                                applicationId: application!.id,
+                              })
+                            }
+                          >
+                            <X className="size-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPickerOpen(true)}
+                  >
+                    Attach
+                  </Button>
+                </fieldset>
               </div>
             </ScrollArea>
           )}
@@ -561,6 +677,19 @@ export function ApplicationForm({
           </DialogFooter>
         </form>
       </DialogContent>
+
+      <DocumentPicker
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        onSelect={handlePickDocument}
+        excludeIds={
+          mode === "edit"
+            ? (attachedDocs
+                .map((d) => d.document_id)
+                .filter(Boolean) as string[])
+            : pendingDocIds
+        }
+      />
     </Dialog>
   );
 }
