@@ -1,19 +1,10 @@
+import type { VisibilityState } from "@tanstack/react-table";
+import { ColumnsIcon, FilterIcon, SearchIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  SearchIcon,
-  FilterIcon,
-  XIcon,
-  ColumnsIcon,
-} from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import type { VisibilityState } from "@tanstack/react-table";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -37,7 +28,10 @@ const INTEREST_OPTIONS = [
 
 const WORK_TYPE_OPTIONS = [
   { value: "remote", label: "Remote" },
-  { value: "hybrid", label: "Hybrid" },
+  { value: "Hybrid (1 day)", label: "Hybrid (1 day)" },
+  { value: "Hybrid (2 day)", label: "Hybrid (2 day)" },
+  { value: "Hybrid (3 day)", label: "Hybrid (3 day)" },
+  { value: "Hybrid (4 day)", label: "Hybrid (4 day)" },
   { value: "onsite", label: "Onsite" },
 ] as const;
 
@@ -113,6 +107,7 @@ function MultiSelectFilter({
           {options.map((option) => {
             const isChecked = selected.includes(option.value);
             return (
+              // biome-ignore lint/a11y/noLabelWithoutControl: custom checkbox component
               <label
                 key={option.value}
                 className="flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
@@ -123,9 +118,7 @@ function MultiSelectFilter({
                     if (checked) {
                       onSelectionChange([...selected, option.value]);
                     } else {
-                      onSelectionChange(
-                        selected.filter((v) => v !== option.value)
-                      );
+                      onSelectionChange(selected.filter((v) => v !== option.value));
                     }
                   }}
                 />
@@ -165,7 +158,7 @@ export function ApplicationFilters({
         onFiltersChange({ ...filters, search: value || undefined });
       }, 300);
     },
-    [filters, onFiltersChange]
+    [filters, onFiltersChange],
   );
 
   const hasActiveFilters =
@@ -237,8 +230,7 @@ export function ApplicationFilters({
         onSelectionChange={(employmentType) =>
           onFiltersChange({
             ...filters,
-            employmentType:
-              employmentType.length > 0 ? employmentType : undefined,
+            employmentType: employmentType.length > 0 ? employmentType : undefined,
           })
         }
       />
@@ -256,6 +248,7 @@ export function ApplicationFilters({
             {COLUMN_OPTIONS.map((col) => {
               const isVisible = columnVisibility[col.id] !== false;
               return (
+                // biome-ignore lint/a11y/noLabelWithoutControl: custom checkbox component
                 <label
                   key={col.id}
                   className="flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
@@ -279,12 +272,7 @@ export function ApplicationFilters({
 
       {/* Clear filters */}
       {hasActiveFilters && (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 gap-1"
-          onClick={handleClearFilters}
-        >
+        <Button variant="ghost" size="sm" className="h-8 gap-1" onClick={handleClearFilters}>
           <XIcon className="size-3" />
           Clear filters
         </Button>
