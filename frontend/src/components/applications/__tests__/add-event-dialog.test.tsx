@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@/test/test-utils";
 import { AddEventDialog } from "../add-event-dialog";
 
@@ -40,6 +40,7 @@ const mockEvent = {
   url: "https://meet.google.com/abc",
   scheduled_at: "2026-03-15T14:30:00Z",
   duration_minutes: 60,
+  notes: "",
   created_at: "2026-02-01T00:00:00Z",
   updated_at: "2026-02-01T00:00:00Z",
 };
@@ -58,18 +59,12 @@ describe("AddEventDialog", () => {
   it("renders create mode with Add Event title", () => {
     render(<AddEventDialog {...defaultProps} mode="create" />);
 
-    expect(
-      screen.getByRole("heading", { name: "Add Event" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("Add a new event to this application timeline.")
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Add Event" })).toBeInTheDocument();
+    expect(screen.getByText("Add a new event to this application timeline.")).toBeInTheDocument();
   });
 
   it("renders edit mode with Edit Event title", () => {
-    render(
-      <AddEventDialog {...defaultProps} mode="edit" event={mockEvent} />
-    );
+    render(<AddEventDialog {...defaultProps} mode="edit" event={mockEvent} />);
 
     expect(screen.getByText("Edit Event")).toBeInTheDocument();
     expect(screen.getByText("Update event details.")).toBeInTheDocument();
@@ -84,7 +79,7 @@ describe("AddEventDialog", () => {
       "Title",
       "Date",
       "Time",
-      "Duration (minutes)",
+      "Duration",
       "Meeting URL",
       "Description",
     ];
@@ -95,17 +90,13 @@ describe("AddEventDialog", () => {
   });
 
   it("pre-fills title in edit mode", () => {
-    render(
-      <AddEventDialog {...defaultProps} mode="edit" event={mockEvent} />
-    );
+    render(<AddEventDialog {...defaultProps} mode="edit" event={mockEvent} />);
 
     expect(screen.getByLabelText("Title")).toHaveValue("System design round");
   });
 
   it("shows Interviewers section only when companyId provided", () => {
-    const { unmount } = render(
-      <AddEventDialog {...defaultProps} mode="create" companyId="c1" />
-    );
+    const { unmount } = render(<AddEventDialog {...defaultProps} mode="create" companyId="c1" />);
 
     expect(screen.getByText("Interviewers")).toBeInTheDocument();
 

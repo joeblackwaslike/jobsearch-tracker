@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@/test/test-utils";
 import { EventTimeline } from "../event-timeline";
 
@@ -31,6 +31,7 @@ const mockEvents = [
     url: "https://zoom.us/123",
     scheduled_at: "2026-02-20T14:00:00Z",
     duration_minutes: 30,
+    notes: "",
     created_at: "2026-02-01T00:00:00Z",
     updated_at: "2026-02-01T00:00:00Z",
   },
@@ -45,6 +46,7 @@ const mockEvents = [
     url: null,
     scheduled_at: "2026-03-01T10:00:00Z",
     duration_minutes: null,
+    notes: "",
     created_at: "2026-03-01T00:00:00Z",
     updated_at: "2026-03-01T00:00:00Z",
   },
@@ -55,9 +57,7 @@ describe("EventTimeline", () => {
     render(<EventTimeline events={[]} applicationId="app-1" />);
 
     expect(
-      screen.getByText(
-        "No events yet. Add an event to start tracking your timeline."
-      )
+      screen.getByText("No events yet. Add an event to start tracking your timeline."),
     ).toBeInTheDocument();
   });
 

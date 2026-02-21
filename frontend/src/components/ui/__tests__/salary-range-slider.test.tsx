@@ -34,11 +34,11 @@ describe("SalaryRangeSlider", () => {
       <SalaryRangeSlider
         period="yearly"
         currency="USD"
-        min={80000}
-        max={120000}
+        min={150000}
+        max={250000}
         onChange={vi.fn()}
       />,
     );
-    expect(screen.getByText("$80k – $120k")).toBeInTheDocument();
+    expect(screen.getByText("$150k – $250k")).toBeInTheDocument();
   });
 });
