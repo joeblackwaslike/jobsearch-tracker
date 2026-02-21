@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useCompanies } from "@/lib/queries/companies";
 import { render, screen } from "@/test/test-utils";
 import { CompanyDirectory } from "../company-directory";
-import { useCompanies } from "@/lib/queries/companies";
 
 const mockCompanies = [
   {
@@ -65,6 +65,7 @@ vi.mock("@/lib/queries/companies", () => ({
   })),
   useCreateCompany: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useUpdateCompany: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useArchiveCompany: () => ({ mutate: vi.fn(), isPending: false }),
 }));
 
 vi.mock("@/lib/queries/contacts", () => ({
@@ -93,21 +94,13 @@ describe("CompanyDirectory", () => {
   it("renders header, stats cards, and search", () => {
     render(<CompanyDirectory {...defaultProps} />);
 
-    expect(
-      screen.getByRole("heading", { name: "Companies" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /New Company/ })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Companies" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /New Company/ })).toBeInTheDocument();
     expect(screen.getByText("Total")).toBeInTheDocument();
-    expect(
-      screen.getAllByText("Researched").length
-    ).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Researched").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("Open Apps")).toBeInTheDocument();
     expect(screen.getByText("Avg Rating")).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText("Search companies...")
-    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Search companies...")).toBeInTheDocument();
   });
 
   it("renders company names in cards view", () => {
@@ -126,31 +119,23 @@ describe("CompanyDirectory", () => {
     render(<CompanyDirectory {...defaultProps} />);
 
     expect(screen.getByText("No companies yet")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /Add Your First Company/ })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Add Your First Company/ })).toBeInTheDocument();
   });
 
   it("renders table view with correct column headers", () => {
     render(<CompanyDirectory {...defaultProps} viewParam="table" />);
 
-    expect(
-      screen.getByRole("columnheader", { name: "Name" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: "Industry" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: "Location" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: "Size" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: "Researched" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: "Tags" })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Name" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Industry" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Location" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Size" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Researched" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Tags" })).toBeInTheDocument();
+  });
+
+  it("defaults to table view when no viewParam given", () => {
+    render(<CompanyDirectory searchParam="" onSearchChange={vi.fn()} onViewChange={vi.fn()} />);
+
+    expect(screen.getByRole("table")).toBeInTheDocument();
   });
 });

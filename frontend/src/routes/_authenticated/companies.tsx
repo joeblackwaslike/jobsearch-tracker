@@ -30,7 +30,7 @@ function CompaniesPage() {
         replace: true,
       });
     },
-    [navigate]
+    [navigate],
   );
 
   const handleViewChange = useCallback(
@@ -39,18 +39,18 @@ function CompaniesPage() {
         to: ".",
         search: (prev: CompaniesSearch) => ({
           ...prev,
-          view: value === "cards" ? undefined : value,
+          view: value === "table" ? undefined : value,
         }),
         replace: true,
       });
     },
-    [navigate]
+    [navigate],
   );
 
   return (
     <CompanyDirectory
       searchParam={search ?? ""}
-      viewParam={view ?? "cards"}
+      viewParam={view ?? "table"}
       onSearchChange={handleSearchChange}
       onViewChange={handleViewChange}
     />

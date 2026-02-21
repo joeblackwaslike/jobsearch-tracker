@@ -1,34 +1,21 @@
-import { useState, useCallback, useEffect } from "react";
 import {
-  Search,
-  Plus,
+  BarChart3,
+  Building2,
+  CheckCircle,
   LayoutGrid,
   List,
-  Building2,
-  BarChart3,
-  CheckCircle,
+  Plus,
+  Search,
   Star,
 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { type Company, useCompanies } from "@/lib/queries/companies";
 import { CompanyCard } from "./company-card";
 import { CompanyForm } from "./company-form";
-import { useCompanies, type Company } from "@/lib/queries/companies";
+import { CompanyTable } from "./company-table";
 
 const PAGE_SIZE = 20;
 
@@ -41,7 +28,7 @@ interface CompanyDirectoryProps {
 
 export function CompanyDirectory({
   searchParam = "",
-  viewParam = "cards",
+  viewParam = "table",
   onSearchChange,
   onViewChange,
 }: CompanyDirectoryProps) {
@@ -81,9 +68,7 @@ export function CompanyDirectory({
   // Stats
   const researchedCount = companies.filter((c) => c.researched).length;
   const researchedPct =
-    companies.length > 0
-      ? Math.round((researchedCount / companies.length) * 100)
-      : 0;
+    companies.length > 0 ? Math.round((researchedCount / companies.length) * 100) : 0;
 
   const avgRating = (() => {
     let sum = 0;
@@ -118,9 +103,7 @@ export function CompanyDirectory({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Companies</h1>
-          <p className="text-sm text-muted-foreground">
-            Your company directory
-          </p>
+          <p className="text-sm text-muted-foreground">Your company directory</p>
         </div>
         <Button onClick={handleOpenCreate} className="gap-2">
           <Plus className="size-4" />
@@ -233,69 +216,7 @@ export function CompanyDirectory({
           ))}
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Industry</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead>Size</TableHead>
-                <TableHead>Researched</TableHead>
-                <TableHead>Tags</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {companies.map((company) => {
-                const tags = Array.isArray(company.tags)
-                  ? (company.tags as string[])
-                  : [];
-                return (
-                  <TableRow
-                    key={company.id}
-                    className="cursor-pointer"
-                    onClick={() => handleOpenEdit(company)}
-                  >
-                    <TableCell className="font-medium">
-                      {company.name}
-                    </TableCell>
-                    <TableCell>{company.industry || "--"}</TableCell>
-                    <TableCell>{company.location || "--"}</TableCell>
-                    <TableCell>{company.size || "--"}</TableCell>
-                    <TableCell>
-                      {company.researched ? (
-                        <Badge variant="secondary" className="gap-1 text-xs">
-                          <CheckCircle className="size-3" />
-                          Yes
-                        </Badge>
-                      ) : (
-                        <span className="text-muted-foreground">No</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {tags.slice(0, 2).map((tag) => (
-                          <Badge
-                            key={tag}
-                            variant="outline"
-                            className="text-xs"
-                          >
-                            {tag}
-                          </Badge>
-                        ))}
-                        {tags.length > 2 && (
-                          <span className="text-xs text-muted-foreground">
-                            +{tags.length - 2}
-                          </span>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </div>
+        <CompanyTable data={companies} onEdit={handleOpenEdit} />
       )}
 
       {/* Pagination */}
