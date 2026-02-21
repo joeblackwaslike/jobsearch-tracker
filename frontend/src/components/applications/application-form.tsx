@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { X } from "lucide-react";
+import { FileIcon, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -414,23 +414,36 @@ export function ApplicationForm({
                 </div>
 
                 {attachedDocs.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5">
-                    {attachedDocs.map((doc) => (
-                      <Badge key={doc.id} variant="secondary" className="gap-1">
-                        {doc.name}
-                        <button
-                          type="button"
-                          onClick={() =>
-                            detachDocument.mutateAsync({
-                              id: doc.id,
-                              applicationId: application?.id ?? "",
-                            })
-                          }
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Attached</Label>
+                    <div className="space-y-1">
+                      {attachedDocs.map((doc) => (
+                        <div
+                          key={doc.id}
+                          className="flex items-center justify-between rounded-md border px-3 py-2 text-sm"
                         >
-                          <X className="size-3" />
-                        </button>
-                      </Badge>
-                    ))}
+                          <div className="flex items-center gap-2 min-w-0">
+                            <FileIcon className="size-4 shrink-0 text-muted-foreground" />
+                            <span className="truncate">{doc.name}</span>
+                            <Badge variant="outline" className="text-xs">{doc.type}</Badge>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="size-6 shrink-0"
+                            onClick={() =>
+                              detachDocument.mutateAsync({
+                                id: doc.id,
+                                applicationId: application?.id ?? "",
+                              })
+                            }
+                          >
+                            <XIcon className="size-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </fieldset>
