@@ -76,7 +76,7 @@ vi.mock("@/lib/queries/contacts", () => ({
   useDeleteContact: () => ({ mutateAsync: vi.fn(), isPending: false }),
 }));
 
-const defaultProps = {
+const cardViewProps = {
   searchParam: "",
   viewParam: "cards",
   onSearchChange: vi.fn(),
@@ -92,7 +92,7 @@ describe("CompanyDirectory", () => {
   });
 
   it("renders header, stats cards, and search", () => {
-    render(<CompanyDirectory {...defaultProps} />);
+    render(<CompanyDirectory {...cardViewProps} />);
 
     expect(screen.getByRole("heading", { name: "Companies" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /New Company/ })).toBeInTheDocument();
@@ -104,7 +104,7 @@ describe("CompanyDirectory", () => {
   });
 
   it("renders company names in cards view", () => {
-    render(<CompanyDirectory {...defaultProps} />);
+    render(<CompanyDirectory {...cardViewProps} />);
 
     expect(screen.getByText("Acme Corp")).toBeInTheDocument();
     expect(screen.getByText("Beta Inc")).toBeInTheDocument();
@@ -116,14 +116,14 @@ describe("CompanyDirectory", () => {
       isLoading: false,
     } as any);
 
-    render(<CompanyDirectory {...defaultProps} />);
+    render(<CompanyDirectory {...cardViewProps} />);
 
     expect(screen.getByText("No companies yet")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Add Your First Company/ })).toBeInTheDocument();
   });
 
   it("renders table view with correct column headers", () => {
-    render(<CompanyDirectory {...defaultProps} viewParam="table" />);
+    render(<CompanyDirectory {...cardViewProps} viewParam="table" />);
 
     expect(screen.getByRole("columnheader", { name: "Name" })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "Industry" })).toBeInTheDocument();
