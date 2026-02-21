@@ -1,5 +1,5 @@
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@/test/test-utils";
 import { DocumentTypePicker } from "../document-type-picker";
 
@@ -85,6 +85,8 @@ vi.mock("../upload-dialog", () => ({
 // ---------------------------------------------------------------------------
 
 describe("DocumentTypePicker", () => {
+  beforeEach(() => vi.clearAllMocks());
+
   it("renders a select combobox trigger", () => {
     render(<DocumentTypePicker value={null} onChange={vi.fn()} />);
     expect(screen.getByRole("combobox")).toBeInTheDocument();
