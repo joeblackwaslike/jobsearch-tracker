@@ -1,19 +1,10 @@
-import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Settings, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ThemeToggle } from "./theme-toggle";
+import { UserMenu } from "./user-menu";
 
 const navLinks = [
   { to: "/dashboard", label: "Dashboard" },
@@ -30,10 +21,7 @@ export function NavBar() {
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex h-14 max-w-7xl items-center px-4 md:px-6">
         {/* Left: Logo */}
-        <Link
-          to="/dashboard"
-          className="mr-8 text-lg font-bold tracking-wider"
-        >
+        <Link to="/dashboard" className="mr-8 text-lg font-bold tracking-wider">
           THRIVE
         </Link>
 
@@ -56,19 +44,10 @@ export function NavBar() {
           ))}
         </nav>
 
-        {/* Right: Theme toggle + Settings (desktop only) */}
+        {/* Right: Theme toggle + User menu (desktop only) */}
         <div className="hidden md:flex items-center gap-1">
           <ThemeToggle />
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" asChild>
-                <Link to="/settings" search={{ tab: "general" }} aria-label="Settings">
-                  <Settings className="size-5" />
-                </Link>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Settings</TooltipContent>
-          </Tooltip>
+          <UserMenu />
         </div>
 
         {/* Mobile: hamburger menu button */}
@@ -91,13 +70,7 @@ export function NavBar() {
             </SheetHeader>
             <nav className="flex flex-col gap-1 px-2">
               {navLinks.map(({ to, label }) => (
-                <Button
-                  key={to}
-                  variant="ghost"
-                  size="sm"
-                  className="justify-start"
-                  asChild
-                >
+                <Button key={to} variant="ghost" size="sm" className="justify-start" asChild>
                   <Link
                     to={to}
                     activeProps={{
@@ -118,21 +91,7 @@ export function NavBar() {
                 <span className="text-sm text-muted-foreground">Theme</span>
                 <ThemeToggle />
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="justify-start gap-2"
-                asChild
-              >
-                <Link
-                  to="/settings"
-                  search={{ tab: "general" }}
-                  onClick={() => setMobileOpen(false)}
-                >
-                  <Settings className="size-4" />
-                  Settings
-                </Link>
-              </Button>
+              <UserMenu />
             </div>
           </SheetContent>
         </Sheet>
