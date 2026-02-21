@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import type { SortingState, VisibilityState } from "@tanstack/react-table";
-import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, PlusIcon, ZapIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { z } from "zod";
 import {
@@ -9,6 +9,8 @@ import {
 } from "@/components/applications/application-filters";
 import { ApplicationForm } from "@/components/applications/application-form";
 import { ApplicationTable } from "@/components/applications/application-table";
+import { EasyAddForm } from "@/components/applications/easy-add-form";
+import { FullApplicationForm } from "@/components/applications/full-application-form";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -122,6 +124,7 @@ function ApplicationsPage() {
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(loadColumnVisibility);
   const [formOpen, setFormOpen] = useState(false);
+  const [easyAddOpen, setEasyAddOpen] = useState(false);
   const [editingApp, setEditingApp] = useState<ApplicationListItem | null>(null);
 
   // Persist column visibility
@@ -228,10 +231,16 @@ function ApplicationsPage() {
             {isLoading ? "Loading..." : `${totalCount} application${totalCount !== 1 ? "s" : ""}`}
           </p>
         </div>
-        <Button onClick={() => setFormOpen(true)}>
-          <PlusIcon className="size-4" />
-          New Application
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => setEasyAddOpen(true)}>
+            <ZapIcon className="size-4" />
+            Easy Add
+          </Button>
+          <Button onClick={() => setFormOpen(true)}>
+            <PlusIcon className="size-4" />
+            New Application
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -295,8 +304,11 @@ function ApplicationsPage() {
         </div>
       )}
 
-      {/* Create application dialog */}
-      <ApplicationForm open={formOpen} onOpenChange={setFormOpen} mode="create" />
+      {/* New application (full form) */}
+      <FullApplicationForm open={formOpen} onOpenChange={setFormOpen} />
+
+      {/* Easy add dialog */}
+      <EasyAddForm open={easyAddOpen} onOpenChange={setEasyAddOpen} />
 
       {/* Edit application dialog */}
       <ApplicationForm
@@ -304,8 +316,6 @@ function ApplicationsPage() {
         onOpenChange={(open) => {
           if (!open) setEditingApp(null);
         }}
-        mode="edit"
-        // ApplicationListItem.company has {name} which is all ApplicationForm needs
         application={editingApp as ApplicationWithCompany | null}
       />
     </div>

@@ -1,16 +1,11 @@
-import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { PlusIcon, CalendarIcon, ListIcon } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ApplicationForm } from "@/components/applications/application-form";
+import { CalendarIcon, ListIcon, PlusIcon, ZapIcon } from "lucide-react";
+import { useState } from "react";
+import { EasyAddForm } from "@/components/applications/easy-add-form";
+import { FullApplicationForm } from "@/components/applications/full-application-form";
 import { ScheduleDialog } from "@/components/interviews/schedule-dialog";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 // ---------------------------------------------------------------------------
 // Component
@@ -18,7 +13,8 @@ import { ScheduleDialog } from "@/components/interviews/schedule-dialog";
 
 export function QuickActions() {
   const navigate = useNavigate();
-  const [applicationFormOpen, setApplicationFormOpen] = useState(false);
+  const [easyAddOpen, setEasyAddOpen] = useState(false);
+  const [fullFormOpen, setFullFormOpen] = useState(false);
   const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
 
   return (
@@ -32,10 +28,18 @@ export function QuickActions() {
           <Button
             variant="outline"
             className="justify-start"
-            onClick={() => setApplicationFormOpen(true)}
+            onClick={() => setEasyAddOpen(true)}
+          >
+            <ZapIcon className="mr-2 size-4" />
+            Easy Add Application
+          </Button>
+          <Button
+            variant="outline"
+            className="justify-start"
+            onClick={() => setFullFormOpen(true)}
           >
             <PlusIcon className="mr-2 size-4" />
-            Add Application
+            New Application
           </Button>
           <Button
             variant="outline"
@@ -56,16 +60,9 @@ export function QuickActions() {
         </CardContent>
       </Card>
 
-      <ApplicationForm
-        open={applicationFormOpen}
-        onOpenChange={setApplicationFormOpen}
-        mode="create"
-      />
-
-      <ScheduleDialog
-        open={scheduleDialogOpen}
-        onOpenChange={setScheduleDialogOpen}
-      />
+      <EasyAddForm open={easyAddOpen} onOpenChange={setEasyAddOpen} />
+      <FullApplicationForm open={fullFormOpen} onOpenChange={setFullFormOpen} />
+      <ScheduleDialog open={scheduleDialogOpen} onOpenChange={setScheduleDialogOpen} />
     </>
   );
 }
