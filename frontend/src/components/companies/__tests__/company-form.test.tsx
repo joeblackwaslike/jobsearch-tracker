@@ -67,9 +67,9 @@ describe("CompanyForm", () => {
 
     expect(screen.getByRole("heading", { name: "Add Company" })).toBeInTheDocument();
     expect(screen.getByText("Basic Information")).toBeInTheDocument();
-    expect(screen.getByText("Links")).toBeInTheDocument();
+    expect(screen.getByText("Company Links")).toBeInTheDocument();
     expect(screen.getByText("Research Notes")).toBeInTheDocument();
-    expect(screen.getByText("Ratings (1-5)")).toBeInTheDocument();
+    expect(screen.getByText("Company Ratings")).toBeInTheDocument();
   });
 
   it("renders edit mode with all section headings", () => {
@@ -79,10 +79,9 @@ describe("CompanyForm", () => {
 
     expect(screen.getByText("Edit Company")).toBeInTheDocument();
     expect(screen.getByText("Basic Information")).toBeInTheDocument();
-    expect(screen.getByText("Links")).toBeInTheDocument();
+    expect(screen.getByText("Company Links")).toBeInTheDocument();
     expect(screen.getByText("Research Notes")).toBeInTheDocument();
-    expect(screen.getByText("Ratings (1-5)")).toBeInTheDocument();
-    expect(screen.getByText("Tags & Status")).toBeInTheDocument();
+    expect(screen.getByText("Company Ratings")).toBeInTheDocument();
     expect(screen.getByText("Contacts")).toBeInTheDocument();
   });
 
@@ -123,6 +122,33 @@ describe("CompanyForm", () => {
       <CompanyForm open={true} onOpenChange={noop} mode="edit" company={mockCompany as never} />,
     );
 
+    expect(screen.getByText("Contacts")).toBeInTheDocument();
+  });
+});
+
+describe("company form refactor", () => {
+  it("renders Industry as a dropdown (select)", () => {
+    render(<CompanyForm open={true} onOpenChange={noop} mode="create" />);
+    expect(screen.getByRole("combobox", { name: /industry/i })).toBeInTheDocument();
+  });
+
+  it("renders Tags as TagInput (not plain text input)", () => {
+    render(
+      <CompanyForm open={true} onOpenChange={noop} mode="edit" company={mockCompany as never} />,
+    );
+    // TagInput renders chip badges, not a plain text input for tags
+    expect(screen.queryByPlaceholderText(/comma-separated/i)).not.toBeInTheDocument();
+  });
+
+  it("does not render Contacts section in create mode", () => {
+    render(<CompanyForm open={true} onOpenChange={noop} mode="create" />);
+    expect(screen.queryByText("Contacts")).not.toBeInTheDocument();
+  });
+
+  it("renders Contacts section in edit mode", () => {
+    render(
+      <CompanyForm open={true} onOpenChange={noop} mode="edit" company={mockCompany as never} />,
+    );
     expect(screen.getByText("Contacts")).toBeInTheDocument();
   });
 });

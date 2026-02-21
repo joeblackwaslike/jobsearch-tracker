@@ -1,7 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
+import { CityCombobox } from "@/components/applications/city-combobox";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -22,6 +23,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { StarRating } from "@/components/ui/star-rating";
+import { TagInput } from "@/components/ui/tag-input";
+import { UrlInput } from "@/components/ui/url-input";
 import { type Company, useCreateCompany, useUpdateCompany } from "@/lib/queries/companies";
 import { CompanyContacts } from "./company-contacts";
 
@@ -35,6 +39,7 @@ const linksSchema = z.object({
   linkedin: z.string().default(""),
   glassdoor: z.string().default(""),
   news: z.string().default(""),
+  crunchbase: z.string().default(""),
 });
 
 const ratingsSchema = z.object({
@@ -55,6 +60,7 @@ const companyFormSchema = z.object({
     linkedin: "",
     glassdoor: "",
     news: "",
+    crunchbase: "",
   }),
   industry: z.string().default(""),
   size: z.string().default(""),
@@ -73,14 +79,14 @@ const companyFormSchema = z.object({
     management: "",
     culture: "",
   }),
-  tags: z.string().default(""),
+  tags: z.array(z.string()).default([]),
   researched: z.boolean().default(false),
 });
 
 type CompanyFormValues = z.infer<typeof companyFormSchema>;
 
 // ---------------------------------------------------------------------------
-// Size options
+// Constants
 // ---------------------------------------------------------------------------
 
 const SIZE_OPTIONS = [
@@ -93,7 +99,60 @@ const SIZE_OPTIONS = [
   "5000+",
 ] as const;
 
-const RATING_OPTIONS = ["1", "2", "3", "4", "5"] as const;
+const INDUSTRY_OPTIONS = [
+  "Analytics",
+  "Engineering, Product and Design",
+  "Finance and Accounting",
+  "Human Resources",
+  "Infrastructure",
+  "Legal",
+  "Marketing",
+  "Office Management",
+  "Operations",
+  "Productivity",
+  "Recruiting and Talent",
+  "Retail",
+  "Sales",
+  "Security",
+  "Supply Chain and Logistics",
+  "Asset Management",
+  "Banking and Exchange",
+  "Consumer Finance",
+  "Credit and Lending",
+  "Insurance",
+  "Payments",
+  "Apparel and Cosmetics",
+  "Consumer Electronics",
+  "Content",
+  "Food and Beverage",
+  "Gaming",
+  "Home and Personal",
+  "Job and Career Services",
+  "Social",
+  "Transportation Services",
+  "Travel, Leisure and Tourism",
+  "Virtual and Augmented Reality",
+  "Consumer Health and Wellness",
+  "Diagnostics",
+  "Drug Discovery and Delivery",
+  "Healthcare IT",
+  "Healthcare Services",
+  "Industrial Bio",
+  "Medical Devices",
+  "Therapeutics",
+  "Education",
+  "Agriculture",
+  "Automotive",
+  "Aviation and Space",
+  "Climate",
+  "Defense",
+  "Drones",
+  "Energy",
+  "Manufacturing and Robotics",
+  "Construction",
+  "Housing and Real Estate",
+  "Government",
+] as const;
 
 // ---------------------------------------------------------------------------
 // Props
@@ -114,7 +173,6 @@ interface CompanyFormProps {
 function companyToFormValues(company: Company): CompanyFormValues {
   const links = (company.links ?? {}) as Record<string, string>;
   const ratings = (company.ratings ?? {}) as Record<string, string>;
-  const tags = Array.isArray(company.tags) ? (company.tags as string[]).join(", ") : "";
 
   return {
     name: company.name,
@@ -125,6 +183,7 @@ function companyToFormValues(company: Company): CompanyFormValues {
       linkedin: links.linkedin ?? "",
       glassdoor: links.glassdoor ?? "",
       news: links.news ?? "",
+      crunchbase: links.crunchbase ?? "",
     },
     industry: company.industry ?? "",
     size: company.size ?? "",
@@ -143,19 +202,12 @@ function companyToFormValues(company: Company): CompanyFormValues {
       management: ratings.management ?? "",
       culture: ratings.culture ?? "",
     },
-    tags,
+    tags: Array.isArray(company.tags) ? (company.tags as string[]) : [],
     researched: company.researched ?? false,
   };
 }
 
 function formValuesToPayload(values: CompanyFormValues) {
-  const tags = values.tags
-    ? values.tags
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean)
-    : [];
-
   // Filter out empty rating values
   const ratings: Record<string, string> = {};
   if (values.ratings) {
@@ -186,7 +238,7 @@ function formValuesToPayload(values: CompanyFormValues) {
     cons: values.cons || null,
     tech_stack: values.tech_stack || null,
     ratings: Object.keys(ratings).length > 0 ? ratings : null,
-    tags: tags.length > 0 ? tags : null,
+    tags: values.tags.length > 0 ? values.tags : null,
     researched: values.researched ?? false,
   };
 }
@@ -205,6 +257,7 @@ export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: Co
     reset,
     setValue,
     watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<CompanyFormValues>({
     // biome-ignore lint/suspicious/noExplicitAny: type mismatch between zod versions
@@ -256,22 +309,24 @@ export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: Co
         <form onSubmit={handleSubmit(onSubmit)}>
           <ScrollArea className="max-h-[calc(85vh-8rem)] pr-4">
             <div className="space-y-6 py-4">
-              {/* Basic Info */}
+              {/* Basic Information */}
               <fieldset className="space-y-4">
                 <legend className="text-sm font-semibold text-muted-foreground">
                   Basic Information
                 </legend>
 
                 <div className="space-y-2">
-                  <Label htmlFor="edit-name">Name *</Label>
-                  <Input id="edit-name" {...register("name")} />
-                  {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
+                  <Label htmlFor="name">Name *</Label>
+                  <Input id="name" {...register("name")} />
+                  {errors.name && (
+                    <p className="text-sm text-destructive">{errors.name.message}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="edit-description">Description</Label>
+                  <Label htmlFor="description">Description</Label>
                   <textarea
-                    id="edit-description"
+                    id="description"
                     className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     {...register("description")}
                   />
@@ -279,14 +334,28 @@ export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: Co
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="edit-industry">Industry</Label>
-                    <Input id="edit-industry" {...register("industry")} />
+                    <Label>Industry</Label>
+                    <Select
+                      value={watch("industry") ?? ""}
+                      onValueChange={(v) => setValue("industry", v)}
+                    >
+                      <SelectTrigger className="w-full" aria-label="Industry">
+                        <SelectValue placeholder="Select industry" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {INDUSTRY_OPTIONS.map((opt) => (
+                          <SelectItem key={opt} value={opt}>
+                            {opt}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="edit-size">Size</Label>
+                    <Label>Size</Label>
                     <Select
                       value={watch("size") ?? ""}
-                      onValueChange={(value) => setValue("size", value)}
+                      onValueChange={(v) => setValue("size", v)}
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select size" />
@@ -302,58 +371,82 @@ export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: Co
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-location">Location</Label>
-                    <Input id="edit-location" {...register("location")} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-founded">Founded</Label>
-                    <Input id="edit-founded" type="date" {...register("founded")} />
-                  </div>
+                <div className="space-y-2">
+                  <Label>Location</Label>
+                  <CityCombobox
+                    value={watch("location") ?? ""}
+                    onChange={(v) => setValue("location", v)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="founded">Founded (year)</Label>
+                  <Input
+                    id="founded"
+                    type="number"
+                    placeholder="e.g. 2012"
+                    min={1800}
+                    max={2099}
+                    {...register("founded")}
+                  />
                 </div>
               </fieldset>
 
-              {/* Links */}
+              {/* Company Links */}
               <fieldset className="space-y-4">
-                <legend className="text-sm font-semibold text-muted-foreground">Links</legend>
+                <legend className="text-sm font-semibold text-muted-foreground">
+                  Company Links
+                </legend>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-website">Website</Label>
-                    <Input
-                      id="edit-website"
-                      placeholder="https://..."
-                      {...register("links.website")}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-careers">Careers Page</Label>
-                    <Input
-                      id="edit-careers"
-                      placeholder="https://..."
-                      {...register("links.careers")}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-linkedin">LinkedIn</Label>
-                    <Input
-                      id="edit-linkedin"
-                      placeholder="https://..."
-                      {...register("links.linkedin")}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-glassdoor">Glassdoor</Label>
-                    <Input
-                      id="edit-glassdoor"
-                      placeholder="https://..."
-                      {...register("links.glassdoor")}
-                    />
-                  </div>
-                  <div className="space-y-2 col-span-2">
-                    <Label htmlFor="edit-news">News</Label>
-                    <Input id="edit-news" placeholder="https://..." {...register("links.news")} />
-                  </div>
+                  {(
+                    [
+                      ["links.website", "Website"],
+                      ["links.careers", "Careers Page"],
+                      ["links.linkedin", "LinkedIn"],
+                      ["links.glassdoor", "Glassdoor"],
+                      ["links.news", "News"],
+                      ["links.crunchbase", "Crunchbase"],
+                    ] as const
+                  ).map(([field, label]) => (
+                    <div key={field} className="space-y-2">
+                      <Label>{label}</Label>
+                      <Controller
+                        name={field}
+                        control={control}
+                        render={({ field: f }) => (
+                          <UrlInput value={f.value} onChange={f.onChange} />
+                        )}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </fieldset>
+
+              {/* Company Ratings */}
+              <fieldset className="space-y-4">
+                <legend className="text-sm font-semibold text-muted-foreground">
+                  Company Ratings
+                </legend>
+                <div className="grid grid-cols-2 gap-4">
+                  {(
+                    [
+                      ["ratings.overall", "Overall"],
+                      ["ratings.work_life", "Work-Life Balance"],
+                      ["ratings.compensation", "Compensation"],
+                      ["ratings.growth", "Career Growth"],
+                      ["ratings.management", "Management"],
+                      ["ratings.culture", "Culture"],
+                    ] as const
+                  ).map(([field, label]) => (
+                    <div key={field} className="space-y-2">
+                      <Label>{label}</Label>
+                      <StarRating
+                        aria-label={label}
+                        value={watch(field) ? Number(watch(field)) : null}
+                        onChange={(v) => setValue(field, v != null ? String(v) : "")}
+                      />
+                    </div>
+                  ))}
                 </div>
               </fieldset>
 
@@ -363,37 +456,38 @@ export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: Co
                   Research Notes
                 </legend>
 
-                <div className="space-y-2">
-                  <Label htmlFor="edit-culture">Culture</Label>
-                  <textarea
-                    id="edit-culture"
-                    className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    {...register("culture")}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="edit-benefits">Benefits</Label>
-                  <textarea
-                    id="edit-benefits"
-                    className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    {...register("benefits")}
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="culture">Culture</Label>
+                    <textarea
+                      id="culture"
+                      className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      {...register("culture")}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="benefits">Benefits</Label>
+                    <textarea
+                      id="benefits"
+                      className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      {...register("benefits")}
+                    />
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="edit-pros">Pros</Label>
+                    <Label htmlFor="pros">Pros</Label>
                     <textarea
-                      id="edit-pros"
+                      id="pros"
                       className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       {...register("pros")}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="edit-cons">Cons</Label>
+                    <Label htmlFor="cons">Cons</Label>
                     <textarea
-                      id="edit-cons"
+                      id="cons"
                       className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       {...register("cons")}
                     />
@@ -401,83 +495,39 @@ export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: Co
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="edit-tech_stack">Tech Stack</Label>
-                  <textarea
-                    id="edit-tech_stack"
-                    className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  <Label htmlFor="tech_stack">Tech Stack</Label>
+                  <Input
+                    id="tech_stack"
+                    placeholder="React, Node.js, PostgreSQL..."
                     {...register("tech_stack")}
                   />
                 </div>
-              </fieldset>
-
-              {/* Ratings */}
-              <fieldset className="space-y-4">
-                <legend className="text-sm font-semibold text-muted-foreground">
-                  Ratings (1-5)
-                </legend>
-                <div className="grid grid-cols-2 gap-4">
-                  {(
-                    [
-                      ["overall", "Overall"],
-                      ["work_life", "Work-Life Balance"],
-                      ["compensation", "Compensation"],
-                      ["growth", "Growth"],
-                      ["management", "Management"],
-                      ["culture", "Culture"],
-                    ] as const
-                  ).map(([key, label]) => (
-                    <div key={key} className="space-y-2">
-                      <Label>{label}</Label>
-                      <Select
-                        value={watch(`ratings.${key}`) ?? ""}
-                        onValueChange={(value) => setValue(`ratings.${key}`, value)}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="--" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {RATING_OPTIONS.map((r) => (
-                            <SelectItem key={r} value={r}>
-                              {r}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  ))}
-                </div>
-              </fieldset>
-
-              {/* Tags & Researched */}
-              <fieldset className="space-y-4">
-                <legend className="text-sm font-semibold text-muted-foreground">
-                  Tags & Status
-                </legend>
 
                 <div className="space-y-2">
-                  <Label htmlFor="edit-tags">Tags (comma-separated)</Label>
-                  <Input
-                    id="edit-tags"
-                    placeholder="e.g. remote, startup, AI"
-                    {...register("tags")}
+                  <Label>Tags</Label>
+                  <TagInput
+                    value={watch("tags") ?? []}
+                    onChange={(tags) => setValue("tags", tags)}
                   />
                 </div>
 
                 <div className="flex items-center gap-2">
                   <Checkbox
-                    id="edit-researched"
+                    id="researched"
                     checked={watch("researched") ?? false}
                     onCheckedChange={(checked) => setValue("researched", checked === true)}
                   />
-                  <Label htmlFor="edit-researched">Researched</Label>
+                  <Label htmlFor="researched">Researched</Label>
                 </div>
               </fieldset>
 
-              {/* Contacts */}
-              <fieldset className="space-y-4">
-                <legend className="text-sm font-semibold text-muted-foreground">Contacts</legend>
-                {company?.id && <CompanyContacts companyId={company.id} />}
-              </fieldset>
+              {/* Contacts (edit mode only) */}
+              {mode === "edit" && company?.id && (
+                <fieldset className="space-y-4">
+                  <legend className="text-sm font-semibold text-muted-foreground">Contacts</legend>
+                  <CompanyContacts companyId={company.id} />
+                </fieldset>
+              )}
 
               <DialogFooter className="mt-4">
                 <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
