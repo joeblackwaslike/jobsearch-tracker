@@ -1,8 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import type { SortingState, VisibilityState } from "@tanstack/react-table";
+import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { z } from "zod";
-import { PlusIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import type { SortingState, VisibilityState } from "@tanstack/react-table";
+import {
+  ApplicationFilters,
+  type ApplicationFiltersState,
+} from "@/components/applications/application-filters";
+import { ApplicationForm } from "@/components/applications/application-form";
+import { ApplicationTable } from "@/components/applications/application-table";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -11,12 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ApplicationTable } from "@/components/applications/application-table";
-import {
-  ApplicationFilters,
-  type ApplicationFiltersState,
-} from "@/components/applications/application-filters";
-import { ApplicationForm } from "@/components/applications/application-form";
+import type { ApplicationListItem, ApplicationWithCompany } from "@/lib/queries/applications";
 import { useApplications } from "@/lib/queries/applications";
 
 // ---------------------------------------------------------------------------
@@ -89,7 +90,7 @@ function toArray(value: string | string[] | undefined): string[] | undefined {
 }
 
 function parseSortParam(
-  sort: string | undefined
+  sort: string | undefined,
 ): { column: string; direction: "asc" | "desc" } | undefined {
   if (!sort) return undefined;
   const parts = sort.split(".");
@@ -119,10 +120,9 @@ function ApplicationsPage() {
   const searchParams = Route.useSearch();
   const navigate = useNavigate();
 
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-    loadColumnVisibility
-  );
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(loadColumnVisibility);
   const [formOpen, setFormOpen] = useState(false);
+  const [editingApp, setEditingApp] = useState<ApplicationListItem | null>(null);
 
   // Persist column visibility
   useEffect(() => {
@@ -177,7 +177,7 @@ function ApplicationsPage() {
         replace: true,
       });
     },
-    [navigate]
+    [navigate],
   );
 
   const handleFiltersChange = useCallback(
@@ -191,7 +191,7 @@ function ApplicationsPage() {
         page: 1, // Reset to page 1 when filters change
       });
     },
-    [updateSearch]
+    [updateSearch],
   );
 
   const handleSortingChange = useCallback(
@@ -201,21 +201,21 @@ function ApplicationsPage() {
         page: 1,
       });
     },
-    [updateSearch]
+    [updateSearch],
   );
 
   const handlePageChange = useCallback(
     (newPage: number) => {
       updateSearch({ page: newPage });
     },
-    [updateSearch]
+    [updateSearch],
   );
 
   const handlePageSizeChange = useCallback(
     (newPageSize: string) => {
       updateSearch({ pageSize: Number(newPageSize), page: 1 });
     },
-    [updateSearch]
+    [updateSearch],
   );
 
   return (
@@ -225,9 +225,7 @@ function ApplicationsPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Applications</h1>
           <p className="text-sm text-muted-foreground">
-            {isLoading
-              ? "Loading..."
-              : `${totalCount} application${totalCount !== 1 ? "s" : ""}`}
+            {isLoading ? "Loading..." : `${totalCount} application${totalCount !== 1 ? "s" : ""}`}
           </p>
         </div>
         <Button onClick={() => setFormOpen(true)}>
@@ -251,6 +249,7 @@ function ApplicationsPage() {
         onSortingChange={handleSortingChange}
         columnVisibility={columnVisibility}
         onColumnVisibilityChange={setColumnVisibility}
+        onEdit={(app) => setEditingApp(app)}
       />
 
       {/* Pagination */}
@@ -258,10 +257,7 @@ function ApplicationsPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>Rows per page</span>
-            <Select
-              value={String(pageSize)}
-              onValueChange={handlePageSizeChange}
-            >
+            <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
               <SelectTrigger className="h-8 w-[70px]">
                 <SelectValue />
               </SelectTrigger>
@@ -300,10 +296,16 @@ function ApplicationsPage() {
       )}
 
       {/* Create application dialog */}
+      <ApplicationForm open={formOpen} onOpenChange={setFormOpen} mode="create" />
+
+      {/* Edit application dialog */}
       <ApplicationForm
-        open={formOpen}
-        onOpenChange={setFormOpen}
-        mode="create"
+        open={!!editingApp}
+        onOpenChange={(open) => {
+          if (!open) setEditingApp(null);
+        }}
+        mode="edit"
+        application={editingApp as ApplicationWithCompany | null}
       />
     </div>
   );

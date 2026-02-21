@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@/test/test-utils";
 import { ApplicationTable } from "../application-table";
 
@@ -81,6 +81,7 @@ const defaultProps = {
   onSortingChange: vi.fn(),
   columnVisibility: {},
   onColumnVisibilityChange: vi.fn(),
+  onEdit: vi.fn(),
 };
 
 // ---------------------------------------------------------------------------
@@ -108,11 +109,7 @@ describe("ApplicationTable", () => {
     render(<ApplicationTable {...defaultProps} data={[]} />);
 
     expect(screen.getByText("No applications found")).toBeVisible();
-    expect(
-      screen.getByText(
-        "Try adjusting your filters or add a new application."
-      )
-    ).toBeVisible();
+    expect(screen.getByText("Try adjusting your filters or add a new application.")).toBeVisible();
   });
 
   it("renders salary column with formatted values", () => {
@@ -147,5 +144,37 @@ describe("ApplicationTable", () => {
     // Second row has interest null which renders as "-"
     // Verify the second row renders correctly (interest null shows "-")
     expect(screen.getByText("Frontend Dev")).toBeVisible();
+  });
+
+  it("renders an edit button per row", () => {
+    const onEdit = vi.fn();
+    render(
+      <ApplicationTable
+        data={mockData as unknown as Parameters<typeof ApplicationTable>[0]["data"]}
+        onEdit={onEdit}
+        sorting={[]}
+        onSortingChange={vi.fn()}
+        columnVisibility={{}}
+        onColumnVisibilityChange={vi.fn()}
+      />,
+    );
+    expect(screen.getAllByTitle("Edit application")).toHaveLength(mockData.length);
+  });
+
+  it("calls onEdit when edit button clicked without navigating", async () => {
+    const user = userEvent.setup();
+    const onEdit = vi.fn();
+    render(
+      <ApplicationTable
+        data={mockData as unknown as Parameters<typeof ApplicationTable>[0]["data"]}
+        onEdit={onEdit}
+        sorting={[]}
+        onSortingChange={vi.fn()}
+        columnVisibility={{}}
+        onColumnVisibilityChange={vi.fn()}
+      />,
+    );
+    await user.click(screen.getAllByTitle("Edit application")[0]);
+    expect(onEdit).toHaveBeenCalledWith(mockData[0]);
   });
 });
