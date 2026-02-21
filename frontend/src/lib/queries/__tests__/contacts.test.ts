@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 // We'll test that the query functions and hooks are exported correctly
 // and that the search hook debounces properly

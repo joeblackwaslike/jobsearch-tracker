@@ -1,11 +1,7 @@
-import {
-  queryOptions,
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
-import type { Tables, TablesInsert, TablesUpdate } from "@/lib/supabase/types";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
+import type { Tables, TablesInsert, TablesUpdate } from "@/lib/supabase/types";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -27,10 +23,7 @@ export function contactsQueryOptions(companyId?: string) {
   return queryOptions({
     queryKey: ["contacts", { companyId }],
     queryFn: async () => {
-      let query = supabase
-        .from("contacts")
-        .select("*")
-        .order("name", { ascending: true });
+      let query = supabase.from("contacts").select("*").order("name", { ascending: true });
 
       if (companyId) {
         query = query.eq("company_id", companyId);
@@ -103,6 +96,8 @@ export function useCreateContact() {
       if (error) throw error;
       return data as Contact;
     },
+    onSuccess: () => { toast.success("Contact saved."); },
+    onError: () => { toast.error("Failed to save contact."); },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["contacts"] });
     },
@@ -114,10 +109,7 @@ export function useUpdateContact() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      ...updates
-    }: ContactUpdate & { id: string }) => {
+    mutationFn: async ({ id, ...updates }: ContactUpdate & { id: string }) => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -133,6 +125,8 @@ export function useUpdateContact() {
       if (error) throw error;
       return data as Contact;
     },
+    onSuccess: () => { toast.success("Contact updated."); },
+    onError: () => { toast.error("Failed to update contact."); },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["contacts"] });
     },
@@ -157,6 +151,8 @@ export function useDeleteContact() {
         .eq("user_id", user.id);
       if (error) throw error;
     },
+    onSuccess: () => { toast.success("Contact deleted."); },
+    onError: () => { toast.error("Failed to delete contact."); },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["contacts"] });
     },

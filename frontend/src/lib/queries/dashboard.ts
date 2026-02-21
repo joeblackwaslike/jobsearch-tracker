@@ -29,16 +29,18 @@ export function useDashboardStats() {
     queryFn: async () => {
       const { data, error } = await supabase.rpc("get_dashboard_stats");
       if (error) throw error;
-      return (data as unknown as DashboardStats) ?? {
-        total_applications: 0,
-        interviews_upcoming: 0,
-        active_applications: 0,
-        offers: 0,
-        rejections: 0,
-        contacts: 0,
-        companies: 0,
-        response_rate: 0,
-      };
+      return (
+        (data as unknown as DashboardStats) ?? {
+          total_applications: 0,
+          interviews_upcoming: 0,
+          active_applications: 0,
+          offers: 0,
+          rejections: 0,
+          contacts: 0,
+          companies: 0,
+          response_rate: 0,
+        }
+      );
     },
   });
 }
@@ -51,9 +53,7 @@ export function useRecentActivity() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("events")
-        .select(
-          "*, application:applications(id, position, company:companies(id, name))"
-        )
+        .select("*, application:applications(id, position, company:companies(id, name))")
         .order("created_at", { ascending: false })
         .limit(15);
       if (error) throw error;

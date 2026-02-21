@@ -1,7 +1,8 @@
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod/v3";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod/v3";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -49,9 +50,8 @@ export function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
         return;
       }
       // If email confirmation is enabled, show a message
-      setMessage(
-        "Account created! Check your email to confirm your account, then sign in."
-      );
+      setMessage("Account created! Check your email to confirm your account, then sign in.");
+      toast.success("Welcome to THRIVE!");
       onSuccess?.();
     } catch {
       setError("An unexpected error occurred. Please try again.");
@@ -71,9 +71,7 @@ export function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
           autoComplete="email"
           {...register("email")}
         />
-        {errors.email && (
-          <p className="text-sm text-destructive">{errors.email.message}</p>
-        )}
+        {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -85,9 +83,7 @@ export function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
           autoComplete="new-password"
           {...register("password")}
         />
-        {errors.password && (
-          <p className="text-sm text-destructive">{errors.password.message}</p>
-        )}
+        {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -100,16 +96,12 @@ export function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
           {...register("confirmPassword")}
         />
         {errors.confirmPassword && (
-          <p className="text-sm text-destructive">
-            {errors.confirmPassword.message}
-          </p>
+          <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
         )}
       </div>
 
       {error && (
-        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-          {error}
-        </div>
+        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
       )}
 
       {message && (

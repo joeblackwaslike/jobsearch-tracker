@@ -1,12 +1,7 @@
-import {
-  queryOptions,
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createClient } from "@/lib/supabase/client";
 import type { Tables } from "@/lib/supabase/types";
 import type { Contact } from "./contacts";
-import { createClient } from "@/lib/supabase/client";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -56,13 +51,7 @@ export function useAddInterviewer() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      eventId,
-      contactId,
-    }: {
-      eventId: string;
-      contactId: string;
-    }) => {
+    mutationFn: async ({ eventId, contactId }: { eventId: string; contactId: string }) => {
       const { data, error } = await supabase
         .from("event_contacts")
         .insert({ event_id: eventId, contact_id: contactId })
@@ -86,13 +75,7 @@ export function useRemoveInterviewer() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      eventId,
-      contactId,
-    }: {
-      eventId: string;
-      contactId: string;
-    }) => {
+    mutationFn: async ({ eventId, contactId }: { eventId: string; contactId: string }) => {
       const { error } = await supabase
         .from("event_contacts")
         .delete()

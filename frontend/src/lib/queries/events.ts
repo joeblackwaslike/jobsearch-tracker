@@ -1,11 +1,7 @@
-import {
-  queryOptions,
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
-import type { Tables, TablesInsert, TablesUpdate } from "@/lib/supabase/types";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
+import type { Tables, TablesInsert, TablesUpdate } from "@/lib/supabase/types";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -77,9 +73,7 @@ export function useUpcomingInterviews() {
       const now = new Date().toISOString();
       const { data, error } = await supabase
         .from("events")
-        .select(
-          "*, application:applications(id, position, company:companies(id, name))"
-        )
+        .select("*, application:applications(id, position, company:companies(id, name))")
         .in("type", INTERVIEW_TYPES as unknown as string[])
         .or(`scheduled_at.gt.${now},scheduled_at.is.null`)
         .order("scheduled_at", { ascending: true, nullsFirst: false });
@@ -98,9 +92,7 @@ export function usePastInterviews() {
       const now = new Date().toISOString();
       const { data, error } = await supabase
         .from("events")
-        .select(
-          "*, application:applications(id, position, company:companies(id, name))"
-        )
+        .select("*, application:applications(id, position, company:companies(id, name))")
         .in("type", INTERVIEW_TYPES as unknown as string[])
         .lte("scheduled_at", now)
         .not("scheduled_at", "is", null)
@@ -120,9 +112,7 @@ export function useCreateEvent() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (
-      input: Omit<EventInsert, "user_id"> & { application_id: string }
-    ) => {
+    mutationFn: async (input: Omit<EventInsert, "user_id"> & { application_id: string }) => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -141,9 +131,7 @@ export function useCreateEvent() {
       // Auto-transition application status
       const eventType = input.type;
 
-      if (
-        (INTERVIEW_TYPES as readonly string[]).includes(eventType)
-      ) {
+      if ((INTERVIEW_TYPES as readonly string[]).includes(eventType)) {
         const { data: app } = await supabase
           .from("applications")
           .select("status")
@@ -173,6 +161,8 @@ export function useCreateEvent() {
 
       return data as Event;
     },
+    onSuccess: () => { toast.success("Interview scheduled."); },
+    onError: () => { toast.error("Failed to schedule interview."); },
     onSettled: (_data, _error, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["events", { applicationId: variables?.application_id }],
@@ -207,6 +197,8 @@ export function useUpdateEvent() {
       if (error) throw error;
       return data as Event;
     },
+    onSuccess: () => { toast.success("Interview updated."); },
+    onError: () => { toast.error("Failed to update interview."); },
     onSettled: (_data, _error, variables) => {
       if (variables?.applicationId) {
         queryClient.invalidateQueries({
@@ -223,26 +215,18 @@ export function useDeleteEvent() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      applicationId,
-    }: {
-      id: string;
-      applicationId: string;
-    }) => {
+    mutationFn: async ({ id, applicationId }: { id: string; applicationId: string }) => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { error } = await supabase
-        .from("events")
-        .delete()
-        .eq("id", id)
-        .eq("user_id", user.id);
+      const { error } = await supabase.from("events").delete().eq("id", id).eq("user_id", user.id);
       if (error) throw error;
       return { id, applicationId };
     },
+    onSuccess: () => { toast.success("Interview deleted."); },
+    onError: () => { toast.error("Failed to delete interview."); },
     onSettled: (_data, _error, variables) => {
       if (variables?.applicationId) {
         queryClient.invalidateQueries({

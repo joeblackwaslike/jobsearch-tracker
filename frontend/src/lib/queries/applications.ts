@@ -1,11 +1,7 @@
-import {
-  queryOptions,
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
-import type { Tables, TablesInsert, TablesUpdate } from "@/lib/supabase/types";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
+import type { Tables, TablesInsert, TablesUpdate } from "@/lib/supabase/types";
 import type { Company } from "./companies";
 
 // ---------------------------------------------------------------------------
@@ -76,9 +72,7 @@ export function applicationsQueryOptions(filters: ApplicationsFilters = {}) {
       }
 
       if (search) {
-        query = query.or(
-          `position.ilike.%${search}%,location.ilike.%${search}%`
-        );
+        query = query.or(`position.ilike.%${search}%,location.ilike.%${search}%`);
       }
 
       if (status) {
@@ -148,7 +142,7 @@ export function useCreateApplication() {
 
   return useMutation({
     mutationFn: async (
-      input: Omit<ApplicationInsert, "user_id" | "status"> & { status?: string }
+      input: Omit<ApplicationInsert, "user_id" | "status"> & { status?: string },
     ) => {
       const {
         data: { user },
@@ -167,6 +161,8 @@ export function useCreateApplication() {
       if (error) throw error;
       return data as Application;
     },
+    onSuccess: () => { toast.success("Application added."); },
+    onError: () => { toast.error("Failed to add application."); },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["applications"] });
     },
@@ -178,10 +174,7 @@ export function useUpdateApplication() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      ...updates
-    }: ApplicationUpdate & { id: string }) => {
+    mutationFn: async ({ id, ...updates }: ApplicationUpdate & { id: string }) => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -197,6 +190,8 @@ export function useUpdateApplication() {
       if (error) throw error;
       return data as Application;
     },
+    onSuccess: () => { toast.success("Application updated."); },
+    onError: () => { toast.error("Failed to update application."); },
     onSettled: (_data, _error, variables) => {
       queryClient.invalidateQueries({ queryKey: ["applications"] });
       if (variables?.id) {
@@ -213,13 +208,7 @@ export function useArchiveApplication() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      archived_reason,
-    }: {
-      id: string;
-      archived_reason?: string;
-    }) => {
+    mutationFn: async ({ id, archived_reason }: { id: string; archived_reason?: string }) => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -239,6 +228,8 @@ export function useArchiveApplication() {
       if (error) throw error;
       return data as Application;
     },
+    onSuccess: () => { toast.success("Application archived."); },
+    onError: () => { toast.error("Failed to archive application."); },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["applications"] });
     },

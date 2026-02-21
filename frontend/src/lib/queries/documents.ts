@@ -1,11 +1,7 @@
-import {
-  queryOptions,
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
-import type { Tables, TablesInsert, TablesUpdate } from "@/lib/supabase/types";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
+import type { Tables, TablesInsert, TablesUpdate } from "@/lib/supabase/types";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -50,11 +46,7 @@ export function documentQueryOptions(id: string) {
   return queryOptions({
     queryKey: ["documents", id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("documents")
-        .select("*")
-        .eq("id", id)
-        .single();
+      const { data, error } = await supabase.from("documents").select("*").eq("id", id).single();
       if (error) throw error;
       return data as Document;
     },
@@ -97,6 +89,8 @@ export function useCreateDocument() {
       if (error) throw error;
       return data as Document;
     },
+    onSuccess: () => { toast.success("Document saved."); },
+    onError: () => { toast.error("Failed to save document."); },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["documents"] });
     },
@@ -108,10 +102,7 @@ export function useUpdateDocument() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      ...updates
-    }: DocumentUpdate & { id: string }) => {
+    mutationFn: async ({ id, ...updates }: DocumentUpdate & { id: string }) => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -127,6 +118,8 @@ export function useUpdateDocument() {
       if (error) throw error;
       return data as Document;
     },
+    onSuccess: () => { toast.success("Document updated."); },
+    onError: () => { toast.error("Failed to update document."); },
     onSettled: (_data, _error, variables) => {
       queryClient.invalidateQueries({ queryKey: ["documents"] });
       if (variables?.id) {
@@ -143,15 +136,7 @@ export function useUploadDocument() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      file,
-      name,
-      type,
-    }: {
-      file: File;
-      name: string;
-      type: string;
-    }) => {
+    mutationFn: async ({ file, name, type }: { file: File; name: string; type: string }) => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -160,9 +145,7 @@ export function useUploadDocument() {
       const docId = crypto.randomUUID();
       const path = `${user.id}/${docId}/${file.name}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("documents")
-        .upload(path, file);
+      const { error: uploadError } = await supabase.storage.from("documents").upload(path, file);
 
       if (uploadError) throw uploadError;
 
