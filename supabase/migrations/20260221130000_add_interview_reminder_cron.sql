@@ -1,3 +1,5 @@
+create extension if not exists pg_cron;
+
 select cron.schedule(
   'send-interview-reminders',
   '0 11 * * *',  -- 6am EST = 11am UTC
