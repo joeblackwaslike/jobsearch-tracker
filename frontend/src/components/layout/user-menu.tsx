@@ -26,7 +26,7 @@ import { createClient } from "@/lib/supabase/client";
 type AuthModal = "login" | "signup" | null;
 
 function getUserInitials(email: string): string {
-  return email.slice(0, 2).toUpperCase();
+  return email.slice(0, 1).toUpperCase();
 }
 
 export function UserMenu() {
