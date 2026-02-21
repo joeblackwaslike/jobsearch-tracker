@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import type { ApplicationWithCompany } from "@/lib/queries/applications";
 import { render, screen } from "@/test/test-utils";
 import { ApplicationForm } from "../application-form";
 
@@ -6,13 +7,7 @@ import { ApplicationForm } from "../application-form";
 // Mock dependencies
 // ---------------------------------------------------------------------------
 
-const createMutateAsync = vi.fn().mockResolvedValue({ id: "new-app" });
-
 vi.mock("@/lib/queries/applications", () => ({
-  useCreateApplication: () => ({
-    mutateAsync: createMutateAsync,
-    isPending: false,
-  }),
   useUpdateApplication: () => ({
     mutateAsync: vi.fn(),
     isPending: false,
@@ -91,17 +86,11 @@ const mockApplication = {
 // ---------------------------------------------------------------------------
 
 describe("ApplicationForm with documents", () => {
-  it("shows Resume label in create mode", () => {
-    render(<ApplicationForm open={true} onOpenChange={vi.fn()} mode="create" />);
-    expect(screen.getByText("Resume")).toBeInTheDocument();
-  });
-
   it("shows Documents fieldset in edit mode", () => {
     render(
       <ApplicationForm
         open={true}
         onOpenChange={vi.fn()}
-        mode="edit"
         application={mockApplication}
       />,
     );
