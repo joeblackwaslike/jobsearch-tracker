@@ -1,10 +1,7 @@
-import { useSettings, useUpdateSettings } from "@/lib/queries/settings";
+import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@/components/layout/theme-provider";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import {
   Select,
   SelectContent,
@@ -12,7 +9,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Sun, Moon } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { useSettings, useUpdateSettings } from "@/lib/queries/settings";
 
 function SettingRow({
   label,
@@ -52,10 +51,7 @@ export function GeneralTab() {
     updateSettings.mutate({ theme: newTheme });
   };
 
-  const handleSelectChange = (
-    field: string,
-    value: string
-  ) => {
+  const handleSelectChange = (field: string, value: string) => {
     updateSettings.mutate({ [field]: value });
   };
 
@@ -74,10 +70,7 @@ export function GeneralTab() {
         <Separator className="my-4" />
 
         <div className="space-y-1">
-          <SettingRow
-            label="Theme"
-            description="Select your preferred color scheme"
-          >
+          <SettingRow label="Theme" description="Select your preferred color scheme">
             <div className="flex gap-2">
               <Button
                 variant={theme === "light" ? "default" : "outline"}
@@ -98,10 +91,7 @@ export function GeneralTab() {
             </div>
           </SettingRow>
 
-          <SettingRow
-            label="Language"
-            description="Choose your preferred language"
-          >
+          <SettingRow label="Language" description="Choose your preferred language">
             <Select
               value={settings?.language ?? "en"}
               onValueChange={(value) => handleSelectChange("language", value)}
@@ -115,15 +105,10 @@ export function GeneralTab() {
             </Select>
           </SettingRow>
 
-          <SettingRow
-            label="Calendar Type"
-            description="Select your calendar system"
-          >
+          <SettingRow label="Calendar Type" description="Select your calendar system">
             <Select
               value={settings?.calendar_type ?? "gregorian"}
-              onValueChange={(value) =>
-                handleSelectChange("calendar_type", value)
-              }
+              onValueChange={(value) => handleSelectChange("calendar_type", value)}
             >
               <SelectTrigger className="w-[180px]">
                 <SelectValue />
@@ -134,15 +119,10 @@ export function GeneralTab() {
             </Select>
           </SettingRow>
 
-          <SettingRow
-            label="Date Format"
-            description="Choose how dates are displayed"
-          >
+          <SettingRow label="Date Format" description="Choose how dates are displayed">
             <Select
               value={settings?.date_format ?? "MM/DD/YYYY"}
-              onValueChange={(value) =>
-                handleSelectChange("date_format", value)
-              }
+              onValueChange={(value) => handleSelectChange("date_format", value)}
             >
               <SelectTrigger className="w-[180px]">
                 <SelectValue />
@@ -155,15 +135,10 @@ export function GeneralTab() {
             </Select>
           </SettingRow>
 
-          <SettingRow
-            label="Time Format"
-            description="Choose how times are displayed"
-          >
+          <SettingRow label="Time Format" description="Choose how times are displayed">
             <Select
               value={settings?.time_format ?? "12h"}
-              onValueChange={(value) =>
-                handleSelectChange("time_format", value)
-              }
+              onValueChange={(value) => handleSelectChange("time_format", value)}
             >
               <SelectTrigger className="w-[180px]">
                 <SelectValue />
@@ -181,21 +156,14 @@ export function GeneralTab() {
           >
             <Switch
               checked={settings?.compact_mode ?? false}
-              onCheckedChange={(checked) =>
-                handleSwitchChange("compact_mode", checked as boolean)
-              }
+              onCheckedChange={(checked) => handleSwitchChange("compact_mode", checked as boolean)}
             />
           </SettingRow>
 
-          <SettingRow
-            label="Show Avatars"
-            description="Display user and company avatars in lists"
-          >
+          <SettingRow label="Show Avatars" description="Display user and company avatars in lists">
             <Switch
               checked={settings?.show_avatars ?? true}
-              onCheckedChange={(checked) =>
-                handleSwitchChange("show_avatars", checked as boolean)
-              }
+              onCheckedChange={(checked) => handleSwitchChange("show_avatars", checked as boolean)}
             />
           </SettingRow>
         </div>
@@ -216,21 +184,14 @@ export function GeneralTab() {
           >
             <Switch
               checked={settings?.notify_backup ?? true}
-              onCheckedChange={(checked) =>
-                handleSwitchChange("notify_backup", checked as boolean)
-              }
+              onCheckedChange={(checked) => handleSwitchChange("notify_backup", checked as boolean)}
             />
           </SettingRow>
 
-          <SettingRow
-            label="Status Changes"
-            description="Notify when application statuses change"
-          >
+          <SettingRow label="Status Changes" description="Notify when application statuses change">
             <Switch
               checked={settings?.notify_status ?? true}
-              onCheckedChange={(checked) =>
-                handleSwitchChange("notify_status", checked as boolean)
-              }
+              onCheckedChange={(checked) => handleSwitchChange("notify_status", checked as boolean)}
             />
           </SettingRow>
 
@@ -260,12 +221,14 @@ export function GeneralTab() {
 
           <SettingRow
             label="Email Notifications"
-            description="Receive notifications via email"
+            description="Receive email reminders for upcoming interviews"
           >
-            <div className="flex items-center gap-2">
-              <Switch disabled checked={false} />
-              <Badge variant="secondary">Coming Soon</Badge>
-            </div>
+            <Switch
+              checked={settings?.email_reminders ?? true}
+              onCheckedChange={(checked) =>
+                handleSwitchChange("email_reminders", checked as boolean)
+              }
+            />
           </SettingRow>
         </div>
       </div>
