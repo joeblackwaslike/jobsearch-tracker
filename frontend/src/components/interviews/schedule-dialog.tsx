@@ -1,19 +1,29 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { ChevronsUpDownIcon, CheckIcon } from "lucide-react";
+import { InterviewerCombobox } from "@/components/interviews/interviewer-combobox";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -21,25 +31,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandInput,
-  CommandList,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-} from "@/components/ui/command";
-import { cn } from "@/lib/utils";
-import { useApplications, type ApplicationListItem } from "@/lib/queries/applications";
-import { useCreateEvent } from "@/lib/queries/events";
+import { type ApplicationListItem, useApplications } from "@/lib/queries/applications";
+import type { Contact } from "@/lib/queries/contacts";
 import { useAddInterviewer } from "@/lib/queries/event-contacts";
-import { type Contact } from "@/lib/queries/contacts";
-import { InterviewerCombobox } from "@/components/interviews/interviewer-combobox";
+import { useCreateEvent } from "@/lib/queries/events";
+import { cn } from "@/lib/utils";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -62,6 +58,21 @@ const EVENT_STATUS_OPTIONS = [
   { value: "cancelled", label: "Cancelled" },
   { value: "rescheduled", label: "Rescheduled" },
   { value: "no_show", label: "No Show" },
+] as const;
+
+const DURATION_OPTIONS = [
+  { value: 15, label: "15 min" },
+  { value: 30, label: "30 min" },
+  { value: 45, label: "45 min" },
+  { value: 60, label: "1 hr" },
+  { value: 75, label: "1 hr 15 min" },
+  { value: 90, label: "1 hr 30 min" },
+  { value: 105, label: "1 hr 45 min" },
+  { value: 120, label: "2 hr" },
+  { value: 135, label: "2 hr 15 min" },
+  { value: 150, label: "2 hr 30 min" },
+  { value: 165, label: "2 hr 45 min" },
+  { value: 180, label: "3 hr" },
 ] as const;
 
 // ---------------------------------------------------------------------------
@@ -96,18 +107,14 @@ interface ScheduleDialogProps {
 // Component
 // ---------------------------------------------------------------------------
 
-export function ScheduleDialog({
-  open,
-  onOpenChange,
-  onSuccess,
-}: ScheduleDialogProps) {
+export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialogProps) {
   const createEvent = useCreateEvent();
   const addInterviewer = useAddInterviewer();
   const [appSearch, setAppSearch] = useState("");
   const [comboboxOpen, setComboboxOpen] = useState(false);
-  const [selectedInterviewers, setSelectedInterviewers] = useState<
-    Pick<Contact, "id" | "name">[]
-  >([]);
+  const [selectedInterviewers, setSelectedInterviewers] = useState<Pick<Contact, "id" | "name">[]>(
+    [],
+  );
 
   const { data: applicationsData } = useApplications({
     search: appSearch || undefined,
@@ -139,9 +146,7 @@ export function ScheduleDialog({
   });
 
   const selectedAppId = watch("application_id");
-  const selectedApp = applications.find(
-    (a: ApplicationListItem) => a.id === selectedAppId
-  );
+  const selectedApp = applications.find((a: ApplicationListItem) => a.id === selectedAppId);
   const companyId = selectedApp?.company_id ?? "";
 
   const handleAddInterviewer = (contact: Pick<Contact, "id" | "name">) => {
@@ -156,13 +161,9 @@ export function ScheduleDialog({
     let scheduled_at: string | null = null;
     if (values.date) {
       if (values.time) {
-        scheduled_at = new Date(
-          `${values.date}T${values.time}`
-        ).toISOString();
+        scheduled_at = new Date(`${values.date}T${values.time}`).toISOString();
       } else {
-        scheduled_at = new Date(
-          `${values.date}T00:00:00`
-        ).toISOString();
+        scheduled_at = new Date(`${values.date}T00:00:00`).toISOString();
       }
     }
 
@@ -184,8 +185,8 @@ export function ScheduleDialog({
           addInterviewer.mutateAsync({
             eventId: newEvent.id,
             contactId: c.id,
-          })
-        )
+          }),
+        ),
       );
     }
 
@@ -256,9 +257,7 @@ export function ScheduleDialog({
                             <CheckIcon
                               className={cn(
                                 "mr-2 size-4",
-                                selectedAppId === app.id
-                                  ? "opacity-100"
-                                  : "opacity-0"
+                                selectedAppId === app.id ? "opacity-100" : "opacity-0",
                               )}
                             />
                             <span className="truncate">
@@ -272,9 +271,7 @@ export function ScheduleDialog({
                 </PopoverContent>
               </Popover>
               {errors.application_id && (
-                <p className="text-sm text-destructive">
-                  {errors.application_id.message}
-                </p>
+                <p className="text-sm text-destructive">{errors.application_id.message}</p>
               )}
             </div>
 
@@ -283,9 +280,7 @@ export function ScheduleDialog({
               <Label>Type *</Label>
               <Select
                 value={watch("type") ?? "screening_interview"}
-                onValueChange={(v) =>
-                  setValue("type", v, { shouldValidate: true })
-                }
+                onValueChange={(v) => setValue("type", v, { shouldValidate: true })}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select interview type" />
@@ -298,11 +293,7 @@ export function ScheduleDialog({
                   ))}
                 </SelectContent>
               </Select>
-              {errors.type && (
-                <p className="text-sm text-destructive">
-                  {errors.type.message}
-                </p>
-              )}
+              {errors.type && <p className="text-sm text-destructive">{errors.type.message}</p>}
             </div>
 
             {/* Status */}
@@ -339,41 +330,41 @@ export function ScheduleDialog({
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="schedule-date">Date</Label>
-                <Input
-                  id="schedule-date"
-                  type="date"
-                  {...register("date")}
-                />
+                <Input id="schedule-date" type="date" {...register("date")} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="schedule-time">Time</Label>
-                <Input
-                  id="schedule-time"
-                  type="time"
-                  {...register("time")}
-                />
+                <Input id="schedule-time" type="time" {...register("time")} />
               </div>
             </div>
 
             {/* Duration */}
             <div className="space-y-2">
-              <Label htmlFor="schedule-duration">Duration (minutes)</Label>
-              <Input
-                id="schedule-duration"
-                type="number"
-                placeholder="e.g. 30"
-                {...register("duration_minutes", { valueAsNumber: true })}
-              />
+              <Label htmlFor="schedule-duration">Duration</Label>
+              <Select
+                value={watch("duration_minutes")?.toString() ?? "__none__"}
+                onValueChange={(v) =>
+                  setValue("duration_minutes", v === "__none__" ? undefined : Number(v))
+                }
+              >
+                <SelectTrigger id="schedule-duration" aria-label="Duration">
+                  <SelectValue placeholder="Select duration..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">None</SelectItem>
+                  {DURATION_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value.toString()}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* URL */}
             <div className="space-y-2">
               <Label htmlFor="schedule-url">Meeting URL</Label>
-              <Input
-                id="schedule-url"
-                placeholder="https://..."
-                {...register("url")}
-              />
+              <Input id="schedule-url" placeholder="https://..." {...register("url")} />
             </div>
 
             {/* Description */}
@@ -381,7 +372,7 @@ export function ScheduleDialog({
               <Label htmlFor="schedule-description">Description</Label>
               <textarea
                 id="schedule-description"
-                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 placeholder="Notes about this interview..."
                 {...register("description")}
               />
@@ -403,11 +394,7 @@ export function ScheduleDialog({
           </div>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => handleOpenChange(false)}
-            >
+            <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>

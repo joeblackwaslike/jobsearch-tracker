@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor } from "@/test/test-utils";
 import { ScheduleDialog } from "../schedule-dialog";
 
@@ -69,11 +69,9 @@ describe("ScheduleDialog", () => {
   it("renders Schedule Interview title and form fields", () => {
     render(<ScheduleDialog {...defaultProps} />);
 
+    expect(screen.getByRole("heading", { name: "Schedule Interview" })).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Schedule Interview" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("Schedule a new interview for an existing application.")
+      screen.getByText("Schedule a new interview for an existing application."),
     ).toBeInTheDocument();
 
     const expectedLabels = [
@@ -83,7 +81,7 @@ describe("ScheduleDialog", () => {
       "Title",
       "Date",
       "Time",
-      "Duration (minutes)",
+      "Duration",
       "Meeting URL",
       "Description",
     ];
@@ -106,12 +104,8 @@ describe("ScheduleDialog", () => {
   it("shows Cancel and Schedule Interview buttons", () => {
     render(<ScheduleDialog {...defaultProps} />);
 
-    expect(
-      screen.getByRole("button", { name: "Cancel" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Schedule Interview" })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Schedule Interview" })).toBeInTheDocument();
   });
 
   it("validates application is required on submit", async () => {
@@ -120,12 +114,28 @@ describe("ScheduleDialog", () => {
 
     render(<ScheduleDialog {...defaultProps} />);
 
-    await user.click(
-      screen.getByRole("button", { name: "Schedule Interview" })
-    );
+    await user.click(screen.getByRole("button", { name: "Schedule Interview" }));
 
     await waitFor(() => {
       expect(screen.getByText("Application is required")).toBeInTheDocument();
     });
+  });
+
+  it("renders duration as a select dropdown, not a number input", () => {
+    render(<ScheduleDialog open onOpenChange={vi.fn()} />);
+    // The number input for duration should not exist
+    expect(screen.queryByPlaceholderText("e.g. 30")).not.toBeInTheDocument();
+    // A duration select should exist
+    expect(screen.getByLabelText(/duration/i)).toBeInTheDocument();
+  });
+
+  it("duration select contains 15-min increment options up to 3 hours", async () => {
+    const { fireEvent } = await import("@testing-library/react");
+    render(<ScheduleDialog open onOpenChange={vi.fn()} />);
+    const trigger = screen.getByLabelText(/duration/i);
+    fireEvent.pointerDown(trigger);
+    expect(await screen.findByText("15 min")).toBeInTheDocument();
+    expect(screen.getByText("1 hr")).toBeInTheDocument();
+    expect(screen.getByText("3 hr")).toBeInTheDocument();
   });
 });
