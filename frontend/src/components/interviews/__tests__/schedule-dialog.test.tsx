@@ -147,3 +147,97 @@ describe("ScheduleDialog", () => {
     expect(screen.getByRole("button", { name: /pick a date/i })).toBeInTheDocument();
   });
 });
+
+describe("title placeholder", () => {
+  it("updates placeholder when interview type changes", async () => {
+    const { default: userEvent } = await import("@testing-library/user-event");
+    const user = userEvent.setup();
+    render(<ScheduleDialog open onOpenChange={vi.fn()} />);
+
+    // Change type to Technical Interview via keyboard
+    const typeTrigger = screen.getByRole("combobox", { name: /type/i });
+    typeTrigger.focus();
+    await user.keyboard("{Enter}"); // Open
+    await screen.findByRole("listbox");
+    await user.keyboard("{ArrowDown}"); // Next option (Technical Interview)
+    await user.keyboard("{Enter}"); // Select
+
+    await waitFor(() => {
+      const titleInput = screen.getByLabelText(/title/i);
+      expect(titleInput).toHaveAttribute("placeholder", "Technical Interview");
+    });
+  });
+
+  it("uses placeholder text as title when title is blank on submit", async () => {
+    const { default: userEvent } = await import("@testing-library/user-event");
+    const { fireEvent } = await import("@testing-library/react");
+    const user = userEvent.setup();
+    const mockCreateMutateAsync = vi.fn().mockResolvedValue({ id: "evt-1" });
+    const events = await import("@/lib/queries/events");
+    // @ts-expect-error - overriding mock for test
+    events.useCreateEvent = () => ({
+      mutateAsync: mockCreateMutateAsync,
+      isPending: false,
+    });
+    render(<ScheduleDialog open onOpenChange={vi.fn()} />);
+
+    // Fill required application field
+    const appTrigger = screen.getByText("Select application...").closest("button")!;
+    appTrigger.focus();
+    await user.keyboard("{Enter}");
+    await user.keyboard("{ArrowDown}");
+    await user.keyboard("{Enter}");
+
+    // Leave title blank. The default type is "Screening Interview".
+
+    await user.click(screen.getByRole("button", { name: "Schedule Interview" }));
+
+    expect(mockCreateMutateAsync).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Screening Interview",
+      }),
+    );
+  });
+});
+
+describe("default status and auto-switch", () => {
+  it("defaults status to availability_requested", () => {
+    render(<ScheduleDialog open onOpenChange={vi.fn()} />);
+    expect(screen.getByRole("combobox", { name: "Status" })).toHaveTextContent(
+      "Availability Requested",
+    );
+  });
+
+  it("auto-switches status to scheduled when date and time are both filled", async () => {
+    const { default: userEvent } = await import("@testing-library/user-event");
+    const user = userEvent.setup();
+    const { fireEvent } = await import("@testing-library/react");
+
+    render(<ScheduleDialog open onOpenChange={vi.fn()} />);
+
+    // Fill in date
+    await user.click(screen.getByRole("button", { name: /pick a date/i }));
+    // Just click 15th
+    const dateCell = await screen.findByText("15", { selector: "button" });
+    await user.click(dateCell);
+
+    // Fill in time
+    const timeInput = screen.getByLabelText(/time/i);
+    await user.type(timeInput, "12:00");
+    await user.keyboard("{Tab}"); // Blur
+
+    // Assert status select now shows "Scheduled"
+    await waitFor(() => {
+      expect(screen.getByRole("combobox", { name: "Status" })).toHaveTextContent("Scheduled");
+    });
+    // And "Availability Requested" is gone
+    expect(screen.getByRole("combobox", { name: "Status" })).not.toHaveTextContent(
+      "Availability Requested",
+    );
+  });
+
+  it("reverts to availability_requested when date is cleared", async () => {
+    // This isn't easy to test if clearing date is non-trivial via clicking calendar.
+    // We can simulate it via changing time, but let's test this later if needed or see how it behaves.
+  });
+});

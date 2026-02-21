@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon, CheckIcon, ChevronsUpDownIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { InterviewerCombobox } from "@/components/interviews/interviewer-combobox";
@@ -84,7 +84,7 @@ const DURATION_OPTIONS = [
 const scheduleFormSchema = z.object({
   application_id: z.string().min(1, "Application is required"),
   type: z.string().min(1, "Type is required"),
-  status: z.string().default("scheduled"),
+  status: z.string().default("availability_requested"),
   title: z.string().default(""),
   date: z.string().default(""),
   time: z.string().default(""),
@@ -138,7 +138,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
     defaultValues: {
       application_id: "",
       type: "screening_interview",
-      status: "scheduled",
+      status: "availability_requested",
       title: "",
       date: "",
       time: "",
@@ -151,6 +151,26 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
   const selectedAppId = watch("application_id");
   const selectedApp = applications.find((a: ApplicationListItem) => a.id === selectedAppId);
   const companyId = selectedApp?.company_id ?? "";
+
+  const selectedType = watch("type");
+  const titlePlaceholder =
+    EVENT_TYPE_OPTIONS.find((o) => o.value === selectedType)?.label ?? "Interview";
+
+  const watchedDate = watch("date");
+  const watchedTime = watch("time");
+
+  useEffect(() => {
+    const currentStatus = watch("status");
+    if (watchedDate && watchedTime) {
+      if (currentStatus === "availability_requested") {
+        setValue("status", "scheduled");
+      }
+    } else {
+      if (currentStatus === "scheduled") {
+        setValue("status", "availability_requested");
+      }
+    }
+  }, [watchedDate, watchedTime]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleAddInterviewer = (contact: Pick<Contact, "id" | "name">) => {
     setSelectedInterviewers((prev) => [...prev, contact]);
@@ -170,11 +190,13 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
       }
     }
 
+    const effectiveTitle = values.title.trim() || titlePlaceholder;
+
     const newEvent = await createEvent.mutateAsync({
       application_id: values.application_id,
       type: values.type,
       status: values.status,
-      title: values.title || null,
+      title: effectiveTitle,
       description: values.description || null,
       url: values.url || null,
       scheduled_at,
@@ -287,7 +309,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
                 value={watch("type") ?? "screening_interview"}
                 onValueChange={(v) => setValue("type", v, { shouldValidate: true })}
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full" aria-label="Type">
                   <SelectValue placeholder="Select interview type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -305,10 +327,10 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
             <div className="space-y-2">
               <Label>Status</Label>
               <Select
-                value={watch("status") ?? "scheduled"}
+                value={watch("status") ?? "availability_requested"}
                 onValueChange={(v) => setValue("status", v)}
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full" aria-label="Status">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -324,11 +346,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
             {/* Title */}
             <div className="space-y-2">
               <Label htmlFor="schedule-title">Title</Label>
-              <Input
-                id="schedule-title"
-                placeholder="e.g. Phone screen with recruiter"
-                {...register("title")}
-              />
+              <Input id="schedule-title" placeholder={titlePlaceholder} {...register("title")} />
             </div>
 
             {/* Date & Time */}
