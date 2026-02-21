@@ -77,6 +77,15 @@ const DURATION_OPTIONS = [
   { value: 180, label: "3 hr" },
 ] as const;
 
+function formatDuration(minutes: number): string {
+  const preset = DURATION_OPTIONS.find((o) => o.value === minutes);
+  if (preset) return preset.label;
+  if (minutes < 60) return `${minutes} min`;
+  const hrs = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return mins === 0 ? `${hrs} hr` : `${hrs} hr ${mins} min`;
+}
+
 // ---------------------------------------------------------------------------
 // Schema
 // ---------------------------------------------------------------------------
@@ -115,6 +124,8 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
   const [appSearch, setAppSearch] = useState("");
   const [comboboxOpen, setComboboxOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [durationOpen, setDurationOpen] = useState(false);
+  const [durationInput, setDurationInput] = useState("");
   const [selectedInterviewers, setSelectedInterviewers] = useState<Pick<Contact, "id" | "name">[]>(
     [],
   );
@@ -133,7 +144,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
     watch,
     formState: { errors, isSubmitting },
   } = useForm<ScheduleFormValues>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // biome-ignore lint/suspicious/noExplicitAny: type mismatch between zod versions
     resolver: zodResolver(scheduleFormSchema as any),
     defaultValues: {
       application_id: "",
@@ -170,7 +181,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
         setValue("status", "availability_requested");
       }
     }
-  }, [watchedDate, watchedTime]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [watchedDate, watchedTime, setValue, watch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleAddInterviewer = (contact: Pick<Contact, "id" | "name">) => {
     setSelectedInterviewers((prev) => [...prev, contact]);
@@ -227,6 +238,8 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
       reset();
       setSelectedInterviewers([]);
       setSelectedDate(undefined);
+      setDurationInput("");
+      setDurationOpen(false);
     }
     onOpenChange(newOpen);
   };
@@ -390,25 +403,83 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
 
             {/* Duration */}
             <div className="space-y-2">
-              <Label htmlFor="schedule-duration">Duration</Label>
-              <Select
-                value={watch("duration_minutes")?.toString() ?? "__none__"}
-                onValueChange={(v) =>
-                  setValue("duration_minutes", v === "__none__" ? undefined : Number(v))
-                }
-              >
-                <SelectTrigger id="schedule-duration" aria-label="Duration">
-                  <SelectValue placeholder="Select duration..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">None</SelectItem>
-                  {DURATION_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value.toString()}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label>Duration</Label>
+              <Popover open={durationOpen} onOpenChange={setDurationOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={durationOpen}
+                    className="w-full justify-between font-normal"
+                    aria-label="Duration"
+                    onPointerDown={() => setDurationOpen(true)}
+                  >
+                    {watch("duration_minutes") != null
+                      ? formatDuration(watch("duration_minutes") as number)
+                      : "Select duration..."}
+                    <ChevronsUpDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                  <Command shouldFilter={false}>
+                    <CommandInput
+                      placeholder="Minutes (e.g. 45) or pick below..."
+                      value={durationInput}
+                      onValueChange={(val) => {
+                        setDurationInput(val);
+                        const parsed = parseInt(val, 10);
+                        if (!Number.isNaN(parsed) && parsed > 0) {
+                          setValue("duration_minutes", parsed);
+                        } else if (val === "") {
+                          setValue("duration_minutes", undefined);
+                        }
+                      }}
+                    />
+                    <CommandList>
+                      <CommandEmpty>Type a number of minutes.</CommandEmpty>
+                      <CommandGroup>
+                        <CommandItem
+                          value="__none__"
+                          onSelect={() => {
+                            setValue("duration_minutes", undefined);
+                            setDurationInput("");
+                            setDurationOpen(false);
+                          }}
+                        >
+                          <CheckIcon
+                            className={cn(
+                              "mr-2 size-4",
+                              watch("duration_minutes") == null ? "opacity-100" : "opacity-0",
+                            )}
+                          />
+                          None
+                        </CommandItem>
+                        {DURATION_OPTIONS.map((opt) => (
+                          <CommandItem
+                            key={opt.value}
+                            value={opt.value.toString()}
+                            onSelect={() => {
+                              setValue("duration_minutes", opt.value);
+                              setDurationInput("");
+                              setDurationOpen(false);
+                            }}
+                          >
+                            <CheckIcon
+                              className={cn(
+                                "mr-2 size-4",
+                                watch("duration_minutes") === opt.value
+                                  ? "opacity-100"
+                                  : "opacity-0",
+                              )}
+                            />
+                            {opt.label}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
 
             {/* URL */}
