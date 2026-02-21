@@ -1,8 +1,9 @@
+
 .PHONY: dev db-start db-stop db-reset db-seed db-types test test-watch lint type install build
 
 # Start everything for local development
 dev: db-start
-	cd frontend && pnpm dev
+	cd frontend && bun dev
 
 # Database
 db-start:
