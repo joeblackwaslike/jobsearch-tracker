@@ -173,6 +173,8 @@ export function useCreateEvent() {
         queryKey: ["events", { applicationId: variables?.application_id }],
       });
       queryClient.invalidateQueries({ queryKey: ["applications"] });
+      queryClient.invalidateQueries({ queryKey: ["interviews", "upcoming"] });
+      queryClient.invalidateQueries({ queryKey: ["interviews", "past"] });
     },
   });
 }
@@ -215,6 +217,8 @@ export function useUpdateEvent() {
         });
       }
       queryClient.invalidateQueries({ queryKey: ["applications"] });
+      queryClient.invalidateQueries({ queryKey: ["interviews", "upcoming"] });
+      queryClient.invalidateQueries({ queryKey: ["interviews", "past"] });
     },
   });
 }
@@ -247,6 +251,8 @@ export function useDeleteEvent() {
         });
       }
       queryClient.invalidateQueries({ queryKey: ["applications"] });
+      queryClient.invalidateQueries({ queryKey: ["interviews", "upcoming"] });
+      queryClient.invalidateQueries({ queryKey: ["interviews", "past"] });
     },
   });
 }
