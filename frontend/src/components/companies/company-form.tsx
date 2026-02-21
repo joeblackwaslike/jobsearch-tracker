@@ -241,270 +241,252 @@ export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: Co
     onOpenChange(false);
   };
 
-  const isCreate = mode === "create";
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className={isCreate ? "sm:max-w-md" : "sm:max-w-2xl max-h-[90vh] overflow-hidden"}
-      >
+      <DialogContent className="sm:max-w-2xl max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle>{isCreate ? "Add Company" : "Edit Company"}</DialogTitle>
+          <DialogTitle>{mode === "create" ? "Add Company" : "Edit Company"}</DialogTitle>
           <DialogDescription>
-            {isCreate
-              ? "Enter the company name to add it to your directory."
+            {mode === "create"
+              ? "Add a new company to your directory."
               : "Update company details and research notes."}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          {isCreate ? (
-            /* ---- Create mode: minimal ---- */
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Company Name</Label>
-                <Input id="name" placeholder="e.g. Acme Corp" {...register("name")} />
-                {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
-              </div>
-            </div>
-          ) : (
-            /* ---- Edit mode: all fields in scroll area ---- */
-            <ScrollArea className="max-h-[70vh] pr-4">
-              <div className="space-y-6 py-4">
-                {/* Basic Info */}
-                <fieldset className="space-y-4">
-                  <legend className="text-sm font-semibold text-muted-foreground">
-                    Basic Information
-                  </legend>
+          <ScrollArea className="max-h-[70vh] pr-4">
+            <div className="space-y-6 py-4">
+              {/* Basic Info */}
+              <fieldset className="space-y-4">
+                <legend className="text-sm font-semibold text-muted-foreground">
+                  Basic Information
+                </legend>
 
+                <div className="space-y-2">
+                  <Label htmlFor="edit-name">Name *</Label>
+                  <Input id="edit-name" {...register("name")} />
+                  {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-description">Description</Label>
+                  <textarea
+                    id="edit-description"
+                    className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    {...register("description")}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="edit-name">Name *</Label>
-                    <Input id="edit-name" {...register("name")} />
-                    {errors.name && (
-                      <p className="text-sm text-destructive">{errors.name.message}</p>
-                    )}
+                    <Label htmlFor="edit-industry">Industry</Label>
+                    <Input id="edit-industry" {...register("industry")} />
                   </div>
-
                   <div className="space-y-2">
-                    <Label htmlFor="edit-description">Description</Label>
-                    <textarea
-                      id="edit-description"
-                      className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      {...register("description")}
+                    <Label htmlFor="edit-size">Size</Label>
+                    <Select
+                      value={watch("size") ?? ""}
+                      onValueChange={(value) => setValue("size", value)}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select size" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {SIZE_OPTIONS.map((s) => (
+                          <SelectItem key={s} value={s}>
+                            {s}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-location">Location</Label>
+                    <Input id="edit-location" {...register("location")} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-founded">Founded</Label>
+                    <Input id="edit-founded" type="date" {...register("founded")} />
+                  </div>
+                </div>
+              </fieldset>
+
+              {/* Links */}
+              <fieldset className="space-y-4">
+                <legend className="text-sm font-semibold text-muted-foreground">Links</legend>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-website">Website</Label>
+                    <Input
+                      id="edit-website"
+                      placeholder="https://..."
+                      {...register("links.website")}
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-careers">Careers Page</Label>
+                    <Input
+                      id="edit-careers"
+                      placeholder="https://..."
+                      {...register("links.careers")}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-linkedin">LinkedIn</Label>
+                    <Input
+                      id="edit-linkedin"
+                      placeholder="https://..."
+                      {...register("links.linkedin")}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-glassdoor">Glassdoor</Label>
+                    <Input
+                      id="edit-glassdoor"
+                      placeholder="https://..."
+                      {...register("links.glassdoor")}
+                    />
+                  </div>
+                  <div className="space-y-2 col-span-2">
+                    <Label htmlFor="edit-news">News</Label>
+                    <Input id="edit-news" placeholder="https://..." {...register("links.news")} />
+                  </div>
+                </div>
+              </fieldset>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-industry">Industry</Label>
-                      <Input id="edit-industry" {...register("industry")} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-size">Size</Label>
+              {/* Research Notes */}
+              <fieldset className="space-y-4">
+                <legend className="text-sm font-semibold text-muted-foreground">
+                  Research Notes
+                </legend>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-culture">Culture</Label>
+                  <textarea
+                    id="edit-culture"
+                    className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    {...register("culture")}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-benefits">Benefits</Label>
+                  <textarea
+                    id="edit-benefits"
+                    className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    {...register("benefits")}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-pros">Pros</Label>
+                    <textarea
+                      id="edit-pros"
+                      className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      {...register("pros")}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-cons">Cons</Label>
+                    <textarea
+                      id="edit-cons"
+                      className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      {...register("cons")}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-tech_stack">Tech Stack</Label>
+                  <textarea
+                    id="edit-tech_stack"
+                    className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    {...register("tech_stack")}
+                  />
+                </div>
+              </fieldset>
+
+              {/* Ratings */}
+              <fieldset className="space-y-4">
+                <legend className="text-sm font-semibold text-muted-foreground">
+                  Ratings (1-5)
+                </legend>
+                <div className="grid grid-cols-2 gap-4">
+                  {(
+                    [
+                      ["overall", "Overall"],
+                      ["work_life", "Work-Life Balance"],
+                      ["compensation", "Compensation"],
+                      ["growth", "Growth"],
+                      ["management", "Management"],
+                      ["culture", "Culture"],
+                    ] as const
+                  ).map(([key, label]) => (
+                    <div key={key} className="space-y-2">
+                      <Label>{label}</Label>
                       <Select
-                        value={watch("size") ?? ""}
-                        onValueChange={(value) => setValue("size", value)}
+                        value={watch(`ratings.${key}`) ?? ""}
+                        onValueChange={(value) => setValue(`ratings.${key}`, value)}
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select size" />
+                          <SelectValue placeholder="--" />
                         </SelectTrigger>
                         <SelectContent>
-                          {SIZE_OPTIONS.map((s) => (
-                            <SelectItem key={s} value={s}>
-                              {s}
+                          {RATING_OPTIONS.map((r) => (
+                            <SelectItem key={r} value={r}>
+                              {r}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
-                  </div>
+                  ))}
+                </div>
+              </fieldset>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-location">Location</Label>
-                      <Input id="edit-location" {...register("location")} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-founded">Founded</Label>
-                      <Input id="edit-founded" type="date" {...register("founded")} />
-                    </div>
-                  </div>
-                </fieldset>
+              {/* Tags & Researched */}
+              <fieldset className="space-y-4">
+                <legend className="text-sm font-semibold text-muted-foreground">
+                  Tags & Status
+                </legend>
 
-                {/* Links */}
-                <fieldset className="space-y-4">
-                  <legend className="text-sm font-semibold text-muted-foreground">Links</legend>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-website">Website</Label>
-                      <Input
-                        id="edit-website"
-                        placeholder="https://..."
-                        {...register("links.website")}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-careers">Careers Page</Label>
-                      <Input
-                        id="edit-careers"
-                        placeholder="https://..."
-                        {...register("links.careers")}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-linkedin">LinkedIn</Label>
-                      <Input
-                        id="edit-linkedin"
-                        placeholder="https://..."
-                        {...register("links.linkedin")}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-glassdoor">Glassdoor</Label>
-                      <Input
-                        id="edit-glassdoor"
-                        placeholder="https://..."
-                        {...register("links.glassdoor")}
-                      />
-                    </div>
-                    <div className="space-y-2 col-span-2">
-                      <Label htmlFor="edit-news">News</Label>
-                      <Input id="edit-news" placeholder="https://..." {...register("links.news")} />
-                    </div>
-                  </div>
-                </fieldset>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-tags">Tags (comma-separated)</Label>
+                  <Input
+                    id="edit-tags"
+                    placeholder="e.g. remote, startup, AI"
+                    {...register("tags")}
+                  />
+                </div>
 
-                {/* Research Notes */}
-                <fieldset className="space-y-4">
-                  <legend className="text-sm font-semibold text-muted-foreground">
-                    Research Notes
-                  </legend>
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="edit-researched"
+                    checked={watch("researched") ?? false}
+                    onCheckedChange={(checked) => setValue("researched", checked === true)}
+                  />
+                  <Label htmlFor="edit-researched">Researched</Label>
+                </div>
+              </fieldset>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-culture">Culture</Label>
-                    <textarea
-                      id="edit-culture"
-                      className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      {...register("culture")}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-benefits">Benefits</Label>
-                    <textarea
-                      id="edit-benefits"
-                      className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      {...register("benefits")}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-pros">Pros</Label>
-                      <textarea
-                        id="edit-pros"
-                        className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        {...register("pros")}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-cons">Cons</Label>
-                      <textarea
-                        id="edit-cons"
-                        className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        {...register("cons")}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-tech_stack">Tech Stack</Label>
-                    <textarea
-                      id="edit-tech_stack"
-                      className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      {...register("tech_stack")}
-                    />
-                  </div>
-                </fieldset>
-
-                {/* Ratings */}
-                <fieldset className="space-y-4">
-                  <legend className="text-sm font-semibold text-muted-foreground">
-                    Ratings (1-5)
-                  </legend>
-                  <div className="grid grid-cols-2 gap-4">
-                    {(
-                      [
-                        ["overall", "Overall"],
-                        ["work_life", "Work-Life Balance"],
-                        ["compensation", "Compensation"],
-                        ["growth", "Growth"],
-                        ["management", "Management"],
-                        ["culture", "Culture"],
-                      ] as const
-                    ).map(([key, label]) => (
-                      <div key={key} className="space-y-2">
-                        <Label>{label}</Label>
-                        <Select
-                          value={watch(`ratings.${key}`) ?? ""}
-                          onValueChange={(value) => setValue(`ratings.${key}`, value)}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="--" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {RATING_OPTIONS.map((r) => (
-                              <SelectItem key={r} value={r}>
-                                {r}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    ))}
-                  </div>
-                </fieldset>
-
-                {/* Tags & Researched */}
-                <fieldset className="space-y-4">
-                  <legend className="text-sm font-semibold text-muted-foreground">
-                    Tags & Status
-                  </legend>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-tags">Tags (comma-separated)</Label>
-                    <Input
-                      id="edit-tags"
-                      placeholder="e.g. remote, startup, AI"
-                      {...register("tags")}
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id="edit-researched"
-                      checked={watch("researched") ?? false}
-                      onCheckedChange={(checked) => setValue("researched", checked === true)}
-                    />
-                    <Label htmlFor="edit-researched">Researched</Label>
-                  </div>
-                </fieldset>
-
-                {/* Contacts */}
-                <fieldset className="space-y-4">
-                  <legend className="text-sm font-semibold text-muted-foreground">Contacts</legend>
-                  {company?.id && <CompanyContacts companyId={company.id} />}
-                </fieldset>
-              </div>
-            </ScrollArea>
-          )}
+              {/* Contacts */}
+              <fieldset className="space-y-4">
+                <legend className="text-sm font-semibold text-muted-foreground">Contacts</legend>
+                {company?.id && <CompanyContacts companyId={company.id} />}
+              </fieldset>
+            </div>
+          </ScrollArea>
 
           <DialogFooter className="mt-4">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : isCreate ? "Add Company" : "Save Changes"}
+              {isSubmitting ? "Saving..." : mode === "create" ? "Add Company" : "Save Changes"}
             </Button>
           </DialogFooter>
         </form>

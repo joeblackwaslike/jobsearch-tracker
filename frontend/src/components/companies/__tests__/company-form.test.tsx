@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, waitFor } from "@/test/test-utils";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+import { render, screen, waitFor } from "@/test/test-utils";
 import { CompanyForm } from "../company-form";
 
 const createMutateAsync = vi.fn();
@@ -62,29 +62,19 @@ const mockCompany = {
 const noop = vi.fn();
 
 describe("CompanyForm", () => {
-  it("renders create mode with Add Company title and only name field", () => {
-    render(
-      <CompanyForm open={true} onOpenChange={noop} mode="create" />
-    );
+  it("renders create mode with Add Company title and full form", () => {
+    render(<CompanyForm open={true} onOpenChange={noop} mode="create" />);
 
-    expect(
-      screen.getByRole("heading", { name: "Add Company" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("Enter the company name to add it to your directory.")
-    ).toBeInTheDocument();
-    expect(screen.getByLabelText("Company Name")).toBeInTheDocument();
-    expect(screen.queryByText("Basic Information")).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Add Company" })).toBeInTheDocument();
+    expect(screen.getByText("Basic Information")).toBeInTheDocument();
+    expect(screen.getByText("Links")).toBeInTheDocument();
+    expect(screen.getByText("Research Notes")).toBeInTheDocument();
+    expect(screen.getByText("Ratings (1-5)")).toBeInTheDocument();
   });
 
   it("renders edit mode with all section headings", () => {
     render(
-      <CompanyForm
-        open={true}
-        onOpenChange={noop}
-        mode="edit"
-        company={mockCompany as never}
-      />
+      <CompanyForm open={true} onOpenChange={noop} mode="edit" company={mockCompany as never} />,
     );
 
     expect(screen.getByText("Edit Company")).toBeInTheDocument();
@@ -98,12 +88,7 @@ describe("CompanyForm", () => {
 
   it("pre-fills name in edit mode", () => {
     render(
-      <CompanyForm
-        open={true}
-        onOpenChange={noop}
-        mode="edit"
-        company={mockCompany as never}
-      />
+      <CompanyForm open={true} onOpenChange={noop} mode="edit" company={mockCompany as never} />,
     );
 
     expect(screen.getByLabelText("Name *")).toHaveValue("Acme Corp");
@@ -112,9 +97,7 @@ describe("CompanyForm", () => {
   it("validates name is required on create submit", async () => {
     const user = userEvent.setup();
 
-    render(
-      <CompanyForm open={true} onOpenChange={noop} mode="create" />
-    );
+    render(<CompanyForm open={true} onOpenChange={noop} mode="create" />);
 
     await user.click(screen.getByRole("button", { name: "Add Company" }));
 
@@ -124,36 +107,20 @@ describe("CompanyForm", () => {
   });
 
   it("shows correct submit button text per mode", () => {
-    const { rerender } = render(
-      <CompanyForm open={true} onOpenChange={noop} mode="create" />
-    );
+    const { rerender } = render(<CompanyForm open={true} onOpenChange={noop} mode="create" />);
 
-    expect(
-      screen.getByRole("button", { name: "Add Company" })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Add Company" })).toBeInTheDocument();
 
     rerender(
-      <CompanyForm
-        open={true}
-        onOpenChange={noop}
-        mode="edit"
-        company={mockCompany as never}
-      />
+      <CompanyForm open={true} onOpenChange={noop} mode="edit" company={mockCompany as never} />,
     );
 
-    expect(
-      screen.getByRole("button", { name: "Save Changes" })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Save Changes" })).toBeInTheDocument();
   });
 
   it("shows Contacts section in edit mode", () => {
     render(
-      <CompanyForm
-        open={true}
-        onOpenChange={noop}
-        mode="edit"
-        company={mockCompany as never}
-      />
+      <CompanyForm open={true} onOpenChange={noop} mode="edit" company={mockCompany as never} />,
     );
 
     expect(screen.getByText("Contacts")).toBeInTheDocument();
