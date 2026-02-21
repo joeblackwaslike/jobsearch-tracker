@@ -1,20 +1,11 @@
-import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import {
-  ExternalLinkIcon,
-  PencilIcon,
-  Trash2Icon,
-  ClockIcon,
-  CalendarIcon,
-} from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { CalendarIcon, ClockIcon, ExternalLinkIcon, PencilIcon, Trash2Icon } from "lucide-react";
+import { useState } from "react";
+import { AddEventDialog } from "@/components/applications/add-event-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AddEventDialog } from "@/components/applications/add-event-dialog";
-import {
-  useDeleteEvent,
-  type EventWithApplication,
-} from "@/lib/queries/events";
+import { Card, CardContent } from "@/components/ui/card";
+import { type EventWithApplication, useDeleteEvent } from "@/lib/queries/events";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -31,17 +22,12 @@ const TYPE_LABELS: Record<string, string> = {
 
 const STATUS_COLORS: Record<string, string> = {
   scheduled: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  completed:
-    "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+  completed: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
   cancelled: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-  rescheduled:
-    "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
-  availability_requested:
-    "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  availability_submitted:
-    "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
-  no_show:
-    "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
+  rescheduled: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
+  availability_requested: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+  availability_submitted: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
+  no_show: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -77,32 +63,28 @@ function formatDateTime(isoString: string | null): string {
 interface InterviewListProps {
   interviews: EventWithApplication[];
   search: string;
+  hideArchived?: boolean;
 }
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
-export function InterviewList({ interviews, search }: InterviewListProps) {
+export function InterviewList({ interviews, search, hideArchived = true }: InterviewListProps) {
   const navigate = useNavigate();
   const deleteEvent = useDeleteEvent();
 
-  const [editingEvent, setEditingEvent] =
-    useState<EventWithApplication | null>(null);
+  const [editingEvent, setEditingEvent] = useState<EventWithApplication | null>(null);
 
-  // Client-side search filtering
+  // Client-side search + archived filtering
   const filtered = interviews.filter((interview) => {
+    if (hideArchived && interview.application?.status === "archived") return false;
     if (!search) return true;
     const term = search.toLowerCase();
-    const companyName =
-      interview.application?.company?.name?.toLowerCase() ?? "";
+    const companyName = interview.application?.company?.name?.toLowerCase() ?? "";
     const position = interview.application?.position?.toLowerCase() ?? "";
     const title = interview.title?.toLowerCase() ?? "";
-    return (
-      companyName.includes(term) ||
-      position.includes(term) ||
-      title.includes(term)
-    );
+    return companyName.includes(term) || position.includes(term) || title.includes(term);
   });
 
   if (filtered.length === 0) {
@@ -115,6 +97,9 @@ export function InterviewList({ interviews, search }: InterviewListProps) {
 
   return (
     <>
+      {hideArchived && (
+        <p className="text-xs text-muted-foreground">Showing active interviews only.</p>
+      )}
       <div className="space-y-3">
         {filtered.map((interview) => (
           <Card
@@ -139,13 +124,8 @@ export function InterviewList({ interviews, search }: InterviewListProps) {
                   </span>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="outline">
-                    {TYPE_LABELS[interview.type] ?? interview.type}
-                  </Badge>
-                  <Badge
-                    variant="secondary"
-                    className={STATUS_COLORS[interview.status] ?? ""}
-                  >
+                  <Badge variant="outline">{TYPE_LABELS[interview.type] ?? interview.type}</Badge>
+                  <Badge variant="secondary" className={STATUS_COLORS[interview.status] ?? ""}>
                     {STATUS_LABELS[interview.status] ?? interview.status}
                   </Badge>
                   <span className="text-muted-foreground flex items-center gap-1 text-xs">
@@ -162,17 +142,15 @@ export function InterviewList({ interviews, search }: InterviewListProps) {
               </div>
 
               {/* Right side: actions */}
+              {/* biome-ignore lint/a11y/noStaticElementInteractions: container is just catching events to prevent routing */}
               <div
+                role="presentation"
                 className="flex shrink-0 items-center gap-1"
                 onClick={(e) => e.stopPropagation()}
+                onKeyDown={(e) => e.stopPropagation()}
               >
                 {interview.url && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="size-8"
-                    asChild
-                  >
+                  <Button variant="ghost" size="icon" className="size-8" asChild>
                     <a
                       href={interview.url}
                       target="_blank"

@@ -15,6 +15,7 @@ export type EventWithApplication = Event & {
   application: {
     id: string;
     position: string;
+    status: string;
     company: { id: string; name: string };
   };
 };
@@ -73,7 +74,7 @@ export function useUpcomingInterviews() {
       const now = new Date().toISOString();
       const { data, error } = await supabase
         .from("events")
-        .select("*, application:applications(id, position, company:companies(id, name))")
+        .select("*, application:applications(id, position, status, company:companies(id, name))")
         .in("type", INTERVIEW_TYPES as unknown as string[])
         .or(`scheduled_at.gt.${now},scheduled_at.is.null`)
         .order("scheduled_at", { ascending: true, nullsFirst: false });
@@ -92,7 +93,7 @@ export function usePastInterviews() {
       const now = new Date().toISOString();
       const { data, error } = await supabase
         .from("events")
-        .select("*, application:applications(id, position, company:companies(id, name))")
+        .select("*, application:applications(id, position, status, company:companies(id, name))")
         .in("type", INTERVIEW_TYPES as unknown as string[])
         .lte("scheduled_at", now)
         .not("scheduled_at", "is", null)
