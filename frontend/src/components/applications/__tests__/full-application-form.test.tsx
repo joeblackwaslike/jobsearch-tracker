@@ -37,6 +37,22 @@ describe("FullApplicationForm", () => {
   });
 });
 
+describe("resume auto-fill and label", () => {
+  it("does NOT pre-populate resume from localStorage on open", () => {
+    localStorage.setItem("thrive:default_resume_id", "some-doc-id");
+    render(<FullApplicationForm open={true} onOpenChange={vi.fn()} />);
+    // DocumentTypePicker value should be null (showing "None"), not the stored ID
+    const picker = document.querySelector("select, [role='combobox']");
+    // The resume picker should not show a pre-selected document
+    expect(screen.queryByText("some-doc-id")).not.toBeInTheDocument();
+  });
+
+  it("does not render a 'Resume' label in the Documents section", () => {
+    render(<FullApplicationForm open={true} onOpenChange={vi.fn()} />);
+    expect(screen.queryByText("Resume")).not.toBeInTheDocument();
+  });
+});
+
 describe("modal overflow regression", () => {
   it("dialog content does not have overflow-hidden class", () => {
     render(<FullApplicationForm open={true} onOpenChange={vi.fn()} />);

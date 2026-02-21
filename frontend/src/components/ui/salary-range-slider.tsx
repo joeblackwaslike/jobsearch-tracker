@@ -32,11 +32,12 @@ function formatSalary(value: number, period: string): string {
 
 export function SalaryRangeSlider({ period, currency, min, max, onChange }: SalaryRangeSliderProps) {
   const isYearly = period === "yearly";
-  const sliderMax = isYearly ? 1_000_000 : 500;
+  const sliderMin = isYearly ? 100_000 : 0;
+  const sliderMax = isYearly ? 600_000 : 500;
   const step = isYearly ? 1000 : 1;
 
-  const safeMin = Math.min(min, sliderMax);
-  const safeMax = Math.min(max, sliderMax);
+  const safeMin = Math.max(sliderMin, Math.min(min, sliderMax));
+  const safeMax = Math.max(sliderMin, Math.min(max, sliderMax));
 
   function handlePeriodChange(newPeriod: string) {
     onChange({ period: newPeriod, currency, min: 0, max: 0 });
@@ -98,7 +99,7 @@ export function SalaryRangeSlider({ period, currency, min, max, onChange }: Sala
         </div>
         <SliderPrimitive.Root
           className="relative flex w-full touch-none select-none items-center"
-          min={0}
+          min={sliderMin}
           max={sliderMax}
           step={step}
           value={[safeMin, safeMax]}
@@ -111,8 +112,8 @@ export function SalaryRangeSlider({ period, currency, min, max, onChange }: Sala
           <SliderPrimitive.Thumb className="block size-4 rounded-full border border-primary/50 bg-background shadow transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50" />
         </SliderPrimitive.Root>
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span>$0</span>
-          <span>{isYearly ? "$1M" : "$500"}</span>
+          <span>{isYearly ? "$100k" : "$0"}</span>
+          <span>{isYearly ? "$600k" : "$500"}</span>
         </div>
       </div>
     </div>

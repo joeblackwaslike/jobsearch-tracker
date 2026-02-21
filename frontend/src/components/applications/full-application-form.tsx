@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { DocumentTypePicker } from "@/components/documents/document-type-picker";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { UrlInput } from "@/components/ui/url-input";
 import { Label } from "@/components/ui/label";
 import { SalaryRangeSlider } from "@/components/ui/salary-range-slider";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -97,6 +98,7 @@ interface FullApplicationFormProps {
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
   prefill?: { company?: string; position?: string; url?: string };
+  defaultStatus?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -135,6 +137,7 @@ export function FullApplicationForm({
   onOpenChange,
   onSuccess,
   prefill,
+  defaultStatus,
 }: FullApplicationFormProps) {
   const createApplication = useCreateApplication();
   const snapshotDocument = useSnapshotDocument();
@@ -146,6 +149,7 @@ export function FullApplicationForm({
     reset,
     setValue,
     watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<FullApplicationValues>({
     // biome-ignore lint/suspicious/noExplicitAny: zod version mismatch
@@ -155,7 +159,7 @@ export function FullApplicationForm({
       company_name: "",
       position: prefill?.position ?? "",
       url: prefill?.url ?? "",
-      status: "applied",
+      status: defaultStatus ?? "applied",
       work_type: "",
       employment_type: "full-time",
       location: "",
@@ -175,7 +179,7 @@ export function FullApplicationForm({
         company_name: "",
         position: prefill?.position ?? "",
         url: prefill?.url ?? "",
-        status: "applied",
+        status: defaultStatus ?? "applied",
         work_type: "",
         employment_type: "full-time",
         location: "",
@@ -186,10 +190,9 @@ export function FullApplicationForm({
         tags: [],
         notes: "",
       });
-      const savedId = localStorage.getItem("thrive:default_resume_id");
-      setSelectedResumeId(savedId ?? null);
+      setSelectedResumeId(null);
     }
-  }, [open, reset, prefill]);
+  }, [open, reset, prefill, defaultStatus]);
 
   const selectedCompany = watch("company_id")
     ? { id: watch("company_id"), name: watch("company_name") }
@@ -354,7 +357,17 @@ export function FullApplicationForm({
 
                 <div className="space-y-2">
                   <Label htmlFor="full-url">URL</Label>
-                  <Input id="full-url" placeholder="https://..." {...register("url")} />
+                  <Controller
+                    name="url"
+                    control={control}
+                    render={({ field }) => (
+                      <UrlInput
+                        id="full-url"
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
                 </div>
 
                 <div className="space-y-2">
@@ -423,7 +436,6 @@ export function FullApplicationForm({
               <fieldset className="space-y-4">
                 <legend className="text-sm font-semibold text-muted-foreground">Documents</legend>
                 <div className="space-y-2">
-                  <Label>Resume</Label>
                   <DocumentTypePicker
                     type="resume"
                     value={selectedResumeId}
