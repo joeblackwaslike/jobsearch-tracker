@@ -207,7 +207,7 @@ export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: Co
     watch,
     formState: { errors, isSubmitting },
   } = useForm<CompanyFormValues>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // biome-ignore lint/suspicious/noExplicitAny: type mismatch between zod versions
     resolver: zodResolver(companyFormSchema as any),
     defaultValues:
       mode === "edit" && company ? companyToFormValues(company) : { name: "", researched: false },
@@ -245,7 +245,7 @@ export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: Co
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={isCreate ? "sm:max-w-md" : "sm:max-w-2xl max-h-[90vh]"}>
+      <DialogContent className={isCreate ? "sm:max-w-md" : "sm:max-w-2xl max-h-[90vh] overflow-hidden"}>
         <DialogHeader>
           <DialogTitle>{isCreate ? "Add Company" : "Edit Company"}</DialogTitle>
           <DialogDescription>
@@ -267,7 +267,7 @@ export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: Co
             </div>
           ) : (
             /* ---- Edit mode: all fields in scroll area ---- */
-            <ScrollArea className="max-h-[60vh] pr-4">
+            <ScrollArea className="max-h-[70vh] pr-4">
               <div className="space-y-6 py-4">
                 {/* Basic Info */}
                 <fieldset className="space-y-4">
