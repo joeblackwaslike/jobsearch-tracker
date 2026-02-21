@@ -3,7 +3,10 @@ import { render, screen } from "@/test/test-utils";
 import { FullApplicationForm } from "../full-application-form";
 
 vi.mock("@/lib/queries/applications", () => ({
-  useCreateApplication: () => ({ mutateAsync: vi.fn().mockResolvedValue({ id: "new" }), isPending: false }),
+  useCreateApplication: () => ({
+    mutateAsync: vi.fn().mockResolvedValue({ id: "new" }),
+    isPending: false,
+  }),
 }));
 vi.mock("@/lib/queries/companies", () => ({
   useSearchCompanies: () => ({ data: [], isLoading: false }),

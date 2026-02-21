@@ -1,25 +1,25 @@
-import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
-  PencilIcon,
   BuildingIcon,
-  PlusIcon,
-  ExternalLinkIcon,
-  ChevronRightIcon,
   ChevronDownIcon,
+  ChevronRightIcon,
+  ExternalLinkIcon,
+  PencilIcon,
+  PlusIcon,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { CompanyForm } from "@/components/companies/company-form";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { ApplicationWithCompany } from "@/lib/queries/applications";
 import { useEvents } from "@/lib/queries/events";
-import { ApplicationForm } from "./application-form";
-import { CompanyForm } from "@/components/companies/company-form";
-import { ArchiveDialog } from "./archive-dialog";
 import { AddEventDialog } from "./add-event-dialog";
-import { EventTimeline } from "./event-timeline";
 import { ApplicationDocuments } from "./application-documents";
+import { ApplicationForm } from "./application-form";
+import { ArchiveDialog } from "./archive-dialog";
+import { EventTimeline } from "./event-timeline";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -101,25 +101,16 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
   const [addEventOpen, setAddEventOpen] = useState(false);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
 
-  const { data: events = [], isLoading: eventsLoading } = useEvents(
-    application.id
-  );
+  const { data: events = [], isLoading: eventsLoading } = useEvents(application.id);
 
-  const salary = formatSalary(
-    application.salary as Record<string, unknown> | null
-  );
-  const tags = Array.isArray(application.tags)
-    ? (application.tags as string[])
-    : [];
+  const salary = formatSalary(application.salary as Record<string, unknown> | null);
+  const tags = Array.isArray(application.tags) ? (application.tags as string[]) : [];
 
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1 text-sm text-muted-foreground">
-        <Link
-          to="/applications"
-          className="hover:text-foreground transition-colors"
-        >
+        <Link to="/applications" className="hover:text-foreground transition-colors">
           Applications
         </Link>
         <ChevronRightIcon className="size-3.5" />
@@ -132,22 +123,14 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
       <div className="space-y-3">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight">
-              {application.company?.name}
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              {application.position}
-            </p>
+            <h1 className="text-2xl font-bold tracking-tight">{application.company?.name}</h1>
+            <p className="text-lg text-muted-foreground">{application.position}</p>
             <div className="flex items-center gap-2 pt-1">
               <Badge variant={STATUS_VARIANT[application.status] ?? "secondary"}>
                 {capitalize(application.status)}
               </Badge>
               {application.interest && (
-                <Badge
-                  variant={
-                    INTEREST_VARIANT[application.interest] ?? "secondary"
-                  }
-                >
+                <Badge variant={INTEREST_VARIANT[application.interest] ?? "secondary"}>
                   {capitalize(application.interest)} interest
                 </Badge>
               )}
@@ -161,11 +144,7 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
             <PencilIcon className="size-4" />
             Edit Application
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setEditCompanyOpen(true)}
-          >
+          <Button variant="outline" size="sm" onClick={() => setEditCompanyOpen(true)}>
             <BuildingIcon className="size-4" />
             Edit Company
           </Button>
@@ -309,12 +288,7 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
       </div>
 
       {/* Dialogs */}
-      <ApplicationForm
-        open={editAppOpen}
-        onOpenChange={setEditAppOpen}
-        mode="edit"
-        application={application}
-      />
+      <ApplicationForm open={editAppOpen} onOpenChange={setEditAppOpen} application={application} />
 
       <CompanyForm
         open={editCompanyOpen}

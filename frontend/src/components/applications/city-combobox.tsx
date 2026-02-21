@@ -1,6 +1,5 @@
-import { useState } from "react";
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
-import cities from "@/data/major-us-cities.json";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -11,6 +10,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import cities from "@/data/major-us-cities.json";
 import { cn } from "@/lib/utils";
 
 interface CityComboboxProps {
@@ -37,11 +37,7 @@ export function CityCombobox({ value, onChange }: CityComboboxProps) {
       </PopoverTrigger>
       <PopoverContent className="w-full p-0" align="start">
         <Command>
-          <CommandInput
-            placeholder="Search city..."
-            value={search}
-            onValueChange={setSearch}
-          />
+          <CommandInput placeholder="Search city..." value={search} onValueChange={setSearch} />
           <CommandList>
             <CommandEmpty>No city found. Type to use custom value.</CommandEmpty>
             <CommandGroup>

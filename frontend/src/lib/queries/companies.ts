@@ -126,8 +126,12 @@ export function useCreateCompany() {
       if (error) throw error;
       return data as Company;
     },
-    onSuccess: () => { toast.success("Company added."); },
-    onError: () => { toast.error("Failed to add company."); },
+    onSuccess: () => {
+      toast.success("Company added.");
+    },
+    onError: () => {
+      toast.error("Failed to add company.");
+    },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });
     },
@@ -155,8 +159,12 @@ export function useUpdateCompany() {
       if (error) throw error;
       return data as Company;
     },
-    onSuccess: () => { toast.success("Company updated."); },
-    onError: () => { toast.error("Failed to update company."); },
+    onSuccess: () => {
+      toast.success("Company updated.");
+    },
+    onError: () => {
+      toast.error("Failed to update company.");
+    },
     onSettled: (_data, _error, variables) => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });
       if (variables?.id) {
@@ -189,8 +197,12 @@ export function useArchiveCompany() {
       if (error) throw error;
       return data as Company;
     },
-    onSuccess: () => { toast.success("Company archived."); },
-    onError: () => { toast.error("Failed to archive company."); },
+    onSuccess: () => {
+      toast.success("Company archived.");
+    },
+    onError: () => {
+      toast.error("Failed to archive company.");
+    },
     onSettled: (_data, _error, id) => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });
       queryClient.invalidateQueries({ queryKey: ["companies", id] });

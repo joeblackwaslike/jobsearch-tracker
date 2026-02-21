@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -63,7 +63,9 @@ export function SourceCombobox({ value, onChange }: SourceComboboxProps) {
               <button
                 type="button"
                 className="px-3 py-2 text-sm w-full text-left hover:bg-accent"
-                onClick={() => { setOpen(false); }}
+                onClick={() => {
+                  setOpen(false);
+                }}
               >
                 Use &ldquo;{value}&rdquo;
               </button>

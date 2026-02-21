@@ -245,7 +245,9 @@ export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: Co
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={isCreate ? "sm:max-w-md" : "sm:max-w-2xl max-h-[90vh] overflow-hidden"}>
+      <DialogContent
+        className={isCreate ? "sm:max-w-md" : "sm:max-w-2xl max-h-[90vh] overflow-hidden"}
+      >
         <DialogHeader>
           <DialogTitle>{isCreate ? "Add Company" : "Edit Company"}</DialogTitle>
           <DialogDescription>

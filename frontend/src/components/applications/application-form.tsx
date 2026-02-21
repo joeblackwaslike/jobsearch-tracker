@@ -27,10 +27,7 @@ import {
 } from "@/components/ui/select";
 import { TagInput } from "@/components/ui/tag-input";
 import { useApplicationDocuments, useDetachDocument } from "@/lib/queries/application-documents";
-import {
-  type ApplicationWithCompany,
-  useUpdateApplication,
-} from "@/lib/queries/applications";
+import { type ApplicationWithCompany, useUpdateApplication } from "@/lib/queries/applications";
 import { useSnapshotDocument } from "@/lib/queries/documents";
 import { CityCombobox } from "./city-combobox";
 import { SourceCombobox } from "./source-combobox";
@@ -61,8 +58,6 @@ const WORK_TYPE_OPTIONS = [
 const EMPLOYMENT_TYPE_OPTIONS = ["full-time", "part-time", "contract", "internship"] as const;
 
 const INTEREST_OPTIONS = ["low", "medium", "high", "dream"] as const;
-
-const SALARY_PERIOD_OPTIONS = ["yearly", "hourly"] as const;
 
 // ---------------------------------------------------------------------------
 // Schema
@@ -425,7 +420,9 @@ export function ApplicationForm({
                           <div className="flex items-center gap-2 min-w-0">
                             <FileIcon className="size-4 shrink-0 text-muted-foreground" />
                             <span className="truncate">{doc.name}</span>
-                            <Badge variant="outline" className="text-xs">{doc.type}</Badge>
+                            <Badge variant="outline" className="text-xs">
+                              {doc.type}
+                            </Badge>
                           </div>
                           <Button
                             type="button"

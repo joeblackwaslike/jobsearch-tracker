@@ -96,8 +96,12 @@ export function useCreateContact() {
       if (error) throw error;
       return data as Contact;
     },
-    onSuccess: () => { toast.success("Contact saved."); },
-    onError: () => { toast.error("Failed to save contact."); },
+    onSuccess: () => {
+      toast.success("Contact saved.");
+    },
+    onError: () => {
+      toast.error("Failed to save contact.");
+    },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["contacts"] });
     },
@@ -125,8 +129,12 @@ export function useUpdateContact() {
       if (error) throw error;
       return data as Contact;
     },
-    onSuccess: () => { toast.success("Contact updated."); },
-    onError: () => { toast.error("Failed to update contact."); },
+    onSuccess: () => {
+      toast.success("Contact updated.");
+    },
+    onError: () => {
+      toast.error("Failed to update contact.");
+    },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["contacts"] });
     },
@@ -151,8 +159,12 @@ export function useDeleteContact() {
         .eq("user_id", user.id);
       if (error) throw error;
     },
-    onSuccess: () => { toast.success("Contact deleted."); },
-    onError: () => { toast.error("Failed to delete contact."); },
+    onSuccess: () => {
+      toast.success("Contact deleted.");
+    },
+    onError: () => {
+      toast.error("Failed to delete contact.");
+    },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["contacts"] });
     },

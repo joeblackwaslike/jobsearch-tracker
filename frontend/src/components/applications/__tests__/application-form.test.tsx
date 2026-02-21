@@ -106,17 +106,13 @@ const mockApplication = {
 
 describe("ApplicationForm", () => {
   it("renders edit mode with title 'Edit Application'", () => {
-    render(
-      <ApplicationForm open={true} onOpenChange={vi.fn()} application={mockApplication} />,
-    );
+    render(<ApplicationForm open={true} onOpenChange={vi.fn()} application={mockApplication} />);
     expect(screen.getByText("Edit Application")).toBeInTheDocument();
     expect(screen.getByText("Update application details.")).toBeInTheDocument();
   });
 
   it("renders edit mode with all field sections", () => {
-    render(
-      <ApplicationForm open={true} onOpenChange={vi.fn()} application={mockApplication} />,
-    );
+    render(<ApplicationForm open={true} onOpenChange={vi.fn()} application={mockApplication} />);
     expect(screen.getByText("Basic Information")).toBeInTheDocument();
     expect(screen.getByText("Job Details")).toBeInTheDocument();
     expect(screen.getByText("Salary")).toBeInTheDocument();
@@ -124,40 +120,30 @@ describe("ApplicationForm", () => {
   });
 
   it("populates edit mode fields with application data", () => {
-    render(
-      <ApplicationForm open={true} onOpenChange={vi.fn()} application={mockApplication} />,
-    );
+    render(<ApplicationForm open={true} onOpenChange={vi.fn()} application={mockApplication} />);
     expect(screen.getByLabelText("Position *")).toHaveValue("Senior Engineer");
     expect(screen.getByLabelText("URL")).toHaveValue("https://example.com/job");
   });
 
   it("shows Save Changes submit button", () => {
-    render(
-      <ApplicationForm open={true} onOpenChange={vi.fn()} application={mockApplication} />,
-    );
+    render(<ApplicationForm open={true} onOpenChange={vi.fn()} application={mockApplication} />);
     expect(screen.getByRole("button", { name: "Save Changes" })).toBeInTheDocument();
   });
 
   it("shows cancel button", () => {
-    render(
-      <ApplicationForm open={true} onOpenChange={vi.fn()} application={mockApplication} />,
-    );
+    render(<ApplicationForm open={true} onOpenChange={vi.fn()} application={mockApplication} />);
     expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
   });
 
   describe("edit mode resume picker", () => {
     it("renders DocumentTypePicker in edit mode", () => {
-      render(
-        <ApplicationForm open application={mockApplication} onOpenChange={vi.fn()} />,
-      );
+      render(<ApplicationForm open application={mockApplication} onOpenChange={vi.fn()} />);
       expect(screen.getByText("Resume")).toBeInTheDocument();
     });
 
     it("does not read from localStorage in edit mode", () => {
       localStorage.setItem("thrive:default_resume_id", "doc-resume-1");
-      render(
-        <ApplicationForm open application={mockApplication} onOpenChange={vi.fn()} />,
-      );
+      render(<ApplicationForm open application={mockApplication} onOpenChange={vi.fn()} />);
       expect(screen.queryByTestId("selected-resume")).not.toBeInTheDocument();
       localStorage.removeItem("thrive:default_resume_id");
     });

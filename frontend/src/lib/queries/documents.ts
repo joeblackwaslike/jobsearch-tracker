@@ -89,8 +89,12 @@ export function useCreateDocument() {
       if (error) throw error;
       return data as Document;
     },
-    onSuccess: () => { toast.success("Document saved."); },
-    onError: () => { toast.error("Failed to save document."); },
+    onSuccess: () => {
+      toast.success("Document saved.");
+    },
+    onError: () => {
+      toast.error("Failed to save document.");
+    },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["documents"] });
     },
@@ -118,8 +122,12 @@ export function useUpdateDocument() {
       if (error) throw error;
       return data as Document;
     },
-    onSuccess: () => { toast.success("Document updated."); },
-    onError: () => { toast.error("Failed to update document."); },
+    onSuccess: () => {
+      toast.success("Document updated.");
+    },
+    onError: () => {
+      toast.error("Failed to update document.");
+    },
     onSettled: (_data, _error, variables) => {
       queryClient.invalidateQueries({ queryKey: ["documents"] });
       if (variables?.id) {

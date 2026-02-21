@@ -162,8 +162,12 @@ export function useCreateEvent() {
 
       return data as Event;
     },
-    onSuccess: () => { toast.success("Interview scheduled."); },
-    onError: () => { toast.error("Failed to schedule interview."); },
+    onSuccess: () => {
+      toast.success("Interview scheduled.");
+    },
+    onError: () => {
+      toast.error("Failed to schedule interview.");
+    },
     onSettled: (_data, _error, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["events", { applicationId: variables?.application_id }],
@@ -198,8 +202,12 @@ export function useUpdateEvent() {
       if (error) throw error;
       return data as Event;
     },
-    onSuccess: () => { toast.success("Interview updated."); },
-    onError: () => { toast.error("Failed to update interview."); },
+    onSuccess: () => {
+      toast.success("Interview updated.");
+    },
+    onError: () => {
+      toast.error("Failed to update interview.");
+    },
     onSettled: (_data, _error, variables) => {
       if (variables?.applicationId) {
         queryClient.invalidateQueries({
@@ -226,8 +234,12 @@ export function useDeleteEvent() {
       if (error) throw error;
       return { id, applicationId };
     },
-    onSuccess: () => { toast.success("Interview deleted."); },
-    onError: () => { toast.error("Failed to delete interview."); },
+    onSuccess: () => {
+      toast.success("Interview deleted.");
+    },
+    onError: () => {
+      toast.error("Failed to delete interview.");
+    },
     onSettled: (_data, _error, variables) => {
       if (variables?.applicationId) {
         queryClient.invalidateQueries({

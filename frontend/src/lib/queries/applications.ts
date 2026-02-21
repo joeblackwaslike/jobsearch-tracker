@@ -161,8 +161,12 @@ export function useCreateApplication() {
       if (error) throw error;
       return data as Application;
     },
-    onSuccess: () => { toast.success("Application added."); },
-    onError: () => { toast.error("Failed to add application."); },
+    onSuccess: () => {
+      toast.success("Application added.");
+    },
+    onError: () => {
+      toast.error("Failed to add application.");
+    },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["applications"] });
     },
@@ -190,8 +194,12 @@ export function useUpdateApplication() {
       if (error) throw error;
       return data as Application;
     },
-    onSuccess: () => { toast.success("Application updated."); },
-    onError: () => { toast.error("Failed to update application."); },
+    onSuccess: () => {
+      toast.success("Application updated.");
+    },
+    onError: () => {
+      toast.error("Failed to update application.");
+    },
     onSettled: (_data, _error, variables) => {
       queryClient.invalidateQueries({ queryKey: ["applications"] });
       if (variables?.id) {
@@ -228,8 +236,12 @@ export function useArchiveApplication() {
       if (error) throw error;
       return data as Application;
     },
-    onSuccess: () => { toast.success("Application archived."); },
-    onError: () => { toast.error("Failed to archive application."); },
+    onSuccess: () => {
+      toast.success("Application archived.");
+    },
+    onError: () => {
+      toast.error("Failed to archive application.");
+    },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["applications"] });
     },

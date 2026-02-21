@@ -1,13 +1,13 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
-import type { Database, Tables, TablesUpdate } from "@/lib/supabase/types";
+import type { Tables, TablesUpdate } from "@/lib/supabase/types";
 
 type UserSettings = Tables<"user_settings">;
 type UserSettingsUpdate = TablesUpdate<"user_settings">;
 
-export function settingsQueryOptions(supabase: SupabaseClient<Database>) {
+export function settingsQueryOptions() {
+  const supabase = createClient();
   return queryOptions({
     queryKey: ["user_settings"],
     queryFn: async () => {
@@ -19,8 +19,7 @@ export function settingsQueryOptions(supabase: SupabaseClient<Database>) {
 }
 
 export function useSettings() {
-  const supabase = createClient();
-  return useQuery(settingsQueryOptions(supabase));
+  return useQuery(settingsQueryOptions());
 }
 
 export function useUpdateSettings() {
@@ -54,7 +53,9 @@ export function useUpdateSettings() {
       }
       return { previous };
     },
-    onSuccess: () => { toast.success("Settings saved."); },
+    onSuccess: () => {
+      toast.success("Settings saved.");
+    },
     onError: (_err, _updates, context) => {
       if (context?.previous) {
         queryClient.setQueryData(["user_settings"], context.previous);

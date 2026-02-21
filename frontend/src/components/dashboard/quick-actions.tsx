@@ -25,19 +25,11 @@ export function QuickActions() {
           <CardDescription>Jump to common tasks</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
-          <Button
-            variant="outline"
-            className="justify-start"
-            onClick={() => setEasyAddOpen(true)}
-          >
+          <Button variant="outline" className="justify-start" onClick={() => setEasyAddOpen(true)}>
             <ZapIcon className="mr-2 size-4" />
             Easy Add Application
           </Button>
-          <Button
-            variant="outline"
-            className="justify-start"
-            onClick={() => setFullFormOpen(true)}
-          >
+          <Button variant="outline" className="justify-start" onClick={() => setFullFormOpen(true)}>
             <PlusIcon className="mr-2 size-4" />
             New Application
           </Button>

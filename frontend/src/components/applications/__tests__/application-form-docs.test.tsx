@@ -87,13 +87,7 @@ const mockApplication = {
 
 describe("ApplicationForm with documents", () => {
   it("shows Documents fieldset in edit mode", () => {
-    render(
-      <ApplicationForm
-        open={true}
-        onOpenChange={vi.fn()}
-        application={mockApplication}
-      />,
-    );
+    render(<ApplicationForm open={true} onOpenChange={vi.fn()} application={mockApplication} />);
     expect(screen.getByText("Documents")).toBeInTheDocument();
   });
 });

@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
-import { LogOutIcon, SettingsIcon, UserIcon } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
+import { LogOutIcon, SettingsIcon, UserIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { LoginForm } from "@/components/auth/login-form";
 import { SignupForm } from "@/components/auth/signup-form";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -86,12 +86,8 @@ export function UserMenu() {
             </>
           ) : (
             <>
-              <DropdownMenuItem onClick={() => setAuthModal("login")}>
-                Sign In
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setAuthModal("signup")}>
-                Register
-              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setAuthModal("login")}>Sign In</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setAuthModal("signup")}>Register</DropdownMenuItem>
             </>
           )}
         </DropdownMenuContent>
