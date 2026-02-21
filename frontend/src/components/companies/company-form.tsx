@@ -1,19 +1,20 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -21,12 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  useCreateCompany,
-  useUpdateCompany,
-  type Company,
-} from "@/lib/queries/companies";
+import { type Company, useCreateCompany, useUpdateCompany } from "@/lib/queries/companies";
 import { CompanyContacts } from "./company-contacts";
 
 // ---------------------------------------------------------------------------
@@ -199,13 +195,7 @@ function formValuesToPayload(values: CompanyFormValues) {
 // Component
 // ---------------------------------------------------------------------------
 
-export function CompanyForm({
-  open,
-  onOpenChange,
-  mode,
-  company,
-  onSuccess,
-}: CompanyFormProps) {
+export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: CompanyFormProps) {
   const createCompany = useCreateCompany();
   const updateCompany = useUpdateCompany();
 
@@ -220,9 +210,7 @@ export function CompanyForm({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(companyFormSchema as any),
     defaultValues:
-      mode === "edit" && company
-        ? companyToFormValues(company)
-        : { name: "", researched: false },
+      mode === "edit" && company ? companyToFormValues(company) : { name: "", researched: false },
   });
 
   // Reset form when company or mode changes
@@ -257,13 +245,9 @@ export function CompanyForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className={isCreate ? "sm:max-w-md" : "sm:max-w-2xl max-h-[90vh]"}
-      >
+      <DialogContent className={isCreate ? "sm:max-w-md" : "sm:max-w-2xl max-h-[90vh]"}>
         <DialogHeader>
-          <DialogTitle>
-            {isCreate ? "Add Company" : "Edit Company"}
-          </DialogTitle>
+          <DialogTitle>{isCreate ? "Add Company" : "Edit Company"}</DialogTitle>
           <DialogDescription>
             {isCreate
               ? "Enter the company name to add it to your directory."
@@ -277,16 +261,8 @@ export function CompanyForm({
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Company Name</Label>
-                <Input
-                  id="name"
-                  placeholder="e.g. Acme Corp"
-                  {...register("name")}
-                />
-                {errors.name && (
-                  <p className="text-sm text-destructive">
-                    {errors.name.message}
-                  </p>
-                )}
+                <Input id="name" placeholder="e.g. Acme Corp" {...register("name")} />
+                {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
               </div>
             </div>
           ) : (
@@ -303,9 +279,7 @@ export function CompanyForm({
                     <Label htmlFor="edit-name">Name *</Label>
                     <Input id="edit-name" {...register("name")} />
                     {errors.name && (
-                      <p className="text-sm text-destructive">
-                        {errors.name.message}
-                      </p>
+                      <p className="text-sm text-destructive">{errors.name.message}</p>
                     )}
                   </div>
 
@@ -350,20 +324,14 @@ export function CompanyForm({
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="edit-founded">Founded</Label>
-                      <Input
-                        id="edit-founded"
-                        type="date"
-                        {...register("founded")}
-                      />
+                      <Input id="edit-founded" type="date" {...register("founded")} />
                     </div>
                   </div>
                 </fieldset>
 
                 {/* Links */}
                 <fieldset className="space-y-4">
-                  <legend className="text-sm font-semibold text-muted-foreground">
-                    Links
-                  </legend>
+                  <legend className="text-sm font-semibold text-muted-foreground">Links</legend>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="edit-website">Website</Label>
@@ -399,11 +367,7 @@ export function CompanyForm({
                     </div>
                     <div className="space-y-2 col-span-2">
                       <Label htmlFor="edit-news">News</Label>
-                      <Input
-                        id="edit-news"
-                        placeholder="https://..."
-                        {...register("links.news")}
-                      />
+                      <Input id="edit-news" placeholder="https://..." {...register("links.news")} />
                     </div>
                   </div>
                 </fieldset>
@@ -481,9 +445,7 @@ export function CompanyForm({
                         <Label>{label}</Label>
                         <Select
                           value={watch(`ratings.${key}`) ?? ""}
-                          onValueChange={(value) =>
-                            setValue(`ratings.${key}`, value)
-                          }
+                          onValueChange={(value) => setValue(`ratings.${key}`, value)}
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="--" />
@@ -520,41 +482,27 @@ export function CompanyForm({
                     <Checkbox
                       id="edit-researched"
                       checked={watch("researched") ?? false}
-                      onCheckedChange={(checked) =>
-                        setValue("researched", checked === true)
-                      }
+                      onCheckedChange={(checked) => setValue("researched", checked === true)}
                     />
-                    <Label htmlFor="edit-researched">
-                      Researched
-                    </Label>
+                    <Label htmlFor="edit-researched">Researched</Label>
                   </div>
                 </fieldset>
 
                 {/* Contacts */}
                 <fieldset className="space-y-4">
-                  <legend className="text-sm font-semibold text-muted-foreground">
-                    Contacts
-                  </legend>
-                  <CompanyContacts companyId={company!.id} />
+                  <legend className="text-sm font-semibold text-muted-foreground">Contacts</legend>
+                  {company?.id && <CompanyContacts companyId={company.id} />}
                 </fieldset>
               </div>
             </ScrollArea>
           )}
 
           <DialogFooter className="mt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting
-                ? "Saving..."
-                : isCreate
-                  ? "Add Company"
-                  : "Save Changes"}
+              {isSubmitting ? "Saving..." : isCreate ? "Add Company" : "Save Changes"}
             </Button>
           </DialogFooter>
         </form>

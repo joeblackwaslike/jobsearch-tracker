@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { Company } from "@/lib/queries/companies";
 import { CompanyTable } from "../company-table";
 
 const mockArchiveMutate = vi.fn();
@@ -26,7 +27,7 @@ const companies = [
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
-];
+] as unknown as Company[];
 
 describe("CompanyTable", () => {
   const onEdit = vi.fn();
