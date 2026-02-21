@@ -36,3 +36,24 @@ describe("FullApplicationForm", () => {
     expect(screen.getByText("Additional Information")).toBeInTheDocument();
   });
 });
+
+describe("modal overflow regression", () => {
+  it("dialog content does not have overflow-hidden class", () => {
+    render(<FullApplicationForm open={true} onOpenChange={vi.fn()} />);
+    const dialogContent = document.querySelector('[data-slot="dialog-content"]');
+    expect(dialogContent).not.toHaveClass("overflow-hidden");
+  });
+
+  it("scroll area has a max-height constraint", () => {
+    render(<FullApplicationForm open={true} onOpenChange={vi.fn()} />);
+    const scrollArea = document.querySelector('[data-slot="scroll-area"]');
+    expect(scrollArea?.className).toMatch(/max-h-/);
+  });
+
+  it("cancel and submit buttons are inside the scroll area", () => {
+    render(<FullApplicationForm open={true} onOpenChange={vi.fn()} />);
+    const scrollArea = document.querySelector('[data-slot="scroll-area"]');
+    expect(scrollArea).toContainElement(screen.getByRole("button", { name: "Add Application" }));
+    expect(scrollArea).toContainElement(screen.getByRole("button", { name: "Cancel" }));
+  });
+});

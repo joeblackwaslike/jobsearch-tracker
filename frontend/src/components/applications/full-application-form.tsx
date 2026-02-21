@@ -220,14 +220,14 @@ export function FullApplicationForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>New Application</DialogTitle>
           <DialogDescription>Add a new job application with full details.</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <ScrollArea className="max-h-[70vh] pr-4">
+          <ScrollArea className="max-h-[calc(85vh-8rem)] pr-4">
             <div className="space-y-6 py-4">
               {/* Basic Information */}
               <fieldset className="space-y-4">
@@ -431,17 +431,17 @@ export function FullApplicationForm({
                   />
                 </div>
               </fieldset>
+
+              <DialogFooter className="mt-4">
+                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Saving..." : "Add Application"}
+                </Button>
+              </DialogFooter>
             </div>
           </ScrollArea>
-
-          <DialogFooter className="mt-4">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Add Application"}
-            </Button>
-          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

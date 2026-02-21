@@ -126,3 +126,49 @@ describe("CompanyForm", () => {
     expect(screen.getByText("Contacts")).toBeInTheDocument();
   });
 });
+
+describe("modal overflow regression", () => {
+  it("dialog content does not have overflow-hidden class in create mode", () => {
+    render(<CompanyForm open={true} onOpenChange={noop} mode="create" />);
+    const dialogContent = document.querySelector('[data-slot="dialog-content"]');
+    expect(dialogContent).not.toHaveClass("overflow-hidden");
+  });
+
+  it("dialog content does not have overflow-hidden class in edit mode", () => {
+    render(
+      <CompanyForm open={true} onOpenChange={noop} mode="edit" company={mockCompany as never} />,
+    );
+    const dialogContent = document.querySelector('[data-slot="dialog-content"]');
+    expect(dialogContent).not.toHaveClass("overflow-hidden");
+  });
+
+  it("scroll area has a max-height constraint in create mode", () => {
+    render(<CompanyForm open={true} onOpenChange={noop} mode="create" />);
+    const scrollArea = document.querySelector('[data-slot="scroll-area"]');
+    expect(scrollArea?.className).toMatch(/max-h-/);
+  });
+
+  it("scroll area has a max-height constraint in edit mode", () => {
+    render(
+      <CompanyForm open={true} onOpenChange={noop} mode="edit" company={mockCompany as never} />,
+    );
+    const scrollArea = document.querySelector('[data-slot="scroll-area"]');
+    expect(scrollArea?.className).toMatch(/max-h-/);
+  });
+
+  it("cancel and submit buttons are inside the scroll area in create mode", () => {
+    render(<CompanyForm open={true} onOpenChange={noop} mode="create" />);
+    const scrollArea = document.querySelector('[data-slot="scroll-area"]');
+    expect(scrollArea).toContainElement(screen.getByRole("button", { name: "Add Company" }));
+    expect(scrollArea).toContainElement(screen.getByRole("button", { name: "Cancel" }));
+  });
+
+  it("cancel and submit buttons are inside the scroll area in edit mode", () => {
+    render(
+      <CompanyForm open={true} onOpenChange={noop} mode="edit" company={mockCompany as never} />,
+    );
+    const scrollArea = document.querySelector('[data-slot="scroll-area"]');
+    expect(scrollArea).toContainElement(screen.getByRole("button", { name: "Save Changes" }));
+    expect(scrollArea).toContainElement(screen.getByRole("button", { name: "Cancel" }));
+  });
+});
