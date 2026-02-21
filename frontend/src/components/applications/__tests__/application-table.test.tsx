@@ -164,6 +164,7 @@ describe("ApplicationTable", () => {
   it("calls onEdit when edit button clicked without navigating", async () => {
     const user = userEvent.setup();
     const onEdit = vi.fn();
+    navigateMock.mockClear();
     render(
       <ApplicationTable
         data={mockData as unknown as Parameters<typeof ApplicationTable>[0]["data"]}
@@ -176,5 +177,6 @@ describe("ApplicationTable", () => {
     );
     await user.click(screen.getAllByTitle("Edit application")[0]);
     expect(onEdit).toHaveBeenCalledWith(mockData[0]);
+    expect(navigateMock).not.toHaveBeenCalled();
   });
 });

@@ -249,7 +249,7 @@ function ApplicationsPage() {
         onSortingChange={handleSortingChange}
         columnVisibility={columnVisibility}
         onColumnVisibilityChange={setColumnVisibility}
-        onEdit={(app) => setEditingApp(app)}
+        onEdit={setEditingApp}
       />
 
       {/* Pagination */}
@@ -305,6 +305,7 @@ function ApplicationsPage() {
           if (!open) setEditingApp(null);
         }}
         mode="edit"
+        // ApplicationListItem.company has {name} which is all ApplicationForm needs
         application={editingApp as ApplicationWithCompany | null}
       />
     </div>
