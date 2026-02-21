@@ -138,4 +138,12 @@ describe("ScheduleDialog", () => {
     expect(screen.getByText("1 hr")).toBeInTheDocument();
     expect(screen.getByText("3 hr")).toBeInTheDocument();
   });
+
+  it("renders a date picker button instead of a raw date input", () => {
+    // Native date input should be gone
+    const { container } = render(<ScheduleDialog open onOpenChange={vi.fn()} />);
+    expect(container.querySelector('input[type="date"]')).not.toBeInTheDocument();
+    // Date picker trigger button should exist
+    expect(screen.getByRole("button", { name: /pick a date/i })).toBeInTheDocument();
+  });
 });

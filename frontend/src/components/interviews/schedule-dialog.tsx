@@ -1,10 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
+import { format } from "date-fns";
+import { CalendarIcon, CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { InterviewerCombobox } from "@/components/interviews/interviewer-combobox";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Command,
   CommandEmpty,
@@ -112,6 +114,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
   const addInterviewer = useAddInterviewer();
   const [appSearch, setAppSearch] = useState("");
   const [comboboxOpen, setComboboxOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedInterviewers, setSelectedInterviewers] = useState<Pick<Contact, "id" | "name">[]>(
     [],
   );
@@ -192,6 +195,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
 
     reset();
     setSelectedInterviewers([]);
+    setSelectedDate(undefined);
     onSuccess?.();
     onOpenChange(false);
   };
@@ -200,6 +204,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
     if (!newOpen) {
       reset();
       setSelectedInterviewers([]);
+      setSelectedDate(undefined);
     }
     onOpenChange(newOpen);
   };
@@ -329,8 +334,35 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
             {/* Date & Time */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="schedule-date">Date</Label>
-                <Input id="schedule-date" type="date" {...register("date")} />
+                <Label>Date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !selectedDate && "text-muted-foreground",
+                      )}
+                      aria-label="Pick a date"
+                    >
+                      <CalendarIcon className="mr-2 size-4" />
+                      {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={(date) => {
+                        setSelectedDate(date);
+                        setValue("date", date ? format(date, "yyyy-MM-dd") : "", {
+                          shouldValidate: true,
+                        });
+                      }}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="schedule-time">Time</Label>
