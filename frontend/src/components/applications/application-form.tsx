@@ -1,18 +1,22 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { DocumentTypePicker } from "@/components/documents/document-type-picker";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -20,22 +24,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
-import { CompanyCombobox } from "./company-combobox";
+import { useApplicationDocuments, useDetachDocument } from "@/lib/queries/application-documents";
 import {
+  type ApplicationWithCompany,
   useCreateApplication,
   useUpdateApplication,
-  type ApplicationWithCompany,
 } from "@/lib/queries/applications";
 import type { Company } from "@/lib/queries/companies";
-import {
-  useApplicationDocuments,
-  useDetachDocument,
-} from "@/lib/queries/application-documents";
 import { useSnapshotDocument } from "@/lib/queries/documents";
-import { DocumentPicker } from "@/components/documents/document-picker";
+import { CompanyCombobox } from "./company-combobox";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -53,12 +50,7 @@ const STATUS_OPTIONS = [
 
 const WORK_TYPE_OPTIONS = ["remote", "hybrid", "onsite"] as const;
 
-const EMPLOYMENT_TYPE_OPTIONS = [
-  "full-time",
-  "part-time",
-  "contract",
-  "internship",
-] as const;
+const EMPLOYMENT_TYPE_OPTIONS = ["full-time", "part-time", "contract", "internship"] as const;
 
 const INTEREST_OPTIONS = ["low", "medium", "high", "dream"] as const;
 
@@ -115,13 +107,9 @@ interface ApplicationFormProps {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function applicationToFormValues(
-  app: ApplicationWithCompany
-): ApplicationFormValues {
+function applicationToFormValues(app: ApplicationWithCompany): ApplicationFormValues {
   const salary = (app.salary ?? {}) as Record<string, unknown>;
-  const tags = Array.isArray(app.tags)
-    ? (app.tags as string[]).join(", ")
-    : "";
+  const tags = Array.isArray(app.tags) ? (app.tags as string[]).join(", ") : "";
 
   return {
     company_id: app.company_id,
@@ -154,10 +142,8 @@ function formValuesToPayload(values: ApplicationFormValues) {
     : [];
 
   const salary: Record<string, string | number> = {};
-  if (values.salary.min !== undefined && values.salary.min !== 0)
-    salary.min = values.salary.min;
-  if (values.salary.max !== undefined && values.salary.max !== 0)
-    salary.max = values.salary.max;
+  if (values.salary.min !== undefined && values.salary.min !== 0) salary.min = values.salary.min;
+  if (values.salary.max !== undefined && values.salary.max !== 0) salary.max = values.salary.max;
   if (values.salary.currency) salary.currency = values.salary.currency;
   if (values.salary.period) salary.period = values.salary.period;
 
@@ -193,12 +179,10 @@ export function ApplicationForm({
   const updateApplication = useUpdateApplication();
 
   // Document attachment state
-  const [pendingDocIds, setPendingDocIds] = useState<string[]>([]);
-  const [pendingDocs, setPendingDocs] = useState<{ id: string; name: string }[]>([]);
-  const [pickerOpen, setPickerOpen] = useState(false);
+  const [selectedResumeId, setSelectedResumeId] = useState<string | null>(null);
 
   const { data: attachedDocs = [] } = useApplicationDocuments(
-    mode === "edit" && application ? application.id : ""
+    mode === "edit" && application ? application.id : "",
   );
   const detachDocument = useDetachDocument();
   const snapshotDocument = useSnapshotDocument();
@@ -235,6 +219,7 @@ export function ApplicationForm({
     if (open) {
       if (mode === "edit" && application) {
         reset(applicationToFormValues(application));
+        setSelectedResumeId(null);
       } else {
         reset({
           company_id: "",
@@ -251,8 +236,8 @@ export function ApplicationForm({
           source: "",
           tags: "",
         });
-        setPendingDocIds([]);
-        setPendingDocs([]);
+        const savedId = localStorage.getItem("thrive:default_resume_id");
+        setSelectedResumeId(savedId ?? null);
       }
     }
   }, [open, mode, application, reset, prefill]);
@@ -266,18 +251,6 @@ export function ApplicationForm({
     setValue("company_name", company.name);
   };
 
-  const handlePickDocument = async (documentId: string, documentName: string) => {
-    if (mode === "edit" && application) {
-      await snapshotDocument.mutateAsync({
-        applicationId: application.id,
-        documentId,
-      });
-    } else {
-      setPendingDocIds((prev) => [...prev, documentId]);
-      setPendingDocs((prev) => [...prev, { id: documentId, name: documentName }]);
-    }
-  };
-
   const onSubmit = async (values: ApplicationFormValues) => {
     const payload = formValuesToPayload(values);
 
@@ -286,17 +259,22 @@ export function ApplicationForm({
         id: application.id,
         ...payload,
       });
+      if (selectedResumeId) {
+        await snapshotDocument.mutateAsync({
+          applicationId: application.id,
+          documentId: selectedResumeId,
+        });
+      }
     } else {
       const newApp = await createApplication.mutateAsync(payload);
-      if (pendingDocIds.length > 0 && newApp?.id) {
-        await Promise.all(
-          pendingDocIds.map((docId) =>
-            snapshotDocument.mutateAsync({
-              applicationId: newApp.id,
-              documentId: docId,
-            })
-          )
-        );
+      if (selectedResumeId && newApp?.id) {
+        await snapshotDocument.mutateAsync({
+          applicationId: newApp.id,
+          documentId: selectedResumeId,
+        });
+        localStorage.setItem("thrive:default_resume_id", selectedResumeId);
+      } else {
+        localStorage.removeItem("thrive:default_resume_id");
       }
     }
 
@@ -308,17 +286,11 @@ export function ApplicationForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className={isCreate ? "sm:max-w-md" : "sm:max-w-2xl max-h-[90vh]"}
-      >
+      <DialogContent className={isCreate ? "sm:max-w-md" : "sm:max-w-2xl max-h-[90vh]"}>
         <DialogHeader>
-          <DialogTitle>
-            {isCreate ? "New Application" : "Edit Application"}
-          </DialogTitle>
+          <DialogTitle>{isCreate ? "New Application" : "Edit Application"}</DialogTitle>
           <DialogDescription>
-            {isCreate
-              ? "Add a new job application to track."
-              : "Update application details."}
+            {isCreate ? "Add a new job application to track." : "Update application details."}
           </DialogDescription>
         </DialogHeader>
 
@@ -334,9 +306,7 @@ export function ApplicationForm({
                   initialSearchText={prefill?.company ?? ""}
                 />
                 {errors.company_id && (
-                  <p className="text-sm text-destructive">
-                    {errors.company_id.message}
-                  </p>
+                  <p className="text-sm text-destructive">{errors.company_id.message}</p>
                 )}
               </div>
 
@@ -348,54 +318,23 @@ export function ApplicationForm({
                   {...register("position")}
                 />
                 {errors.position && (
-                  <p className="text-sm text-destructive">
-                    {errors.position.message}
-                  </p>
+                  <p className="text-sm text-destructive">{errors.position.message}</p>
                 )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="create-url">URL</Label>
-                <Input
-                  id="create-url"
-                  placeholder="https://..."
-                  {...register("url")}
-                />
+                <Input id="create-url" placeholder="https://..." {...register("url")} />
               </div>
 
-              {/* Documents */}
+              {/* Resume */}
               <div className="space-y-2">
-                <Label>Documents</Label>
-                {pendingDocs.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5">
-                    {pendingDocs.map((doc) => (
-                      <Badge key={doc.id} variant="secondary" className="gap-1">
-                        {doc.name}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setPendingDocIds((prev) =>
-                              prev.filter((id) => id !== doc.id)
-                            );
-                            setPendingDocs((prev) =>
-                              prev.filter((d) => d.id !== doc.id)
-                            );
-                          }}
-                        >
-                          <X className="size-3" />
-                        </button>
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPickerOpen(true)}
-                >
-                  Attach
-                </Button>
+                <Label>Resume</Label>
+                <DocumentTypePicker
+                  type="resume"
+                  value={selectedResumeId}
+                  onChange={(doc) => setSelectedResumeId(doc?.id ?? null)}
+                />
               </div>
             </div>
           ) : (
@@ -410,23 +349,14 @@ export function ApplicationForm({
 
                   <div className="space-y-2">
                     <Label>Company</Label>
-                    <Input
-                      value={watch("company_name")}
-                      disabled
-                      readOnly
-                    />
+                    <Input value={watch("company_name")} disabled readOnly />
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="edit-position">Position *</Label>
-                    <Input
-                      id="edit-position"
-                      {...register("position")}
-                    />
+                    <Input id="edit-position" {...register("position")} />
                     {errors.position && (
-                      <p className="text-sm text-destructive">
-                        {errors.position.message}
-                      </p>
+                      <p className="text-sm text-destructive">{errors.position.message}</p>
                     )}
                   </div>
 
@@ -521,19 +451,13 @@ export function ApplicationForm({
 
                   <div className="space-y-2">
                     <Label htmlFor="edit-url">URL</Label>
-                    <Input
-                      id="edit-url"
-                      placeholder="https://..."
-                      {...register("url")}
-                    />
+                    <Input id="edit-url" placeholder="https://..." {...register("url")} />
                   </div>
                 </fieldset>
 
                 {/* Salary */}
                 <fieldset className="space-y-4">
-                  <legend className="text-sm font-semibold text-muted-foreground">
-                    Salary
-                  </legend>
+                  <legend className="text-sm font-semibold text-muted-foreground">Salary</legend>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="edit-salary-min">Min</Label>
@@ -584,14 +508,10 @@ export function ApplicationForm({
 
                 {/* Details */}
                 <fieldset className="space-y-4">
-                  <legend className="text-sm font-semibold text-muted-foreground">
-                    Details
-                  </legend>
+                  <legend className="text-sm font-semibold text-muted-foreground">Details</legend>
 
                   <div className="space-y-2">
-                    <Label htmlFor="edit-job-description">
-                      Job Description
-                    </Label>
+                    <Label htmlFor="edit-job-description">Job Description</Label>
                     <textarea
                       id="edit-job-description"
                       className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
@@ -620,24 +540,28 @@ export function ApplicationForm({
 
                 {/* Documents */}
                 <fieldset className="space-y-4">
-                  <legend className="text-sm font-semibold text-muted-foreground">
-                    Documents
-                  </legend>
+                  <legend className="text-sm font-semibold text-muted-foreground">Documents</legend>
+
+                  <div className="space-y-2">
+                    <Label>Resume</Label>
+                    <DocumentTypePicker
+                      type="resume"
+                      value={selectedResumeId}
+                      onChange={(doc) => setSelectedResumeId(doc?.id ?? null)}
+                    />
+                  </div>
+
                   {attachedDocs.length > 0 && (
                     <div className="flex flex-wrap gap-1.5">
                       {attachedDocs.map((doc) => (
-                        <Badge
-                          key={doc.id}
-                          variant="secondary"
-                          className="gap-1"
-                        >
+                        <Badge key={doc.id} variant="secondary" className="gap-1">
                           {doc.name}
                           <button
                             type="button"
                             onClick={() =>
                               detachDocument.mutateAsync({
                                 id: doc.id,
-                                applicationId: application!.id,
+                                applicationId: application?.id ?? "",
                               })
                             }
                           >
@@ -647,50 +571,21 @@ export function ApplicationForm({
                       ))}
                     </div>
                   )}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPickerOpen(true)}
-                  >
-                    Attach
-                  </Button>
                 </fieldset>
               </div>
             </ScrollArea>
           )}
 
           <DialogFooter className="mt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting
-                ? "Saving..."
-                : isCreate
-                  ? "Add Application"
-                  : "Save Changes"}
+              {isSubmitting ? "Saving..." : isCreate ? "Add Application" : "Save Changes"}
             </Button>
           </DialogFooter>
         </form>
       </DialogContent>
-
-      <DocumentPicker
-        open={pickerOpen}
-        onOpenChange={setPickerOpen}
-        onSelect={handlePickDocument}
-        excludeIds={
-          mode === "edit"
-            ? (attachedDocs
-                .map((d) => d.document_id)
-                .filter(Boolean) as string[])
-            : pendingDocIds
-        }
-      />
     </Dialog>
   );
 }

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@/test/test-utils";
 import { ApplicationForm } from "../application-form";
 
@@ -38,6 +38,11 @@ vi.mock("@/lib/queries/application-documents", () => ({
 vi.mock("@/lib/queries/documents", () => ({
   useDocuments: vi.fn(() => ({ data: [], isLoading: false })),
   useSnapshotDocument: vi.fn(() => ({ mutateAsync: vi.fn(), isPending: false })),
+  useUploadDocument: vi.fn(() => ({ mutateAsync: vi.fn(), isPending: false })),
+  documentsQueryOptions: vi.fn((type?: string) => ({
+    queryKey: ["documents", { type }],
+    queryFn: vi.fn(() => []),
+  })),
 }));
 
 // ---------------------------------------------------------------------------
@@ -59,6 +64,7 @@ const mockApplication = {
   interest: "high",
   source: "LinkedIn",
   tags: ["react", "typescript"],
+  applied_at: null,
   archived_at: null,
   archived_reason: null,
   created_at: "2025-01-01T00:00:00Z",
@@ -78,33 +84,16 @@ const mockApplication = {
     created_at: "2025-01-01T00:00:00Z",
     updated_at: "2025-01-01T00:00:00Z",
   },
-};
+} as unknown as ApplicationWithCompany;
 
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
 
 describe("ApplicationForm with documents", () => {
-  it("shows Attach button in create mode", () => {
-    render(
-      <ApplicationForm
-        open={true}
-        onOpenChange={vi.fn()}
-        mode="create"
-      />
-    );
-    expect(screen.getByText("Attach")).toBeInTheDocument();
-  });
-
-  it("shows Documents label in create mode", () => {
-    render(
-      <ApplicationForm
-        open={true}
-        onOpenChange={vi.fn()}
-        mode="create"
-      />
-    );
-    expect(screen.getByText("Documents")).toBeInTheDocument();
+  it("shows Resume label in create mode", () => {
+    render(<ApplicationForm open={true} onOpenChange={vi.fn()} mode="create" />);
+    expect(screen.getByText("Resume")).toBeInTheDocument();
   });
 
   it("shows Documents fieldset in edit mode", () => {
@@ -114,23 +103,8 @@ describe("ApplicationForm with documents", () => {
         onOpenChange={vi.fn()}
         mode="edit"
         application={mockApplication}
-      />
+      />,
     );
     expect(screen.getByText("Documents")).toBeInTheDocument();
-    expect(screen.getByText("Attach")).toBeInTheDocument();
-  });
-
-  it("shows Attach button in edit mode", () => {
-    render(
-      <ApplicationForm
-        open={true}
-        onOpenChange={vi.fn()}
-        mode="edit"
-        application={mockApplication}
-      />
-    );
-    expect(
-      screen.getByRole("button", { name: "Attach" })
-    ).toBeInTheDocument();
   });
 });
