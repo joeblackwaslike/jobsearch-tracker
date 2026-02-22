@@ -347,12 +347,21 @@ export function FullApplicationForm({
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Location</Label>
-                  <CityCombobox
-                    value={watch("location") ?? ""}
-                    onChange={(v) => setValue("location", v)}
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Location</Label>
+                    <CityCombobox
+                      value={watch("location") ?? ""}
+                      onChange={(v) => setValue("location", v)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Source</Label>
+                    <SourceCombobox
+                      value={watch("source") ?? ""}
+                      onChange={(v) => setValue("source", v)}
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -404,14 +413,6 @@ export function FullApplicationForm({
                 <legend className="text-sm font-semibold text-muted-foreground">
                   Additional Information
                 </legend>
-
-                <div className="space-y-2">
-                  <Label>Source</Label>
-                  <SourceCombobox
-                    value={watch("source") ?? ""}
-                    onChange={(v) => setValue("source", v)}
-                  />
-                </div>
 
                 <div className="space-y-2">
                   <Label>Tags</Label>

@@ -1,3 +1,4 @@
+import { within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@/test/test-utils";
 import { FullApplicationForm } from "../full-application-form";
@@ -71,5 +72,19 @@ describe("modal overflow regression", () => {
     const scrollArea = document.querySelector('[data-slot="scroll-area"]');
     expect(scrollArea).toContainElement(screen.getByRole("button", { name: "Add Application" }));
     expect(scrollArea).toContainElement(screen.getByRole("button", { name: "Cancel" }));
+  });
+});
+
+describe("source field placement", () => {
+  it("renders Source inside the Job Details fieldset", () => {
+    render(<FullApplicationForm open={true} onOpenChange={vi.fn()} />);
+    const jobDetails = screen.getByText("Job Details").closest("fieldset")!;
+    expect(within(jobDetails).getByText("Source")).toBeInTheDocument();
+  });
+
+  it("does not render Source in the Additional Information fieldset", () => {
+    render(<FullApplicationForm open={true} onOpenChange={vi.fn()} />);
+    const additional = screen.getByText("Additional Information").closest("fieldset")!;
+    expect(within(additional).queryByText("Source")).not.toBeInTheDocument();
   });
 });
