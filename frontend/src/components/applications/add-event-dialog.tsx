@@ -1,16 +1,19 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { DurationCombobox } from "@/components/interviews/duration-combobox";
+import { InterviewerCombobox } from "@/components/interviews/interviewer-combobox";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -20,18 +23,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import type { Contact } from "@/lib/queries/contacts";
 import {
-  useCreateEvent,
-  useUpdateEvent,
-  type Event,
-} from "@/lib/queries/events";
-import {
-  useEventContacts,
   useAddInterviewer,
+  useEventContacts,
   useRemoveInterviewer,
 } from "@/lib/queries/event-contacts";
-import { type Contact } from "@/lib/queries/contacts";
-import { InterviewerCombobox } from "@/components/interviews/interviewer-combobox";
+import { type Event, useCreateEvent, useUpdateEvent } from "@/lib/queries/events";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -160,14 +158,12 @@ export function AddEventDialog({
   const removeInterviewer = useRemoveInterviewer();
 
   // For create mode: track interviewers locally until event is created
-  const [selectedInterviewers, setSelectedInterviewers] = useState<
-    Pick<Contact, "id" | "name">[]
-  >([]);
+  const [selectedInterviewers, setSelectedInterviewers] = useState<Pick<Contact, "id" | "name">[]>(
+    [],
+  );
 
   // For edit mode: load existing interviewers from the server
-  const { data: existingInterviewers } = useEventContacts(
-    event?.id ?? ""
-  );
+  const { data: existingInterviewers } = useEventContacts(event?.id ?? "");
 
   const {
     register,
@@ -177,7 +173,7 @@ export function AddEventDialog({
     watch,
     formState: { errors, isSubmitting },
   } = useForm<EventFormValues>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // biome-ignore lint/suspicious/noExplicitAny: type mismatch between zod versions
     resolver: zodResolver(eventFormSchema as any),
     defaultValues: {
       type: "",
@@ -249,8 +245,8 @@ export function AddEventDialog({
             addInterviewer.mutateAsync({
               eventId: newEvent.id,
               contactId: c.id,
-            })
-          )
+            }),
+          ),
         );
       }
     }
@@ -263,19 +259,16 @@ export function AddEventDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-hidden">
         <DialogHeader>
-          <DialogTitle>
-            {isCreate ? "Add Event" : "Edit Event"}
-          </DialogTitle>
+          <DialogTitle>{isCreate ? "Add Event" : "Edit Event"}</DialogTitle>
           <DialogDescription>
-            {isCreate
-              ? "Add a new event to this application timeline."
-              : "Update event details."}
+            {isCreate ? "Add a new event to this application timeline." : "Update event details."}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)}>
+          <ScrollArea className="max-h-[70vh] pr-4">
           <div className="space-y-4 py-4">
             {/* Type */}
             <div className="space-y-2">
@@ -295,11 +288,7 @@ export function AddEventDialog({
                   ))}
                 </SelectContent>
               </Select>
-              {errors.type && (
-                <p className="text-sm text-destructive">
-                  {errors.type.message}
-                </p>
-              )}
+              {errors.type && <p className="text-sm text-destructive">{errors.type.message}</p>}
             </div>
 
             {/* Status */}
@@ -336,41 +325,27 @@ export function AddEventDialog({
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="event-date">Date</Label>
-                <Input
-                  id="event-date"
-                  type="date"
-                  {...register("date")}
-                />
+                <Input id="event-date" type="date" {...register("date")} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="event-time">Time</Label>
-                <Input
-                  id="event-time"
-                  type="time"
-                  {...register("time")}
-                />
+                <Input id="event-time" type="time" {...register("time")} />
               </div>
             </div>
 
             {/* Duration */}
             <div className="space-y-2">
-              <Label htmlFor="event-duration">Duration (minutes)</Label>
-              <Input
-                id="event-duration"
-                type="number"
-                placeholder="e.g. 30"
-                {...register("duration_minutes", { valueAsNumber: true })}
+              <Label>Duration</Label>
+              <DurationCombobox
+                value={watch("duration_minutes")}
+                onChange={(v) => setValue("duration_minutes", v)}
               />
             </div>
 
             {/* URL */}
             <div className="space-y-2">
               <Label htmlFor="event-url">Meeting URL</Label>
-              <Input
-                id="event-url"
-                placeholder="https://..."
-                {...register("url")}
-              />
+              <Input id="event-url" placeholder="https://..." {...register("url")} />
             </div>
 
             {/* Description */}
@@ -409,21 +384,14 @@ export function AddEventDialog({
               </div>
             )}
           </div>
+          </ScrollArea>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting
-                ? "Saving..."
-                : isCreate
-                  ? "Add Event"
-                  : "Save Changes"}
+              {isSubmitting ? "Saving..." : isCreate ? "Add Event" : "Save Changes"}
             </Button>
           </DialogFooter>
         </form>

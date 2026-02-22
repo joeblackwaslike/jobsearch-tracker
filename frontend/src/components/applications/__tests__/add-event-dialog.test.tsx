@@ -107,3 +107,25 @@ describe("AddEventDialog", () => {
     expect(screen.queryByText("Interviewers")).not.toBeInTheDocument();
   });
 });
+
+describe("dialog scrollability", () => {
+  it("dialog content has a max-height constraint", () => {
+    render(<AddEventDialog {...defaultProps} mode="create" />);
+    const content = document.querySelector('[data-slot="dialog-content"]');
+    expect(content?.className).toMatch(/max-h-/);
+  });
+
+  it("scroll area exists with a max-height constraint", () => {
+    render(<AddEventDialog {...defaultProps} mode="create" />);
+    const scrollArea = document.querySelector('[data-slot="scroll-area"]');
+    expect(scrollArea).toBeInTheDocument();
+    expect(scrollArea?.className).toMatch(/max-h-/);
+  });
+
+  it("footer buttons are outside the scroll area", () => {
+    render(<AddEventDialog {...defaultProps} mode="create" />);
+    const scrollArea = document.querySelector('[data-slot="scroll-area"]');
+    const cancelBtn = screen.getByRole("button", { name: "Cancel" });
+    expect(scrollArea).not.toContainElement(cancelBtn);
+  });
+});
