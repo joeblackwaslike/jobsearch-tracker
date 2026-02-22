@@ -22,7 +22,7 @@ export function NavBar() {
       <div className="mx-auto flex h-14 max-w-7xl items-center px-4 md:px-6">
         {/* Left: Logo */}
         <Link to="/dashboard" className="mr-8 text-lg font-bold tracking-wider">
-          THRIVE
+          TRACKER
         </Link>
 
         {/* Center: Navigation links (desktop only) */}

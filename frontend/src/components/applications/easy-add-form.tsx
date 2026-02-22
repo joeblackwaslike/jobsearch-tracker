@@ -66,7 +66,7 @@ export function EasyAddForm({ open, onOpenChange, onSuccess, prefill }: EasyAddF
         position: prefill?.position ?? "",
         url: prefill?.url ?? "",
       });
-      const savedId = localStorage.getItem("thrive:default_resume_id");
+      const savedId = localStorage.getItem("tracker:default_resume_id");
       setSelectedResumeId(savedId ?? null);
     }
   }, [open, reset, prefill]);
@@ -94,9 +94,9 @@ export function EasyAddForm({ open, onOpenChange, onSuccess, prefill }: EasyAddF
         applicationId: newApp.id,
         documentId: selectedResumeId,
       });
-      localStorage.setItem("thrive:default_resume_id", selectedResumeId);
+      localStorage.setItem("tracker:default_resume_id", selectedResumeId);
     } else {
-      localStorage.removeItem("thrive:default_resume_id");
+      localStorage.removeItem("tracker:default_resume_id");
     }
 
     onSuccess?.();

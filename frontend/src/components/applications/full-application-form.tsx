@@ -212,9 +212,9 @@ export function FullApplicationForm({
         applicationId: newApp.id,
         documentId: selectedResumeId,
       });
-      localStorage.setItem("thrive:default_resume_id", selectedResumeId);
+      localStorage.setItem("tracker:default_resume_id", selectedResumeId);
     } else {
-      localStorage.removeItem("thrive:default_resume_id");
+      localStorage.removeItem("tracker:default_resume_id");
     }
 
     onSuccess?.();

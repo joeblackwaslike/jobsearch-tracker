@@ -143,10 +143,10 @@ describe("ApplicationForm", () => {
     });
 
     it("does not read from localStorage in edit mode", () => {
-      localStorage.setItem("thrive:default_resume_id", "doc-resume-1");
+      localStorage.setItem("tracker:default_resume_id", "doc-resume-1");
       render(<ApplicationForm open application={mockApplication} onOpenChange={vi.fn()} />);
       expect(screen.queryByTestId("selected-resume")).not.toBeInTheDocument();
-      localStorage.removeItem("thrive:default_resume_id");
+      localStorage.removeItem("tracker:default_resume_id");
     });
   });
 });

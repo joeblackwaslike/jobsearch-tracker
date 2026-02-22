@@ -52,7 +52,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <script
           // biome-ignore lint/security/noDangerouslySetInnerHtml: theme script MUST run sync before render
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('thrive-theme');if(t==='light')document.documentElement.classList.remove('dark');else document.documentElement.classList.add('dark')}catch(e){}})()`,
+            __html: `(function(){try{var t=localStorage.getItem('tracker-theme');if(t==='light')document.documentElement.classList.remove('dark');else document.documentElement.classList.add('dark')}catch(e){}})()`,
           }}
         />
       </head>
