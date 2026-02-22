@@ -198,3 +198,26 @@ describe("modal overflow regression", () => {
     expect(scrollArea).toContainElement(screen.getByRole("button", { name: "Cancel" }));
   });
 });
+
+describe("founded year conversion", () => {
+  it("displays only the year portion of the founded date in the input", () => {
+    render(
+      <CompanyForm open={true} onOpenChange={noop} mode="edit" company={mockCompany as never} />,
+    );
+    // founded is "2015-01-01" in DB; input should show just "2015"
+    expect(screen.getByLabelText("Founded (year)")).toHaveValue(2015);
+  });
+
+  it("calls updateMutateAsync with founded as a full ISO date string", async () => {
+    const user = userEvent.setup();
+    render(
+      <CompanyForm open={true} onOpenChange={noop} mode="edit" company={mockCompany as never} />,
+    );
+    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await waitFor(() => {
+      expect(updateMutateAsync).toHaveBeenCalledWith(
+        expect.objectContaining({ founded: "2015-01-01" }),
+      );
+    });
+  });
+});
