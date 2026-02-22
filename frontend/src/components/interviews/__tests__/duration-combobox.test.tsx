@@ -68,4 +68,28 @@ describe("DurationCombobox", () => {
     fireEvent.click(screen.getByText(/use 77 min/i));
     expect(onChange).toHaveBeenCalledWith(77);
   });
+
+  it("pressing Enter when input matches a preset: last onChange call is the preset value", async () => {
+    const onChange = vi.fn();
+    const { default: userEvent } = await import("@testing-library/user-event");
+    const user = userEvent.setup();
+    render(<DurationCombobox value={undefined} onChange={onChange} />);
+    await user.click(screen.getByRole("combobox", { name: "Duration" }));
+    const input = screen.getByPlaceholderText(/minutes/i);
+    await user.type(input, "30");
+    await user.keyboard("{Enter}");
+    expect(onChange).toHaveBeenLastCalledWith(30);
+  });
+
+  it("pressing Enter with a valid custom number: last onChange call is that number", async () => {
+    const onChange = vi.fn();
+    const { default: userEvent } = await import("@testing-library/user-event");
+    const user = userEvent.setup();
+    render(<DurationCombobox value={undefined} onChange={onChange} />);
+    await user.click(screen.getByRole("combobox", { name: "Duration" }));
+    const input = screen.getByPlaceholderText(/minutes/i);
+    await user.type(input, "77");
+    await user.keyboard("{Enter}");
+    expect(onChange).toHaveBeenLastCalledWith(77);
+  });
 });

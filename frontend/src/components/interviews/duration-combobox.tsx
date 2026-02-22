@@ -46,6 +46,16 @@ export function DurationCombobox({ value, onChange }: DurationComboboxProps) {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key !== "Enter") return;
+    const parsed = parseInt(input, 10);
+    if (Number.isNaN(parsed) || parsed <= 0) return;
+    e.preventDefault();
+    onChange(parsed);
+    setInput("");
+    setOpen(false);
+  };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -67,6 +77,7 @@ export function DurationCombobox({ value, onChange }: DurationComboboxProps) {
           <CommandInput
             placeholder="Minutes (e.g. 45) or pick below..."
             value={input}
+            onKeyDown={handleKeyDown}
             onValueChange={(val) => {
               setInput(val);
               const parsed = parseInt(val, 10);
