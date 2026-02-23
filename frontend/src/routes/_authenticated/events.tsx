@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { CalendarIcon, PlusIcon, SearchIcon } from "lucide-react";
 import { useState } from "react";
-import { EventList } from "@/components/interviews/interview-list";
+import { EventList } from "@/components/events/event-list";
 import { ScheduleDialog } from "@/components/events/schedule-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/events")({
 // ---------------------------------------------------------------------------
 
 function EventsPage() {
-  const { tab } = useSearch({ from: "/_authenticated/interviews" });
+  const { tab } = useSearch({ from: "/_authenticated/events" });
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [scheduleOpen, setScheduleOpen] = useState(false);

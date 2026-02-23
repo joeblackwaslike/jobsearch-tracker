@@ -60,8 +60,8 @@ function formatDateTime(isoString: string | null): string {
 // Props
 // ---------------------------------------------------------------------------
 
-interface InterviewListProps {
-  interviews: EventWithApplication[];
+interface EventListProps {
+  events: EventWithApplication[];
   search: string;
   hideArchived?: boolean;
 }
@@ -70,27 +70,27 @@ interface InterviewListProps {
 // Component
 // ---------------------------------------------------------------------------
 
-export function InterviewList({ interviews, search, hideArchived = true }: InterviewListProps) {
+export function EventList({ events, search, hideArchived = true }: EventListProps) {
   const navigate = useNavigate();
   const deleteEvent = useDeleteEvent();
 
   const [editingEvent, setEditingEvent] = useState<EventWithApplication | null>(null);
 
   // Client-side search + archived filtering
-  const filtered = interviews.filter((interview) => {
-    if (hideArchived && interview.application?.status === "archived") return false;
+  const filtered = events.filter((event) => {
+    if (hideArchived && event.application?.status === "archived") return false;
     if (!search) return true;
     const term = search.toLowerCase();
-    const companyName = interview.application?.company?.name?.toLowerCase() ?? "";
-    const position = interview.application?.position?.toLowerCase() ?? "";
-    const title = interview.title?.toLowerCase() ?? "";
+    const companyName = event.application?.company?.name?.toLowerCase() ?? "";
+    const position = event.application?.position?.toLowerCase() ?? "";
+    const title = event.title?.toLowerCase() ?? "";
     return companyName.includes(term) || position.includes(term) || title.includes(term);
   });
 
   if (filtered.length === 0) {
     return (
       <p className="text-muted-foreground py-8 text-center text-sm">
-        {search ? "No interviews match your search." : "No interviews found."}
+        {search ? "No events match your search." : "No events found."}
       </p>
     );
   }
@@ -98,17 +98,17 @@ export function InterviewList({ interviews, search, hideArchived = true }: Inter
   return (
     <>
       {hideArchived && (
-        <p className="text-xs text-muted-foreground">Showing active interviews only.</p>
+        <p className="text-xs text-muted-foreground">Showing active events only.</p>
       )}
       <div className="space-y-3">
-        {filtered.map((interview) => (
+        {filtered.map((event) => (
           <Card
-            key={interview.id}
+            key={event.id}
             className="w-full cursor-pointer py-4 transition-colors hover:bg-muted/50"
             onClick={() =>
               navigate({
                 to: "/applications/$applicationId",
-                params: { applicationId: interview.application_id },
+                params: { applicationId: event.application_id },
               })
             }
           >
@@ -117,25 +117,25 @@ export function InterviewList({ interviews, search, hideArchived = true }: Inter
               <div className="flex min-w-0 flex-1 flex-col gap-1">
                 <div className="flex items-center gap-2">
                   <span className="truncate font-semibold">
-                    {interview.application?.company?.name ?? "Unknown Company"}
+                    {event.application?.company?.name ?? "Unknown Company"}
                   </span>
                   <span className="text-muted-foreground truncate text-sm">
-                    {interview.application?.position ?? "Unknown Position"}
+                    {event.application?.position ?? "Unknown Position"}
                   </span>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="outline">{TYPE_LABELS[interview.type] ?? interview.type}</Badge>
-                  <Badge variant="secondary" className={STATUS_COLORS[interview.status] ?? ""}>
-                    {STATUS_LABELS[interview.status] ?? interview.status}
+                  <Badge variant="outline">{TYPE_LABELS[event.type] ?? event.type}</Badge>
+                  <Badge variant="secondary" className={STATUS_COLORS[event.status] ?? ""}>
+                    {STATUS_LABELS[event.status] ?? event.status}
                   </Badge>
                   <span className="text-muted-foreground flex items-center gap-1 text-xs">
                     <CalendarIcon className="size-3" />
-                    {formatDateTime(interview.scheduled_at)}
+                    {formatDateTime(event.scheduled_at)}
                   </span>
-                  {interview.duration_minutes && (
+                  {event.duration_minutes && (
                     <span className="text-muted-foreground flex items-center gap-1 text-xs">
                       <ClockIcon className="size-3" />
-                      {interview.duration_minutes} min
+                      {event.duration_minutes} min
                     </span>
                   )}
                 </div>
@@ -149,10 +149,10 @@ export function InterviewList({ interviews, search, hideArchived = true }: Inter
                 onClick={(e) => e.stopPropagation()}
                 onKeyDown={(e) => e.stopPropagation()}
               >
-                {interview.url && (
+                {event.url && (
                   <Button variant="ghost" size="icon" className="size-8" asChild>
                     <a
-                      href={interview.url}
+                      href={event.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       title="Open meeting link"
@@ -165,8 +165,8 @@ export function InterviewList({ interviews, search, hideArchived = true }: Inter
                   variant="ghost"
                   size="icon"
                   className="size-8"
-                  onClick={() => setEditingEvent(interview)}
-                  title="Edit interview"
+                  onClick={() => setEditingEvent(event)}
+                  title="Edit event"
                 >
                   <PencilIcon className="size-4" />
                 </Button>
@@ -176,11 +176,11 @@ export function InterviewList({ interviews, search, hideArchived = true }: Inter
                   className="size-8 text-destructive hover:text-destructive"
                   onClick={() =>
                     deleteEvent.mutate({
-                      id: interview.id,
-                      applicationId: interview.application_id,
+                      id: event.id,
+                      applicationId: event.application_id,
                     })
                   }
-                  title="Delete interview"
+                  title="Delete event"
                 >
                   <Trash2Icon className="size-4" />
                 </Button>

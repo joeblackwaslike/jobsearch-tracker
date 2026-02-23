@@ -99,11 +99,11 @@ interface ScheduleDialogProps {
 
 export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialogProps) {
   const createEvent = useCreateEvent();
-  const addInterviewer = useAddEventContact();
+  const addContact = useAddEventContact();
   const [appSearch, setAppSearch] = useState("");
   const [comboboxOpen, setComboboxOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [selectedInterviewers, setSelectedInterviewers] = useState<Pick<Contact, "id" | "name">[]>(
+  const [selectedContacts, setSelectedContacts] = useState<Pick<Contact, "id" | "name">[]>(
     [],
   );
 
@@ -162,12 +162,12 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
     }
   }, [watchedDate, watchedTime, setValue, watch]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleAddInterviewer = (contact: Pick<Contact, "id" | "name">) => {
-    setSelectedInterviewers((prev) => [...prev, contact]);
+  const handleAddContact = (contact: Pick<Contact, "id" | "name">) => {
+    setSelectedContacts((prev) => [...prev, contact]);
   };
 
-  const handleRemoveInterviewer = (contactId: string) => {
-    setSelectedInterviewers((prev) => prev.filter((c) => c.id !== contactId));
+  const handleRemoveContact = (contactId: string) => {
+    setSelectedContacts((prev) => prev.filter((c) => c.id !== contactId));
   };
 
   const onSubmit = async (values: ScheduleFormValues) => {
@@ -195,10 +195,10 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
     });
 
     // Link selected contacts to the newly created event
-    if (selectedInterviewers.length > 0 && newEvent?.id) {
+    if (selectedContacts.length > 0 && newEvent?.id) {
       await Promise.all(
-        selectedInterviewers.map((c) =>
-          addInterviewer.mutateAsync({
+        selectedContacts.map((c) =>
+          addContact.mutateAsync({
             eventId: newEvent.id,
             contactId: c.id,
           }),
@@ -207,7 +207,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
     }
 
     reset();
-    setSelectedInterviewers([]);
+    setSelectedContacts([]);
     setSelectedDate(undefined);
     onSuccess?.();
     onOpenChange(false);
@@ -216,7 +216,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
       reset();
-      setSelectedInterviewers([]);
+      setSelectedContacts([]);
       setSelectedDate(undefined);
     }
     onOpenChange(newOpen);
@@ -427,16 +427,16 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
               />
             </div>
 
-            {/* Interviewers */}
+            {/* Contacts */}
             {companyId && (
               <div className="space-y-2">
-                <Label>Interviewers</Label>
+                <Label>Contacts</Label>
                 <ContactCombobox
                   companyId={companyId}
-                  selectedContactIds={selectedInterviewers.map((c) => c.id)}
-                  selectedContacts={selectedInterviewers}
-                  onAdd={handleAddInterviewer}
-                  onRemove={handleRemoveInterviewer}
+                  selectedContactIds={selectedContacts.map((c) => c.id)}
+                  selectedContacts={selectedContacts}
+                  onAdd={handleAddContact}
+                  onRemove={handleRemoveContact}
                 />
               </div>
             )}

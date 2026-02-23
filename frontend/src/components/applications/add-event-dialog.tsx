@@ -154,8 +154,8 @@ export function AddEventDialog({
 }: AddEventDialogProps) {
   const createEvent = useCreateEvent();
   const updateEvent = useUpdateEvent();
-  const addInterviewer = useAddEventContact();
-  const removeInterviewer = useRemoveEventContact();
+  const addContact = useAddEventContact();
+  const removeContact = useRemoveEventContact();
 
   // For create mode: track contacts locally until event is created
   const [selectedContacts, setSelectedContacts] = useState<Pick<Contact, "id" | "name">[]>(
@@ -209,7 +209,7 @@ export function AddEventDialog({
 
   const handleAddContact = (contact: Pick<Contact, "id" | "name">) => {
     if (mode === "edit" && event) {
-      addInterviewer.mutateAsync({ eventId: event.id, contactId: contact.id });
+      addContact.mutateAsync({ eventId: event.id, contactId: contact.id });
     } else {
       setSelectedContacts((prev) => [...prev, contact]);
     }
@@ -217,7 +217,7 @@ export function AddEventDialog({
 
   const handleRemoveContact = (contactId: string) => {
     if (mode === "edit" && event) {
-      removeInterviewer.mutateAsync({ eventId: event.id, contactId });
+      removeContact.mutateAsync({ eventId: event.id, contactId });
     } else {
       setSelectedContacts((prev) => prev.filter((c) => c.id !== contactId));
     }
@@ -242,7 +242,7 @@ export function AddEventDialog({
       if (selectedContacts.length > 0 && newEvent?.id) {
         await Promise.all(
           selectedContacts.map((c) =>
-            addInterviewer.mutateAsync({
+            addContact.mutateAsync({
               eventId: newEvent.id,
               contactId: c.id,
             }),
