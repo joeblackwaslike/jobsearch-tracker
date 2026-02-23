@@ -8,6 +8,7 @@ import {
   type ApplicationFiltersState,
 } from "@/components/applications/application-filters";
 import { ApplicationForm } from "@/components/applications/application-form";
+import { ApplicationStats } from "@/components/applications/application-stats";
 import { ApplicationTable } from "@/components/applications/application-table";
 import { EasyAddForm } from "@/components/applications/easy-add-form";
 import { FullApplicationForm } from "@/components/applications/full-application-form";
@@ -252,6 +253,9 @@ function ApplicationsPage() {
           </Button>
         </div>
       </div>
+
+      {/* Application Stats */}
+      <ApplicationStats />
 
       {/* Filters */}
       <ApplicationFilters
