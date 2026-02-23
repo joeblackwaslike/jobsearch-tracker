@@ -65,7 +65,7 @@ function formatSalary(salary: unknown): string {
 
   if (min && max) return `${fmt(min)} - ${fmt(max)}${suffix}`;
   if (min) return `${fmt(min)}+${suffix}`;
-  return `up to ${fmt(max!)}${suffix}`;
+  return `up to ${fmt(max as number)}${suffix}`;
 }
 
 function formatRelativeTime(dateString: string): string {
@@ -300,6 +300,7 @@ export function ApplicationTable({
         return col;
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // biome-ignore lint/correctness/useExhaustiveDependencies: handleSort is stable
     [sorting, handleSort, onEdit],
   );
 
@@ -324,7 +325,7 @@ export function ApplicationTable({
   });
 
   return (
-    <div className="overflow-x-auto rounded-md border">
+    <div className="overflow-x-auto rounded-md border w-full">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (

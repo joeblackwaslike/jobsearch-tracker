@@ -104,7 +104,7 @@ export function InterviewList({ interviews, search, hideArchived = true }: Inter
         {filtered.map((interview) => (
           <Card
             key={interview.id}
-            className="cursor-pointer py-4 transition-colors hover:bg-muted/50"
+            className="w-full cursor-pointer py-4 transition-colors hover:bg-muted/50"
             onClick={() =>
               navigate({
                 to: "/applications/$applicationId",

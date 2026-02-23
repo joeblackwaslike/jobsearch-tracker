@@ -21,7 +21,7 @@ export function CompanyTable({ data, onEdit }: CompanyTableProps) {
   const archiveCompany = useArchiveCompany();
 
   return (
-    <div className="overflow-x-auto rounded-md border">
+    <div className="overflow-x-auto rounded-md border w-full">
       <Table>
         <TableHeader>
           <TableRow>
