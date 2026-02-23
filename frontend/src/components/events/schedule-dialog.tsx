@@ -144,7 +144,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
 
   const selectedType = watch("type");
   const titlePlaceholder =
-    EVENT_TYPE_OPTIONS.find((o) => o.value === selectedType)?.label ?? "Interview";
+    EVENT_TYPE_OPTIONS.find((o) => o.value === selectedType)?.label ?? "Event";
 
   const watchedDate = watch("date");
   const watchedTime = watch("time");
@@ -228,7 +228,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
         <DialogHeader>
           <DialogTitle>Add Event</DialogTitle>
           <DialogDescription>
-            Schedule a new interview for an existing application.
+            Schedule a new event for an existing application.
           </DialogDescription>
         </DialogHeader>
 
@@ -302,7 +302,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
                 onValueChange={(v) => setValue("type", v, { shouldValidate: true })}
               >
                 <SelectTrigger className="w-full" aria-label="Type">
-                  <SelectValue placeholder="Select interview type" />
+                  <SelectValue placeholder="Select event type" />
                 </SelectTrigger>
                 <SelectContent>
                   {EVENT_TYPE_OPTIONS.map((opt) => (
@@ -411,7 +411,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
               <Label htmlFor="schedule-description">Description</Label>
               <Input
                 id="schedule-description"
-                placeholder="Description of interview"
+                placeholder="Description of event"
                 {...register("description")}
               />
             </div>
@@ -422,7 +422,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
               <textarea
                 id="schedule-notes"
                 className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                placeholder="Notes about this interview..."
+                placeholder="Notes about this event..."
                 {...register("notes")}
               />
             </div>

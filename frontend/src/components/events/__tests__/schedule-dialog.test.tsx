@@ -71,7 +71,7 @@ describe("ScheduleDialog", () => {
 
     expect(screen.getByRole("heading", { name: "Add Event" })).toBeInTheDocument();
     expect(
-      screen.getByText("Schedule a new interview for an existing application."),
+      screen.getByText("Schedule a new event for an existing application."),
     ).toBeInTheDocument();
 
     const expectedLabels = [
@@ -171,12 +171,12 @@ describe("ScheduleDialog", () => {
 });
 
 describe("title placeholder", () => {
-  it("updates placeholder when interview type changes", async () => {
+  it("updates placeholder when event type changes", async () => {
     const { default: userEvent } = await import("@testing-library/user-event");
     const user = userEvent.setup();
     render(<ScheduleDialog open onOpenChange={vi.fn()} />);
 
-    // Change type to Technical Interview via keyboard
+    // Change type to Technical Interview via keyboard (this is the event type name)
     const typeTrigger = screen.getByRole("combobox", { name: /type/i });
     typeTrigger.focus();
     await user.keyboard("{Enter}"); // Open
