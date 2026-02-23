@@ -1,15 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
 import { Check, ChevronsUpDown, Loader2, Plus, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useCallback, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -18,6 +10,9 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -25,17 +20,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  useSearchContacts,
-  useCreateContact,
-  type Contact,
-} from "@/lib/queries/contacts";
+import { type Contact, useCreateContact, useSearchContacts } from "@/lib/queries/contacts";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-interface InterviewerComboboxProps {
+interface ContactComboboxProps {
   companyId: string;
   selectedContactIds: string[];
   selectedContacts?: Pick<Contact, "id" | "name">[];
@@ -55,13 +46,13 @@ const CONTACT_METHOD_OPTIONS: { value: ContactMethod; label: string; placeholder
 // Component
 // ---------------------------------------------------------------------------
 
-export function InterviewerCombobox({
+export function ContactCombobox({
   companyId,
   selectedContactIds,
   selectedContacts = [],
   onAdd,
   onRemove,
-}: InterviewerComboboxProps) {
+}: ContactComboboxProps) {
   const [open, setOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [debouncedTerm, setDebouncedTerm] = useState("");
@@ -80,13 +71,10 @@ export function InterviewerCombobox({
   const createContact = useCreateContact();
 
   // Filter out already-selected contacts
-  const availableContacts = contacts?.filter(
-    (c) => !selectedContactIds.includes(c.id)
-  ) ?? [];
+  const availableContacts = contacts?.filter((c) => !selectedContactIds.includes(c.id)) ?? [];
 
-  const hasExactMatch = contacts?.some(
-    (c) => c.name.toLowerCase() === searchText.toLowerCase()
-  ) ?? false;
+  const hasExactMatch =
+    contacts?.some((c) => c.name.toLowerCase() === searchText.toLowerCase()) ?? false;
 
   const handleSelect = useCallback(
     (contact: Pick<Contact, "id" | "name">) => {
@@ -94,7 +82,7 @@ export function InterviewerCombobox({
       setSearchText("");
       setOpen(false);
     },
-    [onAdd]
+    [onAdd],
   );
 
   const handleStartCreate = useCallback(() => {
@@ -119,7 +107,9 @@ export function InterviewerCombobox({
       input[contactMethod] = contactValue;
     }
 
-    const result = await createContact.mutateAsync(input as any);
+    const result = await createContact.mutateAsync(
+      input as unknown as Parameters<typeof createContact.mutateAsync>[0],
+    );
     handleSelect({ id: result.id, name: result.name });
     setCreating(false);
   }, [newName, newTitle, companyId, contactMethod, contactValue, createContact, handleSelect]);
@@ -130,7 +120,7 @@ export function InterviewerCombobox({
 
   return (
     <div className="space-y-2">
-      {/* Selected interviewers as chips */}
+      {/* Selected contacts as chips */}
       {selectedContacts.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {selectedContacts.map((contact) => (
@@ -160,7 +150,7 @@ export function InterviewerCombobox({
             aria-expanded={open}
             className="w-full justify-between font-normal"
           >
-            Search interviewers...
+            Search contacts...
             <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -283,12 +273,7 @@ export function InterviewerCombobox({
             >
               {createContact.isPending ? "Creating..." : "Add Contact"}
             </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={handleCancelCreate}
-            >
+            <Button type="button" size="sm" variant="outline" onClick={handleCancelCreate}>
               Cancel
             </Button>
           </div>

@@ -3,7 +3,7 @@ import { CalendarIcon, ListIcon, PlusIcon, ZapIcon } from "lucide-react";
 import { useState } from "react";
 import { EasyAddForm } from "@/components/applications/easy-add-form";
 import { FullApplicationForm } from "@/components/applications/full-application-form";
-import { ScheduleDialog } from "@/components/interviews/schedule-dialog";
+import { ScheduleDialog } from "@/components/events/schedule-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -39,7 +39,7 @@ export function QuickActions() {
             onClick={() => setScheduleDialogOpen(true)}
           >
             <CalendarIcon className="mr-2 size-4" />
-            Schedule Interview
+            Add Event
           </Button>
           <Button
             variant="outline"

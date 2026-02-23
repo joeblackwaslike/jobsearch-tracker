@@ -65,11 +65,11 @@ export function useEvents(applicationId: string) {
   return useQuery(eventsQueryOptions(applicationId));
 }
 
-export function useUpcomingInterviews() {
+export function useUpcomingEvents() {
   const supabase = createClient();
 
   return useQuery({
-    queryKey: ["interviews", "upcoming"],
+    queryKey: ["events", "upcoming"],
     queryFn: async () => {
       const now = new Date().toISOString();
       const { data, error } = await supabase
@@ -84,11 +84,11 @@ export function useUpcomingInterviews() {
   });
 }
 
-export function usePastInterviews() {
+export function usePastEvents() {
   const supabase = createClient();
 
   return useQuery({
-    queryKey: ["interviews", "past"],
+    queryKey: ["events", "past"],
     queryFn: async () => {
       const now = new Date().toISOString();
       const { data, error } = await supabase
@@ -163,18 +163,18 @@ export function useCreateEvent() {
       return data as Event;
     },
     onSuccess: () => {
-      toast.success("Interview scheduled.");
+      toast.success("Event scheduled.");
     },
     onError: () => {
-      toast.error("Failed to schedule interview.");
+      toast.error("Failed to schedule event.");
     },
     onSettled: (_data, _error, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["events", { applicationId: variables?.application_id }],
       });
       queryClient.invalidateQueries({ queryKey: ["applications"] });
-      queryClient.invalidateQueries({ queryKey: ["interviews", "upcoming"] });
-      queryClient.invalidateQueries({ queryKey: ["interviews", "past"] });
+      queryClient.invalidateQueries({ queryKey: ["events", "upcoming"] });
+      queryClient.invalidateQueries({ queryKey: ["events", "past"] });
     },
   });
 }
@@ -205,10 +205,10 @@ export function useUpdateEvent() {
       return data as Event;
     },
     onSuccess: () => {
-      toast.success("Interview updated.");
+      toast.success("Event updated.");
     },
     onError: () => {
-      toast.error("Failed to update interview.");
+      toast.error("Failed to update event.");
     },
     onSettled: (_data, _error, variables) => {
       if (variables?.applicationId) {
@@ -217,8 +217,8 @@ export function useUpdateEvent() {
         });
       }
       queryClient.invalidateQueries({ queryKey: ["applications"] });
-      queryClient.invalidateQueries({ queryKey: ["interviews", "upcoming"] });
-      queryClient.invalidateQueries({ queryKey: ["interviews", "past"] });
+      queryClient.invalidateQueries({ queryKey: ["events", "upcoming"] });
+      queryClient.invalidateQueries({ queryKey: ["events", "past"] });
     },
   });
 }
@@ -239,10 +239,10 @@ export function useDeleteEvent() {
       return { id, applicationId };
     },
     onSuccess: () => {
-      toast.success("Interview deleted.");
+      toast.success("Event deleted.");
     },
     onError: () => {
-      toast.error("Failed to delete interview.");
+      toast.error("Failed to delete event.");
     },
     onSettled: (_data, _error, variables) => {
       if (variables?.applicationId) {
@@ -251,8 +251,8 @@ export function useDeleteEvent() {
         });
       }
       queryClient.invalidateQueries({ queryKey: ["applications"] });
-      queryClient.invalidateQueries({ queryKey: ["interviews", "upcoming"] });
-      queryClient.invalidateQueries({ queryKey: ["interviews", "past"] });
+      queryClient.invalidateQueries({ queryKey: ["events", "upcoming"] });
+      queryClient.invalidateQueries({ queryKey: ["events", "past"] });
     },
   });
 }

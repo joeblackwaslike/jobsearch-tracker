@@ -10,8 +10,8 @@ vi.mock("@/lib/queries/events", () => ({
 
 vi.mock("@/lib/queries/event-contacts", () => ({
   useEventContacts: () => ({ data: [] }),
-  useAddInterviewer: () => ({ mutateAsync: vi.fn() }),
-  useRemoveInterviewer: () => ({ mutateAsync: vi.fn() }),
+  useAddEventContact: () => ({ mutateAsync: vi.fn() }),
+  useRemoveEventContact: () => ({ mutateAsync: vi.fn() }),
 }));
 
 vi.mock("@/lib/queries/contacts", () => ({

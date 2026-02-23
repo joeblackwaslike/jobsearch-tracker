@@ -16,8 +16,8 @@ vi.mock("@/lib/queries/events", () => ({
 
 vi.mock("@/lib/queries/event-contacts", () => ({
   useEventContacts: () => ({ data: [] }),
-  useAddInterviewer: () => ({ mutateAsync: vi.fn() }),
-  useRemoveInterviewer: () => ({ mutateAsync: vi.fn() }),
+  useAddEventContact: () => ({ mutateAsync: vi.fn() }),
+  useRemoveEventContact: () => ({ mutateAsync: vi.fn() }),
 }));
 
 vi.mock("@/lib/queries/contacts", () => ({
@@ -95,16 +95,16 @@ describe("AddEventDialog", () => {
     expect(screen.getByLabelText("Title")).toHaveValue("System design round");
   });
 
-  it("shows Interviewers section only when companyId provided", () => {
+  it("shows Contacts section only when companyId provided", () => {
     const { unmount } = render(<AddEventDialog {...defaultProps} mode="create" companyId="c1" />);
 
-    expect(screen.getByText("Interviewers")).toBeInTheDocument();
+    expect(screen.getByText("Contacts")).toBeInTheDocument();
 
     unmount();
 
     render(<AddEventDialog {...defaultProps} mode="create" />);
 
-    expect(screen.queryByText("Interviewers")).not.toBeInTheDocument();
+    expect(screen.queryByText("Contacts")).not.toBeInTheDocument();
   });
 });
 

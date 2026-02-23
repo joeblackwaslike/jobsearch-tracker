@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@/test/test-utils";
 import { ApplicationDetail } from "../application-detail";
 
@@ -7,6 +7,7 @@ import { ApplicationDetail } from "../application-detail";
 // ---------------------------------------------------------------------------
 
 vi.mock("@tanstack/react-router", () => ({
+  // biome-ignore lint/suspicious/noExplicitAny: mock component
   Link: ({ children, to, ...props }: any) => (
     <a href={to} {...props}>
       {children}
@@ -45,8 +46,8 @@ vi.mock("@/lib/queries/documents", () => ({
 
 vi.mock("@/lib/queries/event-contacts", () => ({
   useEventContacts: () => ({ data: [] }),
-  useAddInterviewer: () => ({ mutateAsync: vi.fn() }),
-  useRemoveInterviewer: () => ({ mutateAsync: vi.fn() }),
+  useAddEventContact: () => ({ mutateAsync: vi.fn() }),
+  useRemoveEventContact: () => ({ mutateAsync: vi.fn() }),
 }));
 
 vi.mock("@/lib/queries/contacts", () => ({
@@ -112,6 +113,7 @@ const mockApplication = {
     created_at: "2025-01-01T00:00:00Z",
     updated_at: "2025-01-01T00:00:00Z",
   },
+  // biome-ignore lint/suspicious/noExplicitAny: mock data
 } as any;
 
 // ---------------------------------------------------------------------------
@@ -125,7 +127,7 @@ describe("ApplicationDetail", () => {
     const appLink = screen.getByRole("link", { name: "Applications" });
     expect(appLink).toBeVisible();
 
-    const nav = appLink.closest("nav")!;
+    const nav = appLink.closest("nav") as HTMLElement;
     expect(nav).toHaveTextContent("Acme Corp");
     expect(nav).toHaveTextContent("Senior Engineer");
   });
@@ -136,14 +138,14 @@ describe("ApplicationDetail", () => {
     const heading = screen.getByRole("heading", { level: 1 });
     expect(heading).toHaveTextContent("Acme Corp");
 
-    const position = heading.nextElementSibling!;
+    const position = heading.nextElementSibling as HTMLElement;
     expect(position.tagName).toBe("P");
     expect(position).toHaveTextContent("Senior Engineer");
 
     const badges = screen.getAllByText("Applied");
     const statusBadge = badges.find(
       (el) => el.getAttribute("data-slot") === "badge",
-    )!;
+    ) as HTMLElement;
     expect(statusBadge).toBeVisible();
 
     expect(screen.getByText(/High\s+interest/)).toBeVisible();
@@ -152,12 +154,8 @@ describe("ApplicationDetail", () => {
   it("renders action buttons", () => {
     render(<ApplicationDetail application={mockApplication} />);
 
-    expect(
-      screen.getByRole("button", { name: /Edit Application/i }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("button", { name: /Edit Company/i }),
-    ).toBeVisible();
+    expect(screen.getByRole("button", { name: /Edit Application/i })).toBeVisible();
+    expect(screen.getByRole("button", { name: /Edit Company/i })).toBeVisible();
   });
 
   it("renders Details card with application fields", () => {
@@ -173,11 +171,7 @@ describe("ApplicationDetail", () => {
   it("renders Timeline section with Add Event button", () => {
     render(<ApplicationDetail application={mockApplication} />);
 
-    expect(
-      screen.getByRole("heading", { level: 2, name: "Timeline" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("button", { name: /Add Event/i }),
-    ).toBeVisible();
+    expect(screen.getByRole("heading", { level: 2, name: "Timeline" })).toBeVisible();
+    expect(screen.getByRole("button", { name: /Add Event/i })).toBeVisible();
   });
 });

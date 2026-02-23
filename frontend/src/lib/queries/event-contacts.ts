@@ -46,7 +46,7 @@ export function useEventContacts(eventId: string) {
 // Hooks — mutations
 // ---------------------------------------------------------------------------
 
-export function useAddInterviewer() {
+export function useAddEventContact() {
   const supabase = createClient();
   const queryClient = useQueryClient();
 
@@ -70,7 +70,7 @@ export function useAddInterviewer() {
   });
 }
 
-export function useRemoveInterviewer() {
+export function useRemoveEventContact() {
   const supabase = createClient();
   const queryClient = useQueryClient();
 

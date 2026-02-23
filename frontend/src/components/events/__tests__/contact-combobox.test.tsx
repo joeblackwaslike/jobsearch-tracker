@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@/test/test-utils";
-import { InterviewerCombobox } from "../interviewer-combobox";
+import { ContactCombobox } from "../contact-combobox";
 
 // Mock the contacts query
 vi.mock("@/lib/queries/contacts", () => ({
@@ -11,17 +11,11 @@ vi.mock("@/lib/queries/contacts", () => ({
   })),
 }));
 
-describe("InterviewerCombobox", () => {
+describe("ContactCombobox", () => {
   it("renders the trigger button", () => {
-    render(
-      <InterviewerCombobox
-        companyId="company-1"
-        selectedContactIds={[]}
-        onAdd={vi.fn()}
-      />
-    );
+    render(<ContactCombobox companyId="company-1" selectedContactIds={[]} onAdd={vi.fn()} />);
     expect(screen.getByRole("combobox")).toBeInTheDocument();
-    expect(screen.getByText("Search interviewers...")).toBeInTheDocument();
+    expect(screen.getByText("Search contacts...")).toBeInTheDocument();
   });
 
   it("shows selected contacts as chips", () => {
@@ -30,13 +24,13 @@ describe("InterviewerCombobox", () => {
       { id: "c2", name: "Bob Jones" },
     ];
     render(
-      <InterviewerCombobox
+      <ContactCombobox
         companyId="company-1"
         selectedContactIds={["c1", "c2"]}
         selectedContacts={selectedContacts}
         onAdd={vi.fn()}
         onRemove={vi.fn()}
-      />
+      />,
     );
     expect(screen.getByText("Alice Smith")).toBeInTheDocument();
     expect(screen.getByText("Bob Jones")).toBeInTheDocument();
@@ -49,13 +43,13 @@ describe("InterviewerCombobox", () => {
     const selectedContacts = [{ id: "c1", name: "Alice Smith" }];
 
     render(
-      <InterviewerCombobox
+      <ContactCombobox
         companyId="company-1"
         selectedContactIds={["c1"]}
         selectedContacts={selectedContacts}
         onAdd={vi.fn()}
         onRemove={onRemove}
-      />
+      />,
     );
 
     const removeButton = screen.getByLabelText("Remove Alice Smith");

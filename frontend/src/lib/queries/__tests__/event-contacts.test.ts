@@ -7,15 +7,15 @@ describe("event-contacts query layer", () => {
     expect(typeof mod.useEventContacts).toBe("function");
   });
 
-  it("exports useAddInterviewer hook", async () => {
+  it("exports useAddEventContact hook", async () => {
     const mod = await import("../event-contacts");
-    expect(mod.useAddInterviewer).toBeDefined();
-    expect(typeof mod.useAddInterviewer).toBe("function");
+    expect(mod.useAddEventContact).toBeDefined();
+    expect(typeof mod.useAddEventContact).toBe("function");
   });
 
-  it("exports useRemoveInterviewer hook", async () => {
+  it("exports useRemoveEventContact hook", async () => {
     const mod = await import("../event-contacts");
-    expect(mod.useRemoveInterviewer).toBeDefined();
-    expect(typeof mod.useRemoveInterviewer).toBe("function");
+    expect(mod.useRemoveEventContact).toBeDefined();
+    expect(typeof mod.useRemoveEventContact).toBe("function");
   });
 });

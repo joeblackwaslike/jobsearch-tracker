@@ -1,30 +1,30 @@
-import { useState } from "react";
 import {
-  Phone,
-  Code,
-  Users,
-  Monitor,
-  Home,
   Building,
-  Gift,
-  XCircle,
-  Pencil,
-  Trash2,
   ChevronDown,
   ChevronRight,
+  Code,
   ExternalLink,
+  Gift,
+  Home,
+  Monitor,
+  Pencil,
+  Phone,
+  Trash2,
+  Users,
+  XCircle,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
-import { useDeleteEvent, type Event } from "@/lib/queries/events";
+import { type Event, useDeleteEvent } from "@/lib/queries/events";
 import { AddEventDialog } from "./add-event-dialog";
 
 // ---------------------------------------------------------------------------
@@ -105,19 +105,14 @@ function DeleteConfirmDialog({
         <DialogHeader>
           <DialogTitle>Delete Event</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete this event? This action cannot be
-            undone.
+            Are you sure you want to delete this event? This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button
-            variant="destructive"
-            onClick={onConfirm}
-            disabled={isPending}
-          >
+          <Button variant="destructive" onClick={onConfirm} disabled={isPending}>
             {isPending ? "Deleting..." : "Delete"}
           </Button>
         </DialogFooter>
@@ -163,9 +158,7 @@ function EventNode({
   return (
     <div className="group relative flex gap-4">
       {/* Timeline line */}
-      {!isLast && (
-        <div className="absolute left-[17px] top-10 bottom-0 w-px bg-border" />
-      )}
+      {!isLast && <div className="absolute left-[17px] top-10 bottom-0 w-px bg-border" />}
 
       {/* Icon node */}
       <div className="relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full border bg-background">
@@ -194,12 +187,8 @@ function EventNode({
                 {formatStatusLabel(event.status)}
               </Badge>
             </div>
-            {event.title && (
-              <p className="text-sm text-muted-foreground">{event.title}</p>
-            )}
-            <p className="text-xs text-muted-foreground">
-              {formatDate(event.scheduled_at)}
-            </p>
+            {event.title && <p className="text-sm text-muted-foreground">{event.title}</p>}
+            <p className="text-xs text-muted-foreground">{formatDate(event.scheduled_at)}</p>
           </div>
 
           {/* Edit / Delete buttons — visible on hover */}
@@ -229,9 +218,7 @@ function EventNode({
         {expanded && hasDetails && (
           <div className="mt-2 space-y-1 rounded-md border bg-muted/50 p-3 text-sm">
             {event.duration_minutes && (
-              <p className="text-muted-foreground">
-                Duration: {event.duration_minutes} minutes
-              </p>
+              <p className="text-muted-foreground">Duration: {event.duration_minutes} minutes</p>
             )}
             {event.url && (
               <p>
@@ -247,9 +234,7 @@ function EventNode({
               </p>
             )}
             {event.description && (
-              <p className="text-muted-foreground whitespace-pre-wrap">
-                {event.description}
-              </p>
+              <p className="text-muted-foreground whitespace-pre-wrap">{event.description}</p>
             )}
           </div>
         )}

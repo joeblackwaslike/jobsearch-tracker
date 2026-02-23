@@ -4,8 +4,8 @@ import { CalendarIcon, CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import { DurationCombobox } from "@/components/interviews/duration-combobox";
-import { InterviewerCombobox } from "@/components/interviews/interviewer-combobox";
+import { DurationCombobox } from "@/components/events/duration-combobox";
+import { ContactCombobox } from "@/components/events/contact-combobox";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -37,7 +37,7 @@ import {
 } from "@/components/ui/select";
 import { type ApplicationListItem, useApplications } from "@/lib/queries/applications";
 import type { Contact } from "@/lib/queries/contacts";
-import { useAddInterviewer } from "@/lib/queries/event-contacts";
+import { useAddEventContact } from "@/lib/queries/event-contacts";
 import { useCreateEvent } from "@/lib/queries/events";
 import { cn } from "@/lib/utils";
 
@@ -99,7 +99,7 @@ interface ScheduleDialogProps {
 
 export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialogProps) {
   const createEvent = useCreateEvent();
-  const addInterviewer = useAddInterviewer();
+  const addInterviewer = useAddEventContact();
   const [appSearch, setAppSearch] = useState("");
   const [comboboxOpen, setComboboxOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
@@ -194,7 +194,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
       notes: values.notes || "",
     });
 
-    // Link selected interviewers to the newly created event
+    // Link selected contacts to the newly created event
     if (selectedInterviewers.length > 0 && newEvent?.id) {
       await Promise.all(
         selectedInterviewers.map((c) =>
@@ -226,7 +226,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Schedule Interview</DialogTitle>
+          <DialogTitle>Add Event</DialogTitle>
           <DialogDescription>
             Schedule a new interview for an existing application.
           </DialogDescription>
@@ -431,7 +431,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
             {companyId && (
               <div className="space-y-2">
                 <Label>Interviewers</Label>
-                <InterviewerCombobox
+                <ContactCombobox
                   companyId={companyId}
                   selectedContactIds={selectedInterviewers.map((c) => c.id)}
                   selectedContacts={selectedInterviewers}
@@ -447,7 +447,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Scheduling..." : "Schedule Interview"}
+              {isSubmitting ? "Scheduling..." : "Add Event"}
             </Button>
           </DialogFooter>
         </form>

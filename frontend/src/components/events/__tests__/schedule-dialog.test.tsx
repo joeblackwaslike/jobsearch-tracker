@@ -44,7 +44,7 @@ vi.mock("@/lib/queries/events", () => ({
 }));
 
 vi.mock("@/lib/queries/event-contacts", () => ({
-  useAddInterviewer: () => ({ mutateAsync: vi.fn() }),
+  useAddEventContact: () => ({ mutateAsync: vi.fn() }),
 }));
 
 vi.mock("@/lib/queries/contacts", () => ({
@@ -66,10 +66,10 @@ const defaultProps = {
 // ---------------------------------------------------------------------------
 
 describe("ScheduleDialog", () => {
-  it("renders Schedule Interview title and form fields", () => {
+  it("renders Add Event title and form fields", () => {
     render(<ScheduleDialog {...defaultProps} />);
 
-    expect(screen.getByRole("heading", { name: "Schedule Interview" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Add Event" })).toBeInTheDocument();
     expect(
       screen.getByText("Schedule a new interview for an existing application."),
     ).toBeInTheDocument();
@@ -101,11 +101,11 @@ describe("ScheduleDialog", () => {
     expect(combobox).toBeInTheDocument();
   });
 
-  it("shows Cancel and Schedule Interview buttons", () => {
+  it("shows Cancel and Add Event buttons", () => {
     render(<ScheduleDialog {...defaultProps} />);
 
     expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Schedule Interview" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Add Event" })).toBeInTheDocument();
   });
 
   it("validates application is required on submit", async () => {
@@ -114,7 +114,7 @@ describe("ScheduleDialog", () => {
 
     render(<ScheduleDialog {...defaultProps} />);
 
-    await user.click(screen.getByRole("button", { name: "Schedule Interview" }));
+    await user.click(screen.getByRole("button", { name: "Add Event" }));
 
     await waitFor(() => {
       expect(screen.getByText("Application is required")).toBeInTheDocument();
@@ -216,7 +216,7 @@ describe("title placeholder", () => {
     });
 
     try {
-      await user.click(screen.getByRole("button", { name: "Schedule Interview" }));
+      await user.click(screen.getByRole("button", { name: "Add Event" }));
     } catch {
       // Ignore cmdk subscribe error from unmounting
     }

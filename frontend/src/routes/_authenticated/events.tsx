@@ -1,19 +1,19 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { CalendarIcon, PlusIcon, SearchIcon } from "lucide-react";
 import { useState } from "react";
-import { InterviewList } from "@/components/interviews/interview-list";
-import { ScheduleDialog } from "@/components/interviews/schedule-dialog";
+import { EventList } from "@/components/interviews/interview-list";
+import { ScheduleDialog } from "@/components/events/schedule-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { usePastInterviews, useUpcomingInterviews } from "@/lib/queries/events";
+import { usePastEvents, useUpcomingEvents } from "@/lib/queries/events";
 
 // ---------------------------------------------------------------------------
 // Route
 // ---------------------------------------------------------------------------
 
-export const Route = createFileRoute("/_authenticated/interviews")({
-  component: InterviewsPage,
+export const Route = createFileRoute("/_authenticated/events")({
+  component: EventsPage,
   validateSearch: (search: Record<string, unknown>) => ({
     tab: (search.tab as string) || "upcoming",
   }),
@@ -23,38 +23,38 @@ export const Route = createFileRoute("/_authenticated/interviews")({
 // Page
 // ---------------------------------------------------------------------------
 
-function InterviewsPage() {
+function EventsPage() {
   const { tab } = useSearch({ from: "/_authenticated/interviews" });
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [scheduleOpen, setScheduleOpen] = useState(false);
 
-  const { data: upcoming = [] } = useUpcomingInterviews();
-  const { data: past = [] } = usePastInterviews();
+  const { data: upcoming = [] } = useUpcomingEvents();
+  const { data: past = [] } = usePastEvents();
 
   const setTab = (value: string) => {
     navigate({
-      to: "/interviews",
+      to: "/events",
       search: { tab: value },
       replace: true,
     });
   };
 
-  const hasAnyInterviews = upcoming.length > 0 || past.length > 0;
+  const hasAnyEvents = upcoming.length > 0 || past.length > 0;
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold">Interviews</h1>
+        <h1 className="text-2xl font-bold">Events</h1>
         <Button onClick={() => setScheduleOpen(true)}>
           <PlusIcon className="mr-2 size-4" />
-          Schedule Interview
+          Add Event
         </Button>
       </div>
 
       {/* Search */}
-      {hasAnyInterviews && (
+      {hasAnyEvents && (
         <div className="relative max-w-sm">
           <SearchIcon className="text-muted-foreground absolute left-3 top-1/2 size-4 -translate-y-1/2" />
           <Input
@@ -67,7 +67,7 @@ function InterviewsPage() {
       )}
 
       {/* Tabs */}
-      {hasAnyInterviews ? (
+      {hasAnyEvents ? (
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList>
             <TabsTrigger value="upcoming">Upcoming ({upcoming.length})</TabsTrigger>
@@ -75,23 +75,23 @@ function InterviewsPage() {
           </TabsList>
 
           <TabsContent value="upcoming" className="mt-4">
-            <InterviewList interviews={upcoming} search={search} />
+            <EventList events={upcoming} search={search} />
           </TabsContent>
 
           <TabsContent value="past" className="mt-4">
-            <InterviewList interviews={past} search={search} />
+            <EventList events={past} search={search} />
           </TabsContent>
         </Tabs>
       ) : (
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-16">
           <CalendarIcon className="text-muted-foreground mb-4 size-12" />
-          <h3 className="mb-1 text-lg font-semibold">No interviews scheduled yet</h3>
+          <h3 className="mb-1 text-lg font-semibold">No events scheduled yet</h3>
           <p className="text-muted-foreground mb-4 text-sm">
-            Schedule your first interview to get started.
+            Schedule your first event to get started.
           </p>
           <Button onClick={() => setScheduleOpen(true)}>
             <PlusIcon className="mr-2 size-4" />
-            Schedule Your First Interview
+            Add Your First Event
           </Button>
         </div>
       )}

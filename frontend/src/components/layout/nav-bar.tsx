@@ -9,7 +9,7 @@ import { UserMenu } from "./user-menu";
 const navLinks = [
   { to: "/dashboard", label: "Dashboard" },
   { to: "/applications", label: "Applications" },
-  { to: "/interviews", label: "Interviews" },
+  { to: "/events", label: "Events" },
   { to: "/documents", label: "Documents" },
   { to: "/companies", label: "Companies" },
 ] as const;

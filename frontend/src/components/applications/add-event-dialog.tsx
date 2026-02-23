@@ -2,8 +2,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { DurationCombobox } from "@/components/interviews/duration-combobox";
-import { InterviewerCombobox } from "@/components/interviews/interviewer-combobox";
+import { DurationCombobox } from "@/components/events/duration-combobox";
+import { ContactCombobox } from "@/components/events/contact-combobox";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -25,9 +25,9 @@ import {
 } from "@/components/ui/select";
 import type { Contact } from "@/lib/queries/contacts";
 import {
-  useAddInterviewer,
+  useAddEventContact,
   useEventContacts,
-  useRemoveInterviewer,
+  useRemoveEventContact,
 } from "@/lib/queries/event-contacts";
 import { type Event, useCreateEvent, useUpdateEvent } from "@/lib/queries/events";
 
@@ -154,16 +154,16 @@ export function AddEventDialog({
 }: AddEventDialogProps) {
   const createEvent = useCreateEvent();
   const updateEvent = useUpdateEvent();
-  const addInterviewer = useAddInterviewer();
-  const removeInterviewer = useRemoveInterviewer();
+  const addInterviewer = useAddEventContact();
+  const removeInterviewer = useRemoveEventContact();
 
-  // For create mode: track interviewers locally until event is created
-  const [selectedInterviewers, setSelectedInterviewers] = useState<Pick<Contact, "id" | "name">[]>(
+  // For create mode: track contacts locally until event is created
+  const [selectedContacts, setSelectedContacts] = useState<Pick<Contact, "id" | "name">[]>(
     [],
   );
 
-  // For edit mode: load existing interviewers from the server
-  const { data: existingInterviewers } = useEventContacts(event?.id ?? "");
+  // For edit mode: load existing contacts from the server
+  const { data: existingContacts } = useEventContacts(event?.id ?? "");
 
   const {
     register,
@@ -202,24 +202,24 @@ export function AddEventDialog({
           url: "",
           description: "",
         });
-        setSelectedInterviewers([]);
+        setSelectedContacts([]);
       }
     }
   }, [open, mode, event, reset]);
 
-  const handleAddInterviewer = (contact: Pick<Contact, "id" | "name">) => {
+  const handleAddContact = (contact: Pick<Contact, "id" | "name">) => {
     if (mode === "edit" && event) {
       addInterviewer.mutateAsync({ eventId: event.id, contactId: contact.id });
     } else {
-      setSelectedInterviewers((prev) => [...prev, contact]);
+      setSelectedContacts((prev) => [...prev, contact]);
     }
   };
 
-  const handleRemoveInterviewer = (contactId: string) => {
+  const handleRemoveContact = (contactId: string) => {
     if (mode === "edit" && event) {
       removeInterviewer.mutateAsync({ eventId: event.id, contactId });
     } else {
-      setSelectedInterviewers((prev) => prev.filter((c) => c.id !== contactId));
+      setSelectedContacts((prev) => prev.filter((c) => c.id !== contactId));
     }
   };
 
@@ -238,10 +238,10 @@ export function AddEventDialog({
         ...payload,
       });
 
-      // Link selected interviewers to the newly created event
-      if (selectedInterviewers.length > 0 && newEvent?.id) {
+      // Link selected contacts to the newly created event
+      if (selectedContacts.length > 0 && newEvent?.id) {
         await Promise.all(
-          selectedInterviewers.map((c) =>
+          selectedContacts.map((c) =>
             addInterviewer.mutateAsync({
               eventId: newEvent.id,
               contactId: c.id,
@@ -359,27 +359,27 @@ export function AddEventDialog({
               />
             </div>
 
-            {/* Interviewers */}
+            {/* Contacts */}
             {companyId && (
               <div className="space-y-2">
-                <Label>Interviewers</Label>
-                <InterviewerCombobox
+                <Label>Contacts</Label>
+                <ContactCombobox
                   companyId={companyId}
                   selectedContactIds={
                     mode === "edit"
-                      ? (existingInterviewers?.map((ec) => ec.contact.id) ?? [])
-                      : selectedInterviewers.map((c) => c.id)
+                      ? (existingContacts?.map((ec) => ec.contact.id) ?? [])
+                      : selectedContacts.map((c) => c.id)
                   }
                   selectedContacts={
                     mode === "edit"
-                      ? (existingInterviewers?.map((ec) => ({
+                      ? (existingContacts?.map((ec) => ({
                           id: ec.contact.id,
                           name: ec.contact.name,
                         })) ?? [])
-                      : selectedInterviewers
+                      : selectedContacts
                   }
-                  onAdd={handleAddInterviewer}
-                  onRemove={handleRemoveInterviewer}
+                  onAdd={handleAddContact}
+                  onRemove={handleRemoveContact}
                 />
               </div>
             )}
