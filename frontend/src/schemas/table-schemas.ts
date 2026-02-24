@@ -1,220 +1,280 @@
-import { Badge } from '@/components/ui/badge'
-import { formatDate, formatRelativeTime } from '@/lib/formatters'
+import { Badge } from "@/components/ui/badge";
+import { formatDate, formatRelativeTime } from "@/lib/formatters";
 
 // Constants
 export const STATUS_COLORS = {
-  applied: 'secondary',
-  interview: 'default',
-  offer: 'default',
-  rejected: 'destructive',
-  ghosted: 'secondary'
-} as const
+  applied: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
+  interview: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
+  offer: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
+  rejected: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
+  archived: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+  bookmarked: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
+} as const;
 
 export const INTEREST_COLORS = {
-  low: 'secondary',
-  medium: 'default',
-  high: 'default'
-} as const
+  low: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+  medium: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
+  high: "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300",
+  dream: "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
+} as const;
 
 export const EVENT_TYPE_LABELS = {
-  phone_screen: 'Phone Screen',
-  technical: 'Technical',
-  onsite: 'Onsite',
-  follow_up: 'Follow-up',
-  offer: 'Offer'
-} as const
+  phone_screen: "Phone Screen",
+  technical: "Technical",
+  onsite: "Onsite",
+  follow_up: "Follow-up",
+  offer: "Offer",
+} as const;
 
 export const EVENT_STATUS_COLORS = {
-  scheduled: 'default',
-  completed: 'secondary',
-  cancelled: 'destructive'
-} as const
+  scheduled: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+  completed: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+  cancelled: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+} as const;
 
 // Helper function
 export function capitalize(str: string): string {
-  if (!str) return ''
-  return str.charAt(0).toUpperCase() + str.slice(1)
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 // Application table schema
 export const applicationTableSchema = {
   columns: [
     {
-      key: 'position',
-      label: 'Position',
-      type: 'text' as const,
+      id: "position",
+      header: "Position",
+      type: "text" as const,
       sortable: true,
-      grow: 2,
       minWidth: 200,
-      cellRenderer: (data: { position: string }) => data.position || '-'
+      grow: 2,
+      cell: (data: { position: string }) => (
+        <span className="font-medium">{data.position}</span>
+      ),
     },
     {
-      key: 'company.name',
-      label: 'Company',
-      type: 'relation' as const,
+      id: "company.name",
+      header: "Company",
+      type: "relation" as const,
+      sortable: false,
+      minWidth: 150,
       grow: 1.5,
+      cell: (data: { company?: { name: string } }) => (
+        <span className="text-muted-foreground">{data.company?.name ?? "-"}</span>
+      ),
+    },
+    {
+      id: "status",
+      header: "Status",
+      type: "enum" as const,
+      sortable: false,
+      minWidth: 100,
+      options: ["bookmarked", "applied", "interviewing", "offer", "accepted", "rejected", "archived"],
+      cell: (data: { status: keyof typeof STATUS_COLORS }) => (
+        <Badge variant="secondary" className={STATUS_COLORS[data.status] ?? ""}>
+          {capitalize(data.status)}
+        </Badge>
+      ),
+    },
+    {
+      id: "interest",
+      header: "Interest",
+      type: "enum" as const,
+      sortable: false,
+      minWidth: 100,
+      options: ["low", "medium", "high", "dream"],
+      cell: (data: { interest?: keyof typeof INTEREST_COLORS }) => {
+        if (!data.interest) return <span className="text-muted-foreground">-</span>;
+        return (
+          <Badge variant="secondary" className={INTEREST_COLORS[data.interest] ?? ""}>
+            {capitalize(data.interest)}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "location",
+      header: "Location",
+      type: "text" as const,
+      sortable: false,
       minWidth: 150,
-      cellRenderer: (data: { company?: { name: string } }) => data.company?.name || '-'
-    },
-    {
-      key: 'status',
-      label: 'Status',
-      type: 'enum' as const,
-      minWidth: 100,
-      cellRenderer: (data: { status: keyof typeof STATUS_COLORS }) => ({
-        type: 'mock-badge',
-        props: { variant: STATUS_COLORS[data.status], children: capitalize(data.status) }
-      })
-    },
-    {
-      key: 'interest',
-      label: 'Interest',
-      type: 'enum' as const,
-      minWidth: 100,
-      cellRenderer: (data: { interest: keyof typeof INTEREST_COLORS }) => ({
-        type: 'mock-badge',
-        props: { variant: INTEREST_COLORS[data.interest], children: capitalize(data.interest) }
-      })
-    },
-    {
-      key: 'location',
-      label: 'Location',
-      type: 'text' as const,
       grow: 1,
-      minWidth: 150,
-      cellRenderer: (data: { location: string }) => data.location || '-'
+      cell: (data: { location: string }) => (
+        <span className="text-muted-foreground">{data.location || "-"}</span>
+      ),
     },
     {
-      key: 'applied_at',
-      label: 'Applied Date',
-      type: 'date' as const,
+      id: "applied_at",
+      header: "Applied Date",
+      type: "date" as const,
       sortable: true,
       minWidth: 130,
-      cellRenderer: (data: { applied_at: string | null }) => formatDate(data.applied_at)
+      cell: (data: { applied_at: string | null }) => (
+        <span className="text-muted-foreground">{formatDate(data.applied_at)}</span>
+      ),
     },
     {
-      key: 'updated_at',
-      label: 'Updated Date',
-      type: 'datetime' as const,
+      id: "updated_at",
+      header: "Updated Date",
+      type: "datetime" as const,
       sortable: true,
       minWidth: 140,
-      cellRenderer: (data: { updated_at: string | null }) => formatRelativeTime(data.updated_at || '')
+      cell: (data: { updated_at: string | null }) => (
+        <span className="text-muted-foreground">{formatRelativeTime(data.updated_at || "")}</span>
+      ),
     },
     {
-      key: 'source',
-      label: 'Source',
-      type: 'text' as const,
+      id: "source",
+      header: "Source",
+      type: "text" as const,
+      sortable: false,
       minWidth: 120,
-      cellRenderer: (data: { source: string }) => data.source || '-'
-    }
-  ]
-}
+      cell: (data: { source: string }) => (
+        <span className="text-muted-foreground">{data.source || "-"}</span>
+      ),
+    },
+  ],
+} as const;
 
 // Company table schema
 export const companyTableSchema = {
   columns: [
     {
-      key: 'name',
-      label: 'Company Name',
-      type: 'text' as const,
-      grow: 2,
+      id: "name",
+      header: "Name",
+      type: "text" as const,
+      sortable: false,
       minWidth: 200,
-      cellRenderer: (data: { name: string }) => data.name || '-'
+      grow: 2,
+      cell: (data: { name: string }) => (
+        <span className="font-medium">{data.name}</span>
+      ),
     },
     {
-      key: 'industry',
-      label: 'Industry',
-      type: 'text' as const,
-      grow: 1,
+      id: "industry",
+      header: "Industry",
+      type: "text" as const,
+      sortable: false,
       minWidth: 150,
-      cellRenderer: (data: { industry: string }) => data.industry || '-'
-    },
-    {
-      key: 'location',
-      label: 'Location',
-      type: 'text' as const,
       grow: 1,
-      minWidth: 150,
-      cellRenderer: (data: { location: string }) => data.location || '-'
+      cell: (data: { industry: string }) => (
+        <span className="text-muted-foreground">{data.industry || "--"}</span>
+      ),
     },
     {
-      key: 'size',
-      label: 'Size',
-      type: 'text' as const,
-      grow: 0.5,
+      id: "location",
+      header: "Location",
+      type: "text" as const,
+      sortable: false,
+      minWidth: 150,
+      grow: 1,
+      cell: (data: { location: string }) => (
+        <span className="text-muted-foreground">{data.location || "--"}</span>
+      ),
+    },
+    {
+      id: "size",
+      header: "Size",
+      type: "text" as const,
+      sortable: false,
       minWidth: 120,
-      cellRenderer: (data: { size: string }) => data.size || '-'
+      grow: 0.5,
+      cell: (data: { size: string }) => (
+        <span className="text-muted-foreground">{data.size || "--"}</span>
+      ),
     },
     {
-      key: 'researched',
-      label: 'Researched',
-      type: 'enum' as const,
-      centered: true,
+      id: "researched",
+      header: "Researched",
+      type: "enum" as const,
+      sortable: false,
       minWidth: 100,
-      cellRenderer: (data: { researched: boolean }) => data.researched ? 'Yes' : 'No'
+      align: "center",
+      cell: (data: { researched: boolean }) => (
+        <Badge variant={data.researched ? "secondary" : "outline"} className="text-xs">
+          {data.researched ? "Yes" : "No"}
+        </Badge>
+      ),
     },
     {
-      key: 'tags',
-      label: 'Tags',
-      type: 'text' as const,
-      grow: 1,
+      id: "tags",
+      header: "Tags",
+      type: "text" as const,
+      sortable: false,
       minWidth: 150,
-      cellRenderer: (data: { tags: string[] }) => {
-        if (!data.tags || data.tags.length === 0) return '-'
-        if (data.tags.length <= 2) return data.tags.join(', ')
-        return `${data.tags.slice(0, 2).join(', ')}, +${data.tags.length - 2}`
-      }
-    }
-  ]
-}
+      grow: 1,
+      cell: (data: { tags: string[] }) => {
+        const tags = data.tags || [];
+        if (tags.length === 0) return <span className="text-muted-foreground">-</span>;
+        return (
+          <div className="flex flex-wrap gap-1">
+            {tags.slice(0, 2).map((tag) => (
+              <Badge key={tag} variant="outline" className="text-xs">
+                {tag}
+              </Badge>
+            ))}
+            {tags.length > 2 && <span className="text-xs text-muted-foreground">+{tags.length - 2}</span>}
+          </div>
+        );
+      },
+    },
+  ],
+} as const;
 
 // Event table schema
 export const eventTableSchema = {
   columns: [
     {
-      key: 'application.company.name',
-      label: 'Company',
-      type: 'relation' as const,
-      grow: 1.5,
+      id: "application.company.name",
+      header: "Company",
+      type: "relation" as const,
+      sortable: false,
       minWidth: 180,
-      cellRenderer: (data: { application?: { company?: { name: string } } }) =>
-        data.application?.company?.name || '-'
+      grow: 1.5,
+      cell: (data: { application?: { company?: { name: string } } }) => (
+        <span className="font-medium">{data.application?.company?.name ?? "Unknown"}</span>
+      ),
     },
     {
-      key: 'application.position',
-      label: 'Position',
-      type: 'relation' as const,
-      grow: 2,
+      id: "application.position",
+      header: "Position",
+      type: "relation" as const,
+      sortable: false,
       minWidth: 200,
-      cellRenderer: (data: { application?: { position: string } }) =>
-        data.application?.position || '-'
+      grow: 2,
+      cell: (data: { application?: { position: string } }) => (
+        <span className="text-muted-foreground">{data.application?.position ?? "Unknown"}</span>
+      ),
     },
     {
-      key: 'type',
-      label: 'Type',
-      type: 'enum' as const,
+      id: "type",
+      header: "Type",
+      type: "enum" as const,
+      sortable: false,
       minWidth: 120,
-      cellRenderer: (data: { type: keyof typeof EVENT_TYPE_LABELS }) =>
-        EVENT_TYPE_LABELS[data.type]
+      cell: (data: { type: keyof typeof EVENT_TYPE_LABELS }) => EVENT_TYPE_LABELS[data.type],
     },
     {
-      key: 'status',
-      label: 'Status',
-      type: 'enum' as const,
+      id: "status",
+      header: "Status",
+      type: "enum" as const,
+      sortable: false,
       minWidth: 140,
-      cellRenderer: (data: { status: keyof typeof EVENT_STATUS_COLORS }) => ({
-        type: 'mock-badge',
-        props: { variant: EVENT_STATUS_COLORS[data.status], children: capitalize(data.status) }
-      })
+      cell: (data: { status: keyof typeof EVENT_STATUS_COLORS }) => (
+        <Badge variant="secondary" className={EVENT_STATUS_COLORS[data.status] ?? ""}>
+          {capitalize(data.status)}
+        </Badge>
+      ),
     },
     {
-      key: 'scheduled_at',
-      label: 'Scheduled At',
-      type: 'datetime' as const,
+      id: "scheduled_at",
+      header: "Date",
+      type: "datetime" as const,
       sortable: true,
       minWidth: 180,
-      cellRenderer: (data: { scheduled_at: string | null }) =>
-        formatDate(data.scheduled_at)
-    }
-  ]
-}
+      cell: (data: { scheduled_at: string | null }) => (
+        <span className="text-muted-foreground">{data.scheduled_at ? formatDate(data.scheduled_at) : "TBD"}</span>
+      ),
+    },
+  ],
+} as const;
