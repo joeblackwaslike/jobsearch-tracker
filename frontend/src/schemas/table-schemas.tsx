@@ -18,19 +18,24 @@ export const INTEREST_COLORS = {
   dream: "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
 } as const;
 
-export const EVENT_TYPE_LABELS = {
-  phone_screen: "Phone Screen",
-  technical: "Technical",
+export const EVENT_TYPE_LABELS: Record<string, string> = {
+  screening_interview: "Screening",
+  technical_interview: "Technical",
+  behavioral_interview: "Behavioral",
+  online_test: "Online Test",
+  take_home: "Take Home",
   onsite: "Onsite",
-  follow_up: "Follow-up",
-  offer: "Offer",
-} as const;
+};
 
-export const EVENT_STATUS_COLORS = {
+export const EVENT_STATUS_COLORS: Record<string, string> = {
   scheduled: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
   completed: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
   cancelled: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-} as const;
+  rescheduled: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
+  availability_requested: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+  availability_submitted: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
+  no_show: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
+};
 
 // Helper function
 export function capitalize(str: string): string {

@@ -15,7 +15,7 @@ export interface ColumnSchema<T> {
 }
 
 export interface TableSchema<T> {
-  columns: ColumnSchema<T>[];
+  readonly columns: ReadonlyArray<ColumnSchema<T>>;
 }
 
 export type SchemaData<T> = T extends TableSchema<infer U> ? U : never;

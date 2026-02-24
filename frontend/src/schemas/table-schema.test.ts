@@ -34,12 +34,12 @@ describe("TableSchema Types", () => {
   });
 
   it("type-level test for SchemaData type extraction", () => {
-    const schema = {
+    const schema: TableSchema<{ name: string; age: number }> = {
       columns: [
         { id: "name", header: "Name", type: "text", sortable: true, minWidth: 100 },
         { id: "age", header: "Age", type: "number", sortable: true, minWidth: 100 },
       ],
-    } as const satisfies TableSchema<{ name: string; age: number }>;
+    };
 
     type ExtractedType = SchemaData<typeof schema>;
 
