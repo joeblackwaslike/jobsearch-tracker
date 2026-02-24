@@ -1,0 +1,24 @@
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { PageLayout } from "../page-layout";
+
+describe("PageLayout", () => {
+  it("renders children without detail panel", () => {
+    render(
+      <PageLayout detailPanel={null} onDetailClose={() => {}}>
+        <div>Main Content</div>
+      </PageLayout>,
+    );
+    expect(screen.getByText("Main Content")).toBeInTheDocument();
+  });
+
+  it("renders children with detail panel", () => {
+    render(
+      <PageLayout detailPanel={<div>Detail Content</div>} onDetailClose={() => {}}>
+        <div>Main Content</div>
+      </PageLayout>,
+    );
+    expect(screen.getByText("Main Content")).toBeInTheDocument();
+    expect(screen.getByText("Detail Content")).toBeInTheDocument();
+  });
+});
