@@ -27,7 +27,7 @@ const mockEvent: EventWithApplication = {
     status: "applied",
     company: { id: "c1", name: "Test Company" },
   },
-} as EventWithApplication;
+} as unknown as EventWithApplication;
 
 describe("EventDetail", () => {
   it("renders event type as title when no title set", () => {

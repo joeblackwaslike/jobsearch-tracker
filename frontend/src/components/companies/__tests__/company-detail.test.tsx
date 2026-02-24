@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { CompanyDetail } from "../company-detail";
 import type { Company } from "@/lib/queries/companies";
 
-const mockCompany: Company = {
+const mockCompany = {
   id: "1",
   name: "Test Company",
   industry: "Technology",
@@ -11,11 +11,15 @@ const mockCompany: Company = {
   size: "100-500",
   researched: true,
   tags: ["startup", "remote"],
-  website: null,
-  email: null,
-  phone: null,
-  notes: null,
   ratings: null,
+  description: null,
+  culture: null,
+  pros: null,
+  cons: null,
+  benefits: null,
+  founded: null,
+  tech_stack: null,
+  links: null,
   archived_at: null,
   user_id: "u1",
   created_at: "2026-01-01T00:00:00Z",
@@ -30,7 +34,7 @@ describe("CompanyDetail", () => {
     expect(screen.getByText("San Francisco, CA")).toBeInTheDocument();
   });
 
-  it("shows research status badge", () => {
+  it("shows research status badge when researched", () => {
     render(<CompanyDetail company={mockCompany} />);
     expect(screen.getByText("Researched")).toBeInTheDocument();
   });
@@ -41,13 +45,17 @@ describe("CompanyDetail", () => {
     expect(screen.getByText("remote")).toBeInTheDocument();
   });
 
-  it("shows Not Researched when not researched", () => {
-    render(<CompanyDetail company={{ ...mockCompany, researched: false }} />);
-    expect(screen.getByText("Not Researched")).toBeInTheDocument();
+  it("hides researched badge when not researched", () => {
+    render(<CompanyDetail company={{ ...mockCompany, researched: false } as Company} />);
+    expect(screen.queryByText("Researched")).not.toBeInTheDocument();
   });
 
-  it("renders notes when present", () => {
-    render(<CompanyDetail company={{ ...mockCompany, notes: "Great company to work for" }} />);
+  it("renders description when present", () => {
+    render(
+      <CompanyDetail
+        company={{ ...mockCompany, description: "Great company to work for" } as Company}
+      />,
+    );
     expect(screen.getByText("Great company to work for")).toBeInTheDocument();
   });
 });

@@ -1,4 +1,4 @@
-import { Globe, Mail, MapPin, Tag, Users } from "lucide-react";
+import { MapPin, Tag, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -16,16 +16,8 @@ export function CompanyDetail({ company }: CompanyDetailProps) {
     <div className="space-y-6">
       <div className="space-y-2">
         <h3 className="text-lg font-semibold">{company.name}</h3>
-        {company.website && (
-          <a
-            href={company.website}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-sm text-primary hover:underline"
-          >
-            <Globe className="size-3" />
-            <span>{company.website}</span>
-          </a>
+        {company.researched && (
+          <Badge variant="secondary" className="text-xs">Researched</Badge>
         )}
       </div>
 
@@ -67,43 +59,17 @@ export function CompanyDetail({ company }: CompanyDetailProps) {
             </>
           )}
 
-          <Separator />
-
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Research Status</p>
-            <Badge variant={company.researched ? "secondary" : "outline"}>
-              {company.researched ? "Researched" : "Not Researched"}
-            </Badge>
-          </div>
+          {company.founded && (
+            <>
+              <Separator />
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Founded</p>
+                <p className="text-sm">{company.founded}</p>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
-
-      {(company.email || company.phone) && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Contact</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {company.email && (
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">Email</p>
-                <div className="flex items-center gap-2 text-sm">
-                  <Mail className="size-4 text-muted-foreground" />
-                  <a href={`mailto:${company.email}`} className="text-primary hover:underline">
-                    {company.email}
-                  </a>
-                </div>
-              </div>
-            )}
-            {company.phone && (
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">Phone</p>
-                <p className="text-sm">{company.phone}</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
 
       {tags.length > 0 && (
         <Card>
@@ -152,13 +118,26 @@ export function CompanyDetail({ company }: CompanyDetailProps) {
         </Card>
       )}
 
-      {company.notes && (
+      {company.description && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Notes</CardTitle>
+            <CardTitle className="text-base">Description</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground whitespace-pre-wrap">{company.notes}</p>
+            <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+              {company.description}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {company.culture && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Culture</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground whitespace-pre-wrap">{company.culture}</p>
           </CardContent>
         </Card>
       )}
