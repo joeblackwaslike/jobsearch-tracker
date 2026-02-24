@@ -1,17 +1,19 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import type { SortingState, VisibilityState } from "@tanstack/react-table";
+import type { SortingState } from "@tanstack/react-table";
 import { BookmarkIcon, ChevronLeftIcon, ChevronRightIcon, PlusIcon, ZapIcon } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { z } from "zod";
 import {
   ApplicationFilters,
   type ApplicationFiltersState,
 } from "@/components/applications/application-filters";
+import { ApplicationDetail } from "@/components/applications/application-detail";
 import { ApplicationForm } from "@/components/applications/application-form";
 import { ApplicationStats } from "@/components/applications/application-stats";
-import { ApplicationTable } from "@/components/applications/application-table";
 import { EasyAddForm } from "@/components/applications/easy-add-form";
 import { FullApplicationForm } from "@/components/applications/full-application-form";
+import { PageLayout } from "@/components/shared/page-layout";
+import { UniversalTable } from "@/components/shared/universal-table";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -21,7 +23,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { ApplicationListItem, ApplicationWithCompany } from "@/lib/queries/applications";
-import { useApplications } from "@/lib/queries/applications";
+import { useApplication, useApplications } from "@/lib/queries/applications";
+import type { TableSchema } from "@/schemas/table-schema";
+import { applicationTableSchema } from "@/schemas/table-schemas";
 
 // ---------------------------------------------------------------------------
 // Search params schema
@@ -66,26 +70,6 @@ export const Route = createFileRoute("/_authenticated/applications")({
 // Helpers
 // ---------------------------------------------------------------------------
 
-const COLUMN_VISIBILITY_KEY = "applications-column-visibility";
-
-function loadColumnVisibility(): VisibilityState {
-  try {
-    const stored = localStorage.getItem(COLUMN_VISIBILITY_KEY);
-    if (stored) return JSON.parse(stored) as VisibilityState;
-  } catch {
-    // ignore
-  }
-  return {};
-}
-
-function saveColumnVisibility(state: VisibilityState) {
-  try {
-    localStorage.setItem(COLUMN_VISIBILITY_KEY, JSON.stringify(state));
-  } catch {
-    // ignore
-  }
-}
-
 function toArray(value: string | string[] | undefined): string[] | undefined {
   if (!value) return undefined;
   if (Array.isArray(value)) return value.length > 0 ? value : undefined;
@@ -123,16 +107,11 @@ function ApplicationsPage() {
   const searchParams = Route.useSearch();
   const navigate = useNavigate();
 
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(loadColumnVisibility);
   const [formOpen, setFormOpen] = useState(false);
   const [bookmarkOpen, setBookmarkOpen] = useState(false);
   const [easyAddOpen, setEasyAddOpen] = useState(false);
   const [editingApp, setEditingApp] = useState<ApplicationListItem | null>(null);
-
-  // Persist column visibility
-  useEffect(() => {
-    saveColumnVisibility(columnVisibility);
-  }, [columnVisibility]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   // Derive state from URL params
   const page = searchParams.page ?? 1;
@@ -147,10 +126,6 @@ function ApplicationsPage() {
     employmentType: toArray(searchParams.employmentType),
   };
 
-  // Build query filters -- the query layer uses single string for filter fields,
-  // but we support multi-select in the UI. Pass the first value for now since
-  // the Supabase query uses .eq(). For true multi-select, we'd need .in().
-  // This is a v1 limitation.
   const queryFilters = {
     search: searchParams.search,
     status: toArray(searchParams.status)?.[0],
@@ -166,6 +141,8 @@ function ApplicationsPage() {
   };
 
   const { data: result, isLoading } = useApplications(queryFilters);
+  const { data: selectedApp } = useApplication(selectedId ?? "");
+
   const applications = result?.data ?? [];
   const totalCount = result?.count ?? 0;
   const totalPages = Math.ceil(totalCount / pageSize);
@@ -193,7 +170,7 @@ function ApplicationsPage() {
         interest: filters.interest,
         workType: filters.workType,
         employmentType: filters.employmentType,
-        page: 1, // Reset to page 1 when filters change
+        page: 1,
       });
     },
     [updateSearch],
@@ -224,121 +201,121 @@ function ApplicationsPage() {
   );
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Applications</h1>
-          <p className="text-sm text-muted-foreground">
-            {isLoading ? "Loading..." : `${totalCount} application${totalCount !== 1 ? "s" : ""}`}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            aria-label="Bookmark job"
-            title="Bookmark"
-            onClick={() => setBookmarkOpen(true)}
-          >
-            <BookmarkIcon className="size-4" />
-          </Button>
-          <Button variant="outline" onClick={() => setEasyAddOpen(true)}>
-            <ZapIcon className="size-4" />
-            Easy Add
-          </Button>
-          <Button onClick={() => setFormOpen(true)}>
-            <PlusIcon className="size-4" />
-            New Application
-          </Button>
-        </div>
-      </div>
-
-      {/* Application Stats */}
-      <ApplicationStats />
-
-      {/* Filters */}
-      <ApplicationFilters
-        filters={filtersState}
-        onFiltersChange={handleFiltersChange}
-        columnVisibility={columnVisibility}
-        onColumnVisibilityChange={setColumnVisibility}
-      />
-
-      {/* Table */}
-      <ApplicationTable
-        data={applications}
-        sorting={sorting}
-        onSortingChange={handleSortingChange}
-        columnVisibility={columnVisibility}
-        onColumnVisibilityChange={setColumnVisibility}
-        onEdit={setEditingApp}
-      />
-
-      {/* Pagination */}
-      {totalCount > 0 && (
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>Rows per page</span>
-            <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
-              <SelectTrigger className="h-8 w-[70px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="25">25</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectContent>
-            </Select>
+    <PageLayout
+      detailPanel={selectedApp ? <ApplicationDetail application={selectedApp} /> : null}
+      onDetailClose={() => setSelectedId(null)}
+      detailWidth="lg"
+    >
+      <div className="space-y-4">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Applications</h1>
+            <p className="text-sm text-muted-foreground">
+              {isLoading ? "Loading..." : `${totalCount} application${totalCount !== 1 ? "s" : ""}`}
+            </p>
           </div>
-
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">
-              Page {page} of {totalPages || 1}
-            </span>
-            <div className="flex items-center gap-1">
-              <Button
-                variant="outline"
-                size="icon-sm"
-                disabled={page <= 1}
-                onClick={() => handlePageChange(page - 1)}
-              >
-                <ChevronLeftIcon className="size-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon-sm"
-                disabled={page >= totalPages}
-                onClick={() => handlePageChange(page + 1)}
-              >
-                <ChevronRightIcon className="size-4" />
-              </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label="Bookmark job"
+              title="Bookmark"
+              onClick={() => setBookmarkOpen(true)}
+            >
+              <BookmarkIcon className="size-4" />
+            </Button>
+            <Button variant="outline" onClick={() => setEasyAddOpen(true)}>
+              <ZapIcon className="size-4" />
+              Easy Add
+            </Button>
+            <Button onClick={() => setFormOpen(true)}>
+              <PlusIcon className="size-4" />
+              New Application
+            </Button>
+          </div>
+        </div>
+
+        {/* Application Stats */}
+        <ApplicationStats />
+
+        {/* Filters */}
+        <ApplicationFilters
+          filters={filtersState}
+          onFiltersChange={handleFiltersChange}
+          columnVisibility={{}}
+          onColumnVisibilityChange={() => {}}
+        />
+
+        {/* Table */}
+        <UniversalTable
+          data={applications}
+          schema={applicationTableSchema as unknown as TableSchema<ApplicationListItem>}
+          sorting={sorting}
+          onSortingChange={handleSortingChange}
+          onRowClick={(app) => setSelectedId((app as ApplicationListItem).id)}
+          selectedId={selectedId}
+        />
+
+        {/* Pagination */}
+        {totalCount > 0 && (
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>Rows per page</span>
+              <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
+                <SelectTrigger className="h-8 w-[70px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">
+                Page {page} of {totalPages || 1}
+              </span>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="icon-sm"
+                  disabled={page <= 1}
+                  onClick={() => handlePageChange(page - 1)}
+                >
+                  <ChevronLeftIcon className="size-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon-sm"
+                  disabled={page >= totalPages}
+                  onClick={() => handlePageChange(page + 1)}
+                >
+                  <ChevronRightIcon className="size-4" />
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* New application (full form) */}
-      <FullApplicationForm open={formOpen} onOpenChange={setFormOpen} />
-
-      {/* Bookmark job (pre-set status to bookmarked) */}
-      <FullApplicationForm
-        open={bookmarkOpen}
-        onOpenChange={setBookmarkOpen}
-        defaultStatus="bookmarked"
-      />
-
-      {/* Easy add dialog */}
-      <EasyAddForm open={easyAddOpen} onOpenChange={setEasyAddOpen} />
-
-      {/* Edit application dialog */}
-      <ApplicationForm
-        open={!!editingApp}
-        onOpenChange={(open) => {
-          if (!open) setEditingApp(null);
-        }}
-        application={editingApp as ApplicationWithCompany | null}
-      />
-    </div>
+        {/* Dialogs */}
+        <FullApplicationForm open={formOpen} onOpenChange={setFormOpen} />
+        <FullApplicationForm
+          open={bookmarkOpen}
+          onOpenChange={setBookmarkOpen}
+          defaultStatus="bookmarked"
+        />
+        <EasyAddForm open={easyAddOpen} onOpenChange={setEasyAddOpen} />
+        <ApplicationForm
+          open={!!editingApp}
+          onOpenChange={(open) => {
+            if (!open) setEditingApp(null);
+          }}
+          application={editingApp as ApplicationWithCompany | null}
+        />
+      </div>
+    </PageLayout>
   );
 }
