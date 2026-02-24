@@ -1,0 +1,91 @@
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+
+type SidePanelWidth = "sm" | "md" | "lg" | "xl";
+
+interface SidePanelProps {
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+  width?: SidePanelWidth;
+  position?: "right" | "left";
+}
+
+const WIDTH_CLASSES: Record<SidePanelWidth, string> = {
+  sm: "w-[360px]",
+  md: "w-[480px]",
+  lg: "w-[600px]",
+  xl: "w-[800px]",
+};
+
+export function SidePanel({
+  isOpen,
+  onClose,
+  children,
+  width = "md",
+  position = "right",
+}: SidePanelProps) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof window.addEventListener !== "function") {
+      return;
+    }
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  if (!isOpen) return null;
+
+  if (isMobile) {
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col items-end">
+        <div
+          data-testid="side-panel-backdrop"
+          className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+          onClick={onClose}
+        />
+        <div className="relative flex w-full flex-col border-t bg-background shadow-xl transition-transform duration-300 ease-in-out max-h-[80vh]">
+          <div className="flex items-center justify-between border-b p-4">
+            <h2 className="text-lg font-semibold">Details</h2>
+            <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close">
+              <X className="size-5" />
+            </Button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4">{children}</div>
+        </div>
+      </div>
+    );
+  }
+
+  const positionClass = position === "right" ? "right-0" : "left-0";
+
+  return (
+    <div className="fixed inset-0 z-50 flex">
+      <div
+        data-testid="side-panel-backdrop"
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <aside
+        className={cn(
+          "relative flex h-full w-full max-w-full flex-col border-l bg-background shadow-xl transition-transform duration-300 ease-in-out",
+          WIDTH_CLASSES[width],
+          positionClass,
+        )}
+      >
+        <div className="flex items-center justify-between border-b p-4">
+          <h2 className="text-lg font-semibold">Details</h2>
+          <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close">
+            <X className="size-5" />
+          </Button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-4">{children}</div>
+      </aside>
+    </div>
+  );
+}
