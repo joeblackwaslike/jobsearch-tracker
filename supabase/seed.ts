@@ -1617,3 +1617,11 @@ const sampleDocuments: Array<Document> = [
       archived_at: new Date('2024-12-20')
     },
 ];
+
+export {
+  sampleApplications,
+  sampleCompanies,
+  sampleContacts,
+  sampleDocuments,
+  sampleInterviews,
+};

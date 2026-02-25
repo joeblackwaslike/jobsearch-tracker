@@ -17,7 +17,8 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:seed": "supabase db reset --seed",
-    "db:types": "supabase gen types typescript --local > src/lib/supabase/types.ts"
+    "db:types": "supabase gen types typescript --local > src/lib/supabase/types.ts",
+    "seed:generate": "npx tsx ../supabase/generate-seed.ts > ../supabase/seed.sql"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
