@@ -1,8 +1,6 @@
 #!/usr/bin/env zsh
-
-npx run lint
-# make build
-# make lint
-# make type
-# make test
-# make test:e2e
+cd frontend
+npx bun lint
+npx bun type
+npx bun test
+npx bun test:e2e
