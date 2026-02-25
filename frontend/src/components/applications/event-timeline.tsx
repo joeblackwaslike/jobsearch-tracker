@@ -35,24 +35,23 @@ const EVENT_TYPE_CONFIG: Record<
   string,
   { label: string; icon: React.ComponentType<{ className?: string }> }
 > = {
-  screening_interview: { label: "Screening Interview", icon: Phone },
-  technical_interview: { label: "Technical Interview", icon: Code },
-  behavioral_interview: { label: "Behavioral Interview", icon: Users },
-  online_test: { label: "Online Test", icon: Monitor },
-  take_home: { label: "Take Home", icon: Home },
+  "screening-interview": { label: "Screening Interview", icon: Phone },
+  "technical-interview": { label: "Technical Interview", icon: Code },
+  "behavioral-interview": { label: "Behavioral Interview", icon: Users },
+  "online-test": { label: "Online Test", icon: Monitor },
+  "take-home": { label: "Take Home", icon: Home },
   onsite: { label: "Onsite", icon: Building },
   offer: { label: "Offer", icon: Gift },
-  rejection: { label: "Rejection", icon: XCircle },
 };
 
 const STATUS_VARIANT: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
-  availability_requested: "outline",
-  availability_submitted: "outline",
+  "availability-requested": "outline",
+  "availability-submitted": "outline",
   scheduled: "default",
   completed: "secondary",
   cancelled: "destructive",
   rescheduled: "outline",
-  no_show: "destructive",
+  "no-show": "destructive",
 };
 
 function formatStatusLabel(status: string): string {
