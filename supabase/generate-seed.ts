@@ -37,3 +37,32 @@ function insertBlock(out: string[], table: string, colStr: string, rowValues: st
   });
   out.push("");
 }
+
+// ---------------------------------------------------------------------------
+// Entities with IDs assigned
+// ---------------------------------------------------------------------------
+
+// Companies have hardcoded UUIDs in seed.ts — preserve them
+const companies = sampleCompanies.map((c) => ({
+  ...c,
+  id: c.id ?? randomUUID(),
+}));
+
+// Applications get fresh UUIDs; round-robin company assignment
+const applications = sampleApplications.map((a, i) => ({
+  ...a,
+  id: randomUUID(),
+  company_id: companies[i % companies.length].id!,
+}));
+
+// Documents: preserve existing IDs (parent_id refs depend on them)
+const documents = sampleDocuments.map((d) => ({
+  ...d,
+  id: d.id ?? randomUUID(),
+}));
+
+// Contacts already have company_id in seed.ts; just add IDs
+const contacts = sampleContacts.map((c) => ({
+  ...c,
+  id: randomUUID(),
+}));
