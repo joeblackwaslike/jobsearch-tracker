@@ -146,3 +146,73 @@ const events = tracks.flatMap((track) =>
     };
   })
 );
+
+// ---------------------------------------------------------------------------
+// application_documents  (90% resume, ~20% cover letter)
+// ---------------------------------------------------------------------------
+
+const activeResumes = documents.filter((d) => d.type === "resume" && !d.archived_at);
+const activeCoverLetters = documents.filter((d) => d.type === "cover-letter" && !d.archived_at);
+
+const appDocRows: Array<{
+  id: string; application_id: string; document_id: string;
+  name: string; type: string;
+  content: string | null | undefined;
+  uri: string | null | undefined;
+  mime_type: string | null | undefined;
+  revision: string | null;
+}> = [];
+
+applications.forEach((app, i) => {
+  // 90 % get a resume
+  if (i < Math.floor(applications.length * 0.9) && activeResumes.length > 0) {
+    const doc = activeResumes[i % activeResumes.length];
+    appDocRows.push({
+      id: randomUUID(), application_id: app.id, document_id: doc.id,
+      name: doc.name, type: doc.type,
+      content: doc.content ?? null, uri: doc.uri ?? null, mime_type: doc.mime_type ?? null,
+      revision: doc.revision != null ? String(doc.revision) : null,
+    });
+  }
+  // Every 5th app (~20 %) gets a cover letter
+  if (i % 5 === 0 && activeCoverLetters.length > 0) {
+    const doc = activeCoverLetters[Math.floor(i / 5) % activeCoverLetters.length];
+    appDocRows.push({
+      id: randomUUID(), application_id: app.id, document_id: doc.id,
+      name: doc.name, type: doc.type,
+      content: doc.content ?? null, uri: doc.uri ?? null, mime_type: doc.mime_type ?? null,
+      revision: doc.revision != null ? String(doc.revision) : null,
+    });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// event_contacts  (1–3 contacts per event from the event's application's company)
+// ---------------------------------------------------------------------------
+
+const contactsByCompany = new Map<string, typeof contacts>();
+for (const c of contacts) {
+  if (!c.company_id) continue;
+  const list = contactsByCompany.get(c.company_id) ?? [];
+  list.push(c);
+  contactsByCompany.set(c.company_id, list);
+}
+
+const appToCompany = new Map(applications.map((a) => [a.id, a.company_id]));
+
+const eventContactRows: Array<{ id: string; event_id: string; contact_id: string }> = [];
+
+events.forEach((event, idx) => {
+  const companyId = appToCompany.get(event.application_id);
+  if (!companyId) return;
+  const compContacts = contactsByCompany.get(companyId);
+  if (!compContacts?.length) return;
+  const count = (idx % 3) + 1; // cycles 1, 2, 3
+  for (let j = 0; j < count && j < compContacts.length; j++) {
+    eventContactRows.push({
+      id: randomUUID(),
+      event_id: event.id,
+      contact_id: compContacts[j].id,
+    });
+  }
+});
