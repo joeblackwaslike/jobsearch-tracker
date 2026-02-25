@@ -216,3 +216,110 @@ events.forEach((event, idx) => {
     });
   }
 });
+
+// ---------------------------------------------------------------------------
+// Emit SQL
+// ---------------------------------------------------------------------------
+
+const out: string[] = [];
+
+out.push("-- ===========================================================");
+out.push("-- Seed data for local development");
+out.push("-- ===========================================================");
+out.push("-- Prerequisites:");
+out.push("--   1. Run `supabase start`");
+out.push("--   2. Sign up at least one user via the app (http://localhost:3000)");
+out.push("--   3. Run `supabase db reset` (this file runs automatically)");
+out.push("-- ===========================================================");
+out.push("");
+out.push("DO $$");
+out.push("DECLARE");
+out.push("  v_user_id UUID;");
+out.push("BEGIN");
+out.push("  SELECT id INTO v_user_id FROM auth.users ORDER BY created_at ASC LIMIT 1;");
+out.push("  IF v_user_id IS NULL THEN");
+out.push("    RAISE EXCEPTION 'No users found in auth.users. Sign up at http://localhost:3000 then run supabase db reset.';");
+out.push("  END IF;");
+out.push("  RAISE NOTICE 'Seeding data for user %', v_user_id;");
+out.push("");
+
+insertBlock(out, "companies",
+  "id, user_id, name, description, links, industry, size, location, founded, culture, benefits, pros, cons, tech_stack, ratings, tags, researched",
+  companies.map((c) => [
+    val(c.id), "v_user_id",
+    val(c.name), val(c.description ?? null), val(c.links ?? null),
+    val(c.industry ?? null), val(c.size ?? null), val(c.location ?? null),
+    c.founded instanceof Date ? `'${c.founded.toISOString().split("T")[0]}'` : "NULL",
+    val(c.culture ?? null), val(c.benefits ?? null),
+    val(c.pros ?? null), val(c.cons ?? null),
+    val(c.techStack ?? null), val(c.ratings ?? null),
+    val(c.tags ?? null), c.researched ? "true" : "false",
+  ])
+);
+
+insertBlock(out, "applications",
+  "id, user_id, company_id, position, status, work_type, employment_type, location, salary, url, job_description, interest, source, tags, applied_at",
+  applications.map((a) => [
+    val(a.id), "v_user_id", val(a.company_id),
+    val(a.position), val(a.status),
+    val(a.work_type ?? null), val(a.employment_type ?? null),
+    val(a.location ?? null), val(a.salary ?? null),
+    val(a.url ?? null), val(a.job_description ?? null),
+    val(a.interest ?? null), val(a.source ?? null),
+    val(a.tags ?? null),
+    a.applied_at instanceof Date ? `'${a.applied_at.toISOString()}'` : "NULL",
+  ])
+);
+
+insertBlock(out, "documents",
+  "id, user_id, name, type, content, uri, mime_type, revision, parent_id, tags, archived_at",
+  documents.map((d) => [
+    val(d.id), "v_user_id",
+    val(d.name), val(d.type),
+    val(d.content ?? null), val(d.uri ?? null), val(d.mime_type ?? null),
+    val(d.revision ?? null), val(d.parent_id ?? null),
+    val(d.tags ?? null),
+    d.archived_at instanceof Date ? `'${d.archived_at.toISOString()}'` : "NULL",
+  ])
+);
+
+insertBlock(out, "contacts",
+  "id, user_id, company_id, name, title, email, phone, linkedin_url, notes",
+  contacts.map((c) => [
+    val(c.id), "v_user_id",
+    val(c.company_id ?? null), val(c.name),
+    val(c.title ?? null), val(c.email ?? null),
+    val(c.phone ?? null), val(c.linkedin_url ?? null),
+    val(c.notes ?? null),
+  ])
+);
+
+insertBlock(out, "events",
+  "id, user_id, application_id, type, status, url, title, description, duration_minutes, scheduled_at, notes",
+  events.map((e) => [
+    val(e.id), "v_user_id", val(e.application_id),
+    val(e.type), val(e.status),
+    val(e.url), val(e.title), val(e.description),
+    val(e.duration_minutes), val(e.scheduled_at),
+    val(e.notes),
+  ])
+);
+
+insertBlock(out, "application_documents",
+  "id, application_id, document_id, name, type, content, uri, mime_type, revision",
+  appDocRows.map((r) => [
+    val(r.id), val(r.application_id), val(r.document_id),
+    val(r.name), val(r.type),
+    val(r.content ?? null), val(r.uri ?? null), val(r.mime_type ?? null),
+    val(r.revision),
+  ])
+);
+
+insertBlock(out, "event_contacts",
+  "id, event_id, contact_id",
+  eventContactRows.map((r) => [val(r.id), val(r.event_id), val(r.contact_id)])
+);
+
+out.push("END $$;");
+
+console.log(out.join("\n"));
