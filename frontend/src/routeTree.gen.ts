@@ -13,7 +13,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
-import { Route as AuthenticatedInterviewsRouteImport } from './routes/_authenticated/interviews'
+import { Route as AuthenticatedEventsRouteImport } from './routes/_authenticated/events'
 import { Route as AuthenticatedDocumentsRouteImport } from './routes/_authenticated/documents'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCompaniesRouteImport } from './routes/_authenticated/companies'
@@ -39,9 +39,9 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedInterviewsRoute = AuthenticatedInterviewsRouteImport.update({
-  id: '/interviews',
-  path: '/interviews',
+const AuthenticatedEventsRoute = AuthenticatedEventsRouteImport.update({
+  id: '/events',
+  path: '/events',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedDocumentsRoute = AuthenticatedDocumentsRouteImport.update({
@@ -79,7 +79,7 @@ export interface FileRoutesByFullPath {
   '/companies': typeof AuthenticatedCompaniesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/documents': typeof AuthenticatedDocumentsRoute
-  '/interviews': typeof AuthenticatedInterviewsRoute
+  '/events': typeof AuthenticatedEventsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/applications/$applicationId': typeof AuthenticatedApplicationsApplicationIdRoute
 }
@@ -90,7 +90,7 @@ export interface FileRoutesByTo {
   '/companies': typeof AuthenticatedCompaniesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/documents': typeof AuthenticatedDocumentsRoute
-  '/interviews': typeof AuthenticatedInterviewsRoute
+  '/events': typeof AuthenticatedEventsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/applications/$applicationId': typeof AuthenticatedApplicationsApplicationIdRoute
 }
@@ -103,7 +103,7 @@ export interface FileRoutesById {
   '/_authenticated/companies': typeof AuthenticatedCompaniesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/documents': typeof AuthenticatedDocumentsRoute
-  '/_authenticated/interviews': typeof AuthenticatedInterviewsRoute
+  '/_authenticated/events': typeof AuthenticatedEventsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/applications/$applicationId': typeof AuthenticatedApplicationsApplicationIdRoute
 }
@@ -116,7 +116,7 @@ export interface FileRouteTypes {
     | '/companies'
     | '/dashboard'
     | '/documents'
-    | '/interviews'
+    | '/events'
     | '/settings'
     | '/applications/$applicationId'
   fileRoutesByTo: FileRoutesByTo
@@ -127,7 +127,7 @@ export interface FileRouteTypes {
     | '/companies'
     | '/dashboard'
     | '/documents'
-    | '/interviews'
+    | '/events'
     | '/settings'
     | '/applications/$applicationId'
   id:
@@ -139,7 +139,7 @@ export interface FileRouteTypes {
     | '/_authenticated/companies'
     | '/_authenticated/dashboard'
     | '/_authenticated/documents'
-    | '/_authenticated/interviews'
+    | '/_authenticated/events'
     | '/_authenticated/settings'
     | '/_authenticated/applications/$applicationId'
   fileRoutesById: FileRoutesById
@@ -180,11 +180,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/interviews': {
-      id: '/_authenticated/interviews'
-      path: '/interviews'
-      fullPath: '/interviews'
-      preLoaderRoute: typeof AuthenticatedInterviewsRouteImport
+    '/_authenticated/events': {
+      id: '/_authenticated/events'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof AuthenticatedEventsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/documents': {
@@ -245,7 +245,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedCompaniesRoute: typeof AuthenticatedCompaniesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDocumentsRoute: typeof AuthenticatedDocumentsRoute
-  AuthenticatedInterviewsRoute: typeof AuthenticatedInterviewsRoute
+  AuthenticatedEventsRoute: typeof AuthenticatedEventsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
 }
 
@@ -254,7 +254,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCompaniesRoute: AuthenticatedCompaniesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDocumentsRoute: AuthenticatedDocumentsRoute,
-  AuthenticatedInterviewsRoute: AuthenticatedInterviewsRoute,
+  AuthenticatedEventsRoute: AuthenticatedEventsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
 }
 

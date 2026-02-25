@@ -1,12 +1,6 @@
-import { CheckCircle, MapPin, Building2, Users } from "lucide-react";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Building2, CheckCircle, MapPin, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Company } from "@/lib/queries/companies";
 
 interface CompanyCardProps {
@@ -15,23 +9,15 @@ interface CompanyCardProps {
 }
 
 export function CompanyCard({ company, onClick }: CompanyCardProps) {
-  const tags = Array.isArray(company.tags)
-    ? (company.tags as string[])
-    : [];
+  const tags = Array.isArray(company.tags) ? (company.tags as string[]) : [];
 
   return (
-    <Card
-      className="cursor-pointer transition-shadow hover:shadow-md"
-      onClick={onClick}
-    >
+    <Card className="cursor-pointer transition-shadow hover:shadow-md" onClick={onClick}>
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-2">
           <CardTitle className="text-base">{company.name}</CardTitle>
           {company.researched && (
-            <Badge
-              variant="secondary"
-              className="shrink-0 gap-1 text-xs"
-            >
+            <Badge variant="secondary" className="shrink-0 gap-1 text-xs">
               <CheckCircle className="size-3" />
               Researched
             </Badge>
@@ -67,9 +53,7 @@ export function CompanyCard({ company, onClick }: CompanyCardProps) {
             </Badge>
           ))}
           {tags.length > 3 && (
-            <span className="text-xs text-muted-foreground">
-              +{tags.length - 3} more
-            </span>
+            <span className="text-xs text-muted-foreground">+{tags.length - 3} more</span>
           )}
         </div>
       </CardContent>

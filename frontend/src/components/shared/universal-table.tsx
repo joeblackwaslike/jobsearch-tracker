@@ -1,9 +1,9 @@
 import {
+  type ColumnDef,
   flexRender,
   getCoreRowModel,
-  useReactTable,
-  type ColumnDef,
   type SortingState,
+  useReactTable,
 } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { useMemo } from "react";
@@ -17,8 +17,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatDate, formatRelativeTime } from "@/lib/formatters";
-import type { ColumnType, TableSchema } from "@/schemas/table-schema";
 import { cn } from "@/lib/utils";
+import type { ColumnType, TableSchema } from "@/schemas/table-schema";
 
 interface UniversalTableProps<T extends object> {
   data: T[];
@@ -46,7 +46,7 @@ export function UniversalTable<T extends object>({
       enableSorting: col.sortable,
       size: col.minWidth,
       cell: col.cell
-        ? ({ row }) => col.cell!(row.original as T)
+        ? ({ row }) => col.cell?.(row.original as T)
         : ({ row }) => {
             const value = getValue(row.original, col.id);
             return <DefaultCell value={value} type={col.type} />;
@@ -150,10 +150,7 @@ export function UniversalTable<T extends object>({
               return (
                 <TableRow
                   key={row.id}
-                  className={cn(
-                    "cursor-pointer hover:bg-muted/50",
-                    isSelected && "bg-muted",
-                  )}
+                  className={cn("cursor-pointer hover:bg-muted/50", isSelected && "bg-muted")}
                   onClick={() => onRowClick?.(rowData)}
                 >
                   {row.getVisibleCells().map((cell, cellIdx) => (
@@ -184,8 +181,6 @@ function DefaultCell({ value, type }: { value: unknown; type: ColumnType }) {
       return <span className="text-muted-foreground">{formatDate(String(value))}</span>;
     case "datetime":
       return <span className="text-muted-foreground">{formatRelativeTime(String(value))}</span>;
-    case "number":
-    case "text":
     default:
       return <span className="text-muted-foreground">{String(value)}</span>;
   }

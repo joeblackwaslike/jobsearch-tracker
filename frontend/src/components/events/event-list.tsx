@@ -12,11 +12,11 @@ import { type EventWithApplication, useDeleteEvent } from "@/lib/queries/events"
 // ---------------------------------------------------------------------------
 
 const TYPE_LABELS: Record<string, string> = {
-  screening_interview: "Screening",
-  technical_interview: "Technical",
-  behavioral_interview: "Behavioral",
-  online_test: "Online Test",
-  take_home: "Take Home",
+  "screening-interview": "Screening",
+  "technical-interview": "Technical",
+  "behavioral-interview": "Behavioral",
+  "online-test": "Online Test",
+  "take-home": "Take Home",
   onsite: "Onsite",
 };
 
@@ -25,9 +25,9 @@ const STATUS_COLORS: Record<string, string> = {
   completed: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
   cancelled: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
   rescheduled: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
-  availability_requested: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  availability_submitted: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
-  no_show: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
+  "availability-requested": "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+  "availability-submitted": "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
+  "no-show": "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -35,9 +35,9 @@ const STATUS_LABELS: Record<string, string> = {
   completed: "Completed",
   cancelled: "Cancelled",
   rescheduled: "Rescheduled",
-  availability_requested: "Avail. Requested",
-  availability_submitted: "Avail. Submitted",
-  no_show: "No Show",
+  "availability-requested": "Avail. Requested",
+  "availability-submitted": "Avail. Submitted",
+  "no-show": "No Show",
 };
 
 // ---------------------------------------------------------------------------
@@ -97,9 +97,7 @@ export function EventList({ events, search, hideArchived = true }: EventListProp
 
   return (
     <>
-      {hideArchived && (
-        <p className="text-xs text-muted-foreground">Showing active events only.</p>
-      )}
+      {hideArchived && <p className="text-xs text-muted-foreground">Showing active events only.</p>}
       <div className="space-y-3">
         {filtered.map((event) => (
           <Card

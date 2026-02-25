@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { UniversalTable } from "../universal-table";
 
 const mockSchema = {
@@ -29,9 +29,7 @@ describe("UniversalTable", () => {
 
   it("calls onRowClick when row clicked", () => {
     const onRowClick = vi.fn();
-    render(
-      <UniversalTable data={mockData} schema={mockSchema} onRowClick={onRowClick} />,
-    );
+    render(<UniversalTable data={mockData} schema={mockSchema} onRowClick={onRowClick} />);
     fireEvent.click(screen.getByText("Item 1"));
     expect(onRowClick).toHaveBeenCalledWith(mockData[0]);
   });

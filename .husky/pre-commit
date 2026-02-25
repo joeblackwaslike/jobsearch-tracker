@@ -1,0 +1,8 @@
+#!/usr/bin/env zsh
+
+npx run lint
+# make build
+# make lint
+# make type
+# make test
+# make test:e2e

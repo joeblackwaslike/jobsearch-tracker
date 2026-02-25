@@ -19,11 +19,11 @@ export const INTEREST_COLORS = {
 } as const;
 
 export const EVENT_TYPE_LABELS: Record<string, string> = {
-  screening_interview: "Screening",
-  technical_interview: "Technical",
-  behavioral_interview: "Behavioral",
-  online_test: "Online Test",
-  take_home: "Take Home",
+  "screening-interview": "Screening",
+  "technical-interview": "Technical",
+  "behavioral-interview": "Behavioral",
+  "online-test": "Online Test",
+  "take-home": "Take Home",
   onsite: "Onsite",
 };
 
@@ -32,9 +32,9 @@ export const EVENT_STATUS_COLORS: Record<string, string> = {
   completed: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
   cancelled: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
   rescheduled: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
-  availability_requested: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  availability_submitted: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
-  no_show: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
+  "availability-requested": "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+  "availability-submitted": "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
+  "no-show": "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
 };
 
 // Helper function
@@ -53,9 +53,7 @@ export const applicationTableSchema = {
       sortable: true,
       minWidth: 200,
       grow: 2,
-      cell: (data: { position: string }) => (
-        <span className="font-medium">{data.position}</span>
-      ),
+      cell: (data: { position: string }) => <span className="font-medium">{data.position}</span>,
     },
     {
       id: "company.name",
@@ -74,7 +72,15 @@ export const applicationTableSchema = {
       type: "enum" as const,
       sortable: false,
       minWidth: 100,
-      options: ["bookmarked", "applied", "interviewing", "offer", "accepted", "rejected", "archived"],
+      options: [
+        "bookmarked",
+        "applied",
+        "interviewing",
+        "offer",
+        "accepted",
+        "rejected",
+        "archived",
+      ],
       cell: (data: { status: keyof typeof STATUS_COLORS }) => (
         <Badge variant="secondary" className={STATUS_COLORS[data.status] ?? ""}>
           {capitalize(data.status)}
@@ -151,9 +157,7 @@ export const companyTableSchema = {
       sortable: false,
       minWidth: 200,
       grow: 2,
-      cell: (data: { name: string }) => (
-        <span className="font-medium">{data.name}</span>
-      ),
+      cell: (data: { name: string }) => <span className="font-medium">{data.name}</span>,
     },
     {
       id: "industry",
@@ -218,7 +222,9 @@ export const companyTableSchema = {
                 {tag}
               </Badge>
             ))}
-            {tags.length > 2 && <span className="text-xs text-muted-foreground">+{tags.length - 2}</span>}
+            {tags.length > 2 && (
+              <span className="text-xs text-muted-foreground">+{tags.length - 2}</span>
+            )}
           </div>
         );
       },
@@ -278,7 +284,9 @@ export const eventTableSchema = {
       sortable: true,
       minWidth: 180,
       cell: (data: { scheduled_at: string | null }) => (
-        <span className="text-muted-foreground">{data.scheduled_at ? formatDate(data.scheduled_at) : "TBD"}</span>
+        <span className="text-muted-foreground">
+          {data.scheduled_at ? formatDate(data.scheduled_at) : "TBD"}
+        </span>
       ),
     },
   ],

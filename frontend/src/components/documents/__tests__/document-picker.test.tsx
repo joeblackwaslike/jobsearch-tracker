@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@/test/test-utils";
 import { DocumentPicker } from "../document-picker";
 
@@ -7,7 +7,7 @@ vi.mock("@/lib/queries/documents", () => ({
   useDocuments: vi.fn(() => ({
     data: [
       { id: "d1", name: "My Resume", type: "resume", updated_at: "2026-01-01" },
-      { id: "d2", name: "Cover Letter", type: "cover_letter", updated_at: "2026-01-02" },
+      { id: "d2", name: "Cover Letter", type: "cover-letter", updated_at: "2026-01-02" },
       { id: "d3", name: "Portfolio", type: "other", updated_at: "2026-01-03" },
     ],
     isLoading: false,
@@ -17,12 +17,7 @@ vi.mock("@/lib/queries/documents", () => ({
 describe("DocumentPicker", () => {
   it("renders document list grouped by type", () => {
     render(
-      <DocumentPicker
-        open={true}
-        onOpenChange={vi.fn()}
-        onSelect={vi.fn()}
-        excludeIds={[]}
-      />
+      <DocumentPicker open={true} onOpenChange={vi.fn()} onSelect={vi.fn()} excludeIds={[]} />,
     );
     expect(screen.getByText("Resumes")).toBeInTheDocument();
     expect(screen.getByText("My Resume")).toBeInTheDocument();
@@ -34,12 +29,7 @@ describe("DocumentPicker", () => {
 
   it("excludes documents in excludeIds", () => {
     render(
-      <DocumentPicker
-        open={true}
-        onOpenChange={vi.fn()}
-        onSelect={vi.fn()}
-        excludeIds={["d1"]}
-      />
+      <DocumentPicker open={true} onOpenChange={vi.fn()} onSelect={vi.fn()} excludeIds={["d1"]} />,
     );
     expect(screen.queryByText("My Resume")).not.toBeInTheDocument();
     expect(screen.getByText("Cover Letter")).toBeInTheDocument();
@@ -56,7 +46,7 @@ describe("DocumentPicker", () => {
         onOpenChange={onOpenChange}
         onSelect={onSelect}
         excludeIds={[]}
-      />
+      />,
     );
 
     await user.click(screen.getByText("My Resume"));
@@ -72,10 +62,10 @@ describe("DocumentPicker", () => {
         onOpenChange={vi.fn()}
         onSelect={vi.fn()}
         excludeIds={["d1", "d2", "d3"]}
-      />
+      />,
     );
     expect(
-      screen.getByText("No documents yet. Create documents on the Documents page.")
+      screen.getByText("No documents yet. Create documents on the Documents page."),
     ).toBeInTheDocument();
   });
 });

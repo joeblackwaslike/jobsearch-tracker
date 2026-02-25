@@ -1,5 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { BarChart3, Building2, CheckCircle, ChevronLeftIcon, ChevronRightIcon, Plus, Search, Star } from "lucide-react";
+import {
+  BarChart3,
+  Building2,
+  CheckCircle,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  Plus,
+  Search,
+  Star,
+} from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { CompanyDetail } from "@/components/companies/company-detail";
 import { CompanyForm } from "@/components/companies/company-form";
@@ -116,9 +125,7 @@ function CompaniesPage() {
           <div>
             <h1 className="text-2xl font-bold">Companies</h1>
             <p className="text-sm text-muted-foreground">
-              {isLoading
-                ? "Loading..."
-                : `${totalCount} compan${totalCount !== 1 ? "ies" : "y"}`}
+              {isLoading ? "Loading..." : `${totalCount} compan${totalCount !== 1 ? "ies" : "y"}`}
             </p>
           </div>
           <Button onClick={handleOpenCreate}>

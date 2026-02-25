@@ -1,14 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useApplication } from "@/lib/queries/applications";
 import { ApplicationDetail } from "@/components/applications/application-detail";
+import { useApplication } from "@/lib/queries/applications";
 
 // ---------------------------------------------------------------------------
 // Route definition
 // ---------------------------------------------------------------------------
 
-export const Route = createFileRoute(
-  "/_authenticated/applications/$applicationId"
-)({
+export const Route = createFileRoute("/_authenticated/applications/$applicationId")({
   component: ApplicationDetailPage,
 });
 
@@ -32,10 +30,7 @@ function ApplicationDetailPage() {
     return (
       <div className="flex flex-col items-center justify-center py-12 gap-2">
         <p className="text-muted-foreground">Application not found.</p>
-        <a
-          href="/applications"
-          className="text-sm text-primary hover:underline"
-        >
+        <a href="/applications" className="text-sm text-primary hover:underline">
           Back to applications
         </a>
       </div>

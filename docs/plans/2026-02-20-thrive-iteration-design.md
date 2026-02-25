@@ -98,13 +98,13 @@ A "None" option at the top maps to `undefined`.
 
 ### ScheduleDialog — title placeholder
 
-The title `Input` placeholder is derived from the currently selected `type` using the existing `EVENT_TYPE_OPTIONS` label map (e.g. `type="technical_interview"` → placeholder `"Technical Interview"`). On submit, if `title` is blank, the value is set to the placeholder label before sending.
+The title `Input` placeholder is derived from the currently selected `type` using the existing `EVENT_TYPE_OPTIONS` label map (e.g. `type="technical-interview"` → placeholder `"Technical Interview"`). On submit, if `title` is blank, the value is set to the placeholder label before sending.
 
 ### ScheduleDialog — default status + auto-switch
 
-Default status changes from `"scheduled"` to `"availability_requested"`. A `useEffect` watches `date` and `time` field values:
+Default status changes from `"scheduled"` to `"availability-requested"`. A `useEffect` watches `date` and `time` field values:
 - Both non-empty → set status to `"scheduled"`
-- Either cleared → revert to `"availability_requested"`
+- Either cleared → revert to `"availability-requested"`
 
 The user can manually override status after an auto-switch.
 

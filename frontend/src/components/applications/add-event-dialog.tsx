@@ -2,10 +2,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { DurationCombobox } from "@/components/events/duration-combobox";
 import { ContactCombobox } from "@/components/events/contact-combobox";
+import { DurationCombobox } from "@/components/events/duration-combobox";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -36,24 +36,22 @@ import { type Event, useCreateEvent, useUpdateEvent } from "@/lib/queries/events
 // ---------------------------------------------------------------------------
 
 const EVENT_TYPE_OPTIONS = [
-  { value: "screening_interview", label: "Screening Interview" },
-  { value: "technical_interview", label: "Technical Interview" },
-  { value: "behavioral_interview", label: "Behavioral Interview" },
-  { value: "online_test", label: "Online Test" },
-  { value: "take_home", label: "Take Home" },
+  { value: "screening-interview", label: "Screening Interview" },
+  { value: "technical-interview", label: "Technical Interview" },
+  { value: "behavioral-interview", label: "Behavioral Interview" },
+  { value: "online-test", label: "Online Test" },
+  { value: "take-home", label: "Take Home" },
   { value: "onsite", label: "Onsite" },
-  { value: "offer", label: "Offer" },
-  { value: "rejection", label: "Rejection" },
 ] as const;
 
 const EVENT_STATUS_OPTIONS = [
-  { value: "availability_requested", label: "Availability Requested" },
-  { value: "availability_submitted", label: "Availability Submitted" },
+  { value: "availability-requested", label: "Availability Requested" },
+  { value: "availability-submitted", label: "Availability Submitted" },
   { value: "scheduled", label: "Scheduled" },
   { value: "completed", label: "Completed" },
   { value: "cancelled", label: "Cancelled" },
   { value: "rescheduled", label: "Rescheduled" },
-  { value: "no_show", label: "No Show" },
+  { value: "no-show", label: "No Show" },
 ] as const;
 
 // ---------------------------------------------------------------------------
@@ -158,9 +156,7 @@ export function AddEventDialog({
   const removeContact = useRemoveEventContact();
 
   // For create mode: track contacts locally until event is created
-  const [selectedContacts, setSelectedContacts] = useState<Pick<Contact, "id" | "name">[]>(
-    [],
-  );
+  const [selectedContacts, setSelectedContacts] = useState<Pick<Contact, "id" | "name">[]>([]);
 
   // For edit mode: load existing contacts from the server
   const { data: existingContacts } = useEventContacts(event?.id ?? "");
@@ -269,121 +265,121 @@ export function AddEventDialog({
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <ScrollArea className="max-h-[70vh] pr-4">
-          <div className="space-y-4 py-4">
-            {/* Type */}
-            <div className="space-y-2">
-              <Label>Type *</Label>
-              <Select
-                value={watch("type") ?? ""}
-                onValueChange={(v) => setValue("type", v, { shouldValidate: true })}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select event type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {EVENT_TYPE_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.type && <p className="text-sm text-destructive">{errors.type.message}</p>}
-            </div>
-
-            {/* Status */}
-            <div className="space-y-2">
-              <Label>Status</Label>
-              <Select
-                value={watch("status") ?? "scheduled"}
-                onValueChange={(v) => setValue("status", v)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  {EVENT_STATUS_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Title */}
-            <div className="space-y-2">
-              <Label htmlFor="event-title">Title</Label>
-              <Input
-                id="event-title"
-                placeholder="e.g. Phone screen with recruiter"
-                {...register("title")}
-              />
-            </div>
-
-            {/* Date & Time */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-4 py-4">
+              {/* Type */}
               <div className="space-y-2">
-                <Label htmlFor="event-date">Date</Label>
-                <Input id="event-date" type="date" {...register("date")} />
+                <Label>Type *</Label>
+                <Select
+                  value={watch("type") ?? ""}
+                  onValueChange={(v) => setValue("type", v, { shouldValidate: true })}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select event type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {EVENT_TYPE_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.type && <p className="text-sm text-destructive">{errors.type.message}</p>}
               </div>
+
+              {/* Status */}
               <div className="space-y-2">
-                <Label htmlFor="event-time">Time</Label>
-                <Input id="event-time" type="time" {...register("time")} />
+                <Label>Status</Label>
+                <Select
+                  value={watch("status") ?? "scheduled"}
+                  onValueChange={(v) => setValue("status", v)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {EVENT_STATUS_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-            </div>
 
-            {/* Duration */}
-            <div className="space-y-2">
-              <Label>Duration</Label>
-              <DurationCombobox
-                value={watch("duration_minutes")}
-                onChange={(v) => setValue("duration_minutes", v)}
-              />
-            </div>
-
-            {/* URL */}
-            <div className="space-y-2">
-              <Label htmlFor="event-url">Meeting URL</Label>
-              <Input id="event-url" placeholder="https://..." {...register("url")} />
-            </div>
-
-            {/* Description */}
-            <div className="space-y-2">
-              <Label htmlFor="event-description">Description</Label>
-              <textarea
-                id="event-description"
-                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                placeholder="Notes about this event..."
-                {...register("description")}
-              />
-            </div>
-
-            {/* Contacts */}
-            {companyId && (
+              {/* Title */}
               <div className="space-y-2">
-                <Label>Contacts</Label>
-                <ContactCombobox
-                  companyId={companyId}
-                  selectedContactIds={
-                    mode === "edit"
-                      ? (existingContacts?.map((ec) => ec.contact.id) ?? [])
-                      : selectedContacts.map((c) => c.id)
-                  }
-                  selectedContacts={
-                    mode === "edit"
-                      ? (existingContacts?.map((ec) => ({
-                          id: ec.contact.id,
-                          name: ec.contact.name,
-                        })) ?? [])
-                      : selectedContacts
-                  }
-                  onAdd={handleAddContact}
-                  onRemove={handleRemoveContact}
+                <Label htmlFor="event-title">Title</Label>
+                <Input
+                  id="event-title"
+                  placeholder="e.g. Phone screen with recruiter"
+                  {...register("title")}
                 />
               </div>
-            )}
-          </div>
+
+              {/* Date & Time */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="event-date">Date</Label>
+                  <Input id="event-date" type="date" {...register("date")} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="event-time">Time</Label>
+                  <Input id="event-time" type="time" {...register("time")} />
+                </div>
+              </div>
+
+              {/* Duration */}
+              <div className="space-y-2">
+                <Label>Duration</Label>
+                <DurationCombobox
+                  value={watch("duration_minutes")}
+                  onChange={(v) => setValue("duration_minutes", v)}
+                />
+              </div>
+
+              {/* URL */}
+              <div className="space-y-2">
+                <Label htmlFor="event-url">Meeting URL</Label>
+                <Input id="event-url" placeholder="https://..." {...register("url")} />
+              </div>
+
+              {/* Description */}
+              <div className="space-y-2">
+                <Label htmlFor="event-description">Description</Label>
+                <textarea
+                  id="event-description"
+                  className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  placeholder="Notes about this event..."
+                  {...register("description")}
+                />
+              </div>
+
+              {/* Contacts */}
+              {companyId && (
+                <div className="space-y-2">
+                  <Label>Contacts</Label>
+                  <ContactCombobox
+                    companyId={companyId}
+                    selectedContactIds={
+                      mode === "edit"
+                        ? (existingContacts?.map((ec) => ec.contact.id) ?? [])
+                        : selectedContacts.map((c) => c.id)
+                    }
+                    selectedContacts={
+                      mode === "edit"
+                        ? (existingContacts?.map((ec) => ({
+                            id: ec.contact.id,
+                            name: ec.contact.name,
+                          })) ?? [])
+                        : selectedContacts
+                    }
+                    onAdd={handleAddContact}
+                    onRemove={handleRemoveContact}
+                  />
+                </div>
+              )}
+            </div>
           </ScrollArea>
 
           <DialogFooter>

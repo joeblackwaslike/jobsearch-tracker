@@ -3,11 +3,11 @@ import type { SortingState } from "@tanstack/react-table";
 import { BookmarkIcon, ChevronLeftIcon, ChevronRightIcon, PlusIcon, ZapIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { z } from "zod";
+import { ApplicationDetail } from "@/components/applications/application-detail";
 import {
   ApplicationFilters,
   type ApplicationFiltersState,
 } from "@/components/applications/application-filters";
-import { ApplicationDetail } from "@/components/applications/application-detail";
 import { ApplicationForm } from "@/components/applications/application-form";
 import { ApplicationStats } from "@/components/applications/application-stats";
 import { EasyAddForm } from "@/components/applications/easy-add-form";

@@ -503,12 +503,12 @@ export const companyTableSchema: TableSchema<Company> = {
 
 // Event Schema
 const EVENT_TYPE_LABELS: Record<string, string> = {
-  screening_interview: "Screening",
-  technical_interview: "Technical",
-  behavioral_interview: "Behavioral",
-  online_test: "Online Test",
-  take_home: "Take Home",
-  onsite: "Onsite",
+  "screening-interview": "Screening",
+  "technical-interview": "Technical",
+  "behavioral-interview": "Behavioral",
+  "online-test": "Online Test",
+  "take-home": "Take Home",
+  "onsite": "Onsite",
 };
 
 export const eventTableSchema: TableSchema<EventWithApplication> = {
@@ -546,7 +546,7 @@ export const eventTableSchema: TableSchema<EventWithApplication> = {
       type: "enum",
       sortable: false,
       minWidth: 140,
-      options: ["scheduled", "completed", "cancelled", "rescheduled", "availability_requested", "availability_submitted", "no_show"],
+      options: ["scheduled", "completed", "cancelled", "rescheduled", "availability-requested", "availability-submitted", "no-show"],
       cell: (row) => (
         <Badge variant="secondary" className={getEventStatusColor(row.status)}>
           {capitalize(row.status)}
@@ -595,9 +595,9 @@ function getEventStatusColor(status: string): string {
     completed: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
     cancelled: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
     rescheduled: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
-    availability_requested: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-    availability_submitted: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
-    no_show: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
+    "availability-requested": "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+    "availability-submitted": "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
+    "no-show": "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
   };
   return colors[status] ?? "";
 }
@@ -1862,7 +1862,7 @@ import type { EventWithApplication } from "@/lib/queries/events";
 
 const mockEvent: EventWithApplication = {
   id: "1",
-  type: "technical_interview",
+  type: "technical-interview",
   status: "scheduled",
   scheduled_at: "2026-02-25T10:00:00Z",
   duration_minutes: 60,
@@ -1916,12 +1916,12 @@ import type { EventWithApplication } from "@/lib/queries/events";
 import { formatDate } from "@/lib/formatters";
 
 const EVENT_TYPE_LABELS: Record<string, string> = {
-  screening_interview: "Screening Interview",
-  technical_interview: "Technical Interview",
-  behavioral_interview: "Behavioral Interview",
-  online_test: "Online Test",
-  take_home: "Take Home Assignment",
-  onsite: "Onsite Interview",
+  "screening-interview": "Screening Interview",
+  "technical-interview": "Technical Interview",
+  "behavioral-interview": "Behavioral Interview",
+  "online-test": "Online Test",
+  "take-home": "Take Home Assignment",
+  "onsite": "Onsite Interview",
 };
 
 const EVENT_STATUS_COLORS: Record<string, string> = {
@@ -1929,9 +1929,9 @@ const EVENT_STATUS_COLORS: Record<string, string> = {
   completed: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
   cancelled: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
   rescheduled: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
-  availability_requested: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  availability_submitted: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
-  no_show: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
+  "availability-requested": "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+  "availability-submitted": "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
+  "no-show": "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
 };
 
 interface EventDetailProps {

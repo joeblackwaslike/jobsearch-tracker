@@ -17,7 +17,9 @@ export function CompanyDetail({ company }: CompanyDetailProps) {
       <div className="space-y-2">
         <h3 className="text-lg font-semibold">{company.name}</h3>
         {company.researched && (
-          <Badge variant="secondary" className="text-xs">Researched</Badge>
+          <Badge variant="secondary" className="text-xs">
+            Researched
+          </Badge>
         )}
       </div>
 
@@ -102,10 +104,10 @@ export function CompanyDetail({ company }: CompanyDetailProps) {
                 <div key={key} className="flex items-center justify-between">
                   <p className="text-sm text-muted-foreground capitalize">{key}</p>
                   <div className="flex items-center gap-1">
-                    {Array.from({ length: 5 }).map((_, i) => (
+                    {[1, 2, 3, 4, 5].map((n) => (
                       <span
-                        key={i}
-                        className={`size-4 ${i < Number(value) ? "text-yellow-500" : "text-gray-300"}`}
+                        key={n}
+                        className={`size-4 ${n <= Number(value) ? "text-yellow-500" : "text-gray-300"}`}
                       >
                         ★
                       </span>

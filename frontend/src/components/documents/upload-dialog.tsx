@@ -1,14 +1,14 @@
+import { FileIcon, UploadIcon, XIcon } from "lucide-react";
 import * as React from "react";
-import { UploadIcon, FileIcon, XIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -34,11 +34,7 @@ interface UploadDialogProps {
 // Component
 // ---------------------------------------------------------------------------
 
-export function UploadDialog({
-  open,
-  onOpenChange,
-  onSuccess,
-}: UploadDialogProps) {
+export function UploadDialog({ open, onOpenChange, onSuccess }: UploadDialogProps) {
   const [file, setFile] = React.useState<File | null>(null);
   const [name, setName] = React.useState("");
   const [type, setType] = React.useState("other");
@@ -93,7 +89,7 @@ export function UploadDialog({
           onOpenChange(false);
           onSuccess?.(doc.id);
         },
-      }
+      },
     );
   };
 
@@ -102,19 +98,26 @@ export function UploadDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Upload Document</DialogTitle>
-          <DialogDescription>
-            Upload a file to your document library.
-          </DialogDescription>
+          <DialogDescription>Upload a file to your document library.</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Drop zone */}
           {!file ? (
+            // biome-ignore lint/a11y/useSemanticElements: this is a drag and drop zone area
             <div
+              role="button"
+              tabIndex={0}
               onDrop={handleDrop}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onClick={() => fileInputRef.current?.click()}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  fileInputRef.current?.click();
+                }
+              }}
               className={`flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed p-8 cursor-pointer transition-colors ${
                 dragging
                   ? "border-primary bg-primary/5"
@@ -141,16 +144,10 @@ export function UploadDialog({
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{file.name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {file.type || "Unknown type"} &mdash;{" "}
-                  {(file.size / 1024).toFixed(1)} KB
+                  {file.type || "Unknown type"} &mdash; {(file.size / 1024).toFixed(1)} KB
                 </p>
               </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setFile(null)}
-              >
+              <Button type="button" variant="ghost" size="sm" onClick={() => setFile(null)}>
                 <XIcon className="size-4" />
               </Button>
             </div>
@@ -176,24 +173,17 @@ export function UploadDialog({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="resume">Resume</SelectItem>
-                <SelectItem value="cover_letter">Cover Letter</SelectItem>
+                <SelectItem value="cover-letter">Cover Letter</SelectItem>
                 <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={!file || !name || upload.isPending}
-            >
+            <Button type="submit" disabled={!file || !name || upload.isPending}>
               {upload.isPending ? "Uploading..." : "Upload"}
             </Button>
           </DialogFooter>

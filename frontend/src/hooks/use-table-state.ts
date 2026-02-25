@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from "react";
 
 // Define types based on the interface
 export type SortingState = Array<{ id: string; desc: boolean }>;
@@ -37,13 +37,13 @@ interface UseTableStateReturn<TFilter = Record<string, unknown>> {
 }
 
 export function useTableState<TFilter = Record<string, unknown>>(
-  options: UseTableStateOptions<TFilter> = {}
+  options: UseTableStateOptions<TFilter> = {},
 ): UseTableStateReturn<TFilter> {
   const {
     initialFilters = {} as TFilter,
     initialSorting = [],
     initialPageSize = 25,
-    initialPage = 1
+    initialPage = 1,
   } = options;
 
   // State declarations
@@ -54,11 +54,8 @@ export function useTableState<TFilter = Record<string, unknown>>(
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   // Callbacks wrapped with useCallback for optimization
-  const updateFilter = useCallback(<K extends keyof TFilter>(
-    key: K,
-    value: TFilter[K]
-  ) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+  const updateFilter = useCallback(<K extends keyof TFilter>(key: K, value: TFilter[K]) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
   }, []);
 
   const resetFilters = useCallback(() => {

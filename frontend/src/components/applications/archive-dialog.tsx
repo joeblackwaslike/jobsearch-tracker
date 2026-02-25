@@ -1,12 +1,12 @@
-import { useState } from "react";
 import { ArchiveIcon } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger,
   PopoverHeader,
   PopoverTitle,
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import { useArchiveApplication } from "@/lib/queries/applications";
 
@@ -23,11 +23,7 @@ interface ArchiveDialogProps {
 // Constants
 // ---------------------------------------------------------------------------
 
-const ARCHIVE_REASONS = [
-  "Received rejection",
-  "No response",
-  "No longer interested",
-] as const;
+const ARCHIVE_REASONS = ["Received rejection", "No response", "No longer interested"] as const;
 
 // ---------------------------------------------------------------------------
 // Component
@@ -63,15 +59,9 @@ export function ArchiveDialog({ applicationId, onArchived }: ArchiveDialogProps)
           <ArchiveIcon className="size-4" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        className="w-56 p-2"
-        align="end"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <PopoverContent className="w-56 p-2" align="end" onClick={(e) => e.stopPropagation()}>
         <PopoverHeader className="px-2 pb-2">
-          <PopoverTitle className="text-sm">
-            Why are you archiving this?
-          </PopoverTitle>
+          <PopoverTitle className="text-sm">Why are you archiving this?</PopoverTitle>
         </PopoverHeader>
         <div className="flex flex-col gap-1">
           {ARCHIVE_REASONS.map((reason) => (

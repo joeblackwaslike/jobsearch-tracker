@@ -12,23 +12,9 @@ vi.mock("@/lib/supabase/client", () => ({
       select: vi.fn(() => ({
         is: vi.fn(() => ({
           gte: vi.fn(() => ({
-            order: vi.fn(() => ({
-              then: vi.fn((resolve) =>
-                resolve({
-                  data: [],
-                  error: null,
-                }),
-              ),
-            })),
+            order: vi.fn().mockResolvedValue({ data: [], error: null }),
           })),
-          order: vi.fn(() => ({
-            then: vi.fn((resolve) =>
-              resolve({
-                data: [],
-                error: null,
-              }),
-            ),
-          })),
+          order: vi.fn().mockResolvedValue({ data: [], error: null }),
         })),
       })),
     })),

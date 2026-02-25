@@ -318,9 +318,7 @@ export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: Co
                 <div className="space-y-2">
                   <Label htmlFor="name">Name *</Label>
                   <Input id="name" {...register("name")} />
-                  {errors.name && (
-                    <p className="text-sm text-destructive">{errors.name.message}</p>
-                  )}
+                  {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -353,10 +351,7 @@ export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: Co
                   </div>
                   <div className="space-y-2">
                     <Label>Size</Label>
-                    <Select
-                      value={watch("size") ?? ""}
-                      onValueChange={(v) => setValue("size", v)}
-                    >
+                    <Select value={watch("size") ?? ""} onValueChange={(v) => setValue("size", v)}>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select size" />
                       </SelectTrigger>

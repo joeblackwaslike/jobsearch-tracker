@@ -1,8 +1,8 @@
-import { createFileRoute, redirect, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { NavBar } from "@/components/layout/nav-bar";
 import { PageShell } from "@/components/layout/page-shell";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const getUser = createServerFn({ method: "GET" }).handler(async () => {
   const supabase = createServerSupabaseClient();

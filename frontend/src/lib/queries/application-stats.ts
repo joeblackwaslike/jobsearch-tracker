@@ -56,17 +56,14 @@ function computeStats(applications: Application[], events: Event[]): Application
 
   // Active: status IN ('applied', 'interviewing', 'offer')
   const active = applications.filter(
-    (app) =>
-      app.status === "applied" || app.status === "interviewing" || app.status === "offer",
+    (app) => app.status === "applied" || app.status === "interviewing" || app.status === "offer",
   ).length;
 
   // Response rate: (applied with status NOT 'bookmarked') / (all non-bookmarked)
   const nonBookmarked = applications.filter((app) => app.status !== "bookmarked");
   const responded = nonBookmarked.filter((app) => app.status !== "applied");
   const responseRate =
-    nonBookmarked.length > 0
-      ? Math.round((responded.length / nonBookmarked.length) * 100)
-      : 0;
+    nonBookmarked.length > 0 ? Math.round((responded.length / nonBookmarked.length) * 100) : 0;
 
   // Interviews: total events count
   const interviews = events.length;

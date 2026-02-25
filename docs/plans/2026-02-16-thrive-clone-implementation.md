@@ -1086,8 +1086,8 @@ Auto-transition logic in `useCreateEvent()`:
 ```ts
 // After inserting event, check if status transition needed
 const interviewTypes = [
-  "screening_interview", "technical_interview", "behavioral_interview",
-  "online_test", "take_home", "onsite"
+  "screening-interview", "technical-interview", "behavioral-interview",
+  "online-test", "take-home", "onsite"
 ];
 
 if (interviewTypes.includes(eventType)) {
@@ -1121,8 +1121,8 @@ Invalidate both events and applications queries after mutation.
 File: `frontend/app/components/applications/add-event-dialog.tsx`
 
 Form fields:
-- Type: Select (screening_interview, technical_interview, behavioral_interview, online_test, take_home, onsite, offer, rejection)
-- Status: Select (availability_requested, availability_submitted, scheduled, completed, cancelled, rescheduled, no_show)
+- Type: Select (screening-interview, technical-interview, behavioral-interview, online-test, take-home, onsite)
+- Status: Select (availability-requested, availability-submitted, scheduled, completed, cancelled, rescheduled, no-show)
 - Title: Text input (optional)
 - Date: Date picker (optional — leave blank for TBD, stores as null)
 - Time: Time input (optional, combined with date into `scheduled_at`)
@@ -1158,7 +1158,7 @@ Layout:
 This page supports the full Workflow 2 (recruiter screen response):
 1. User arrives here from applications list search
 2. Clicks "Edit Company" to fill in research during prep
-3. Clicks "Add Event" to create screening_interview event
+3. Clicks "Add Event" to create screening-interview event
 4. Clicks "Edit Application" to update details (work_type, salary, etc.)
 
 **Step 5: Verify Workflow 2 end-to-end**
@@ -1166,7 +1166,7 @@ This page supports the full Workflow 2 (recruiter screen response):
 1. Create an application (status: bookmarked)
 2. Open detail view
 3. Edit company — fill in industry, size, etc.
-4. Add event: screening_interview, status: scheduled, with a date
+4. Add event: screening-interview, status: scheduled, with a date
 5. Verify application status auto-transitions to "interviewing"
 6. Edit application — update salary, work_type
 7. All changes persist on refresh
@@ -1195,7 +1195,7 @@ git commit -m "feat: implement application detail with event timeline and status
 
 File: `frontend/app/lib/queries/documents.ts`
 
-- `useDocuments(type?)` — list documents, optionally filter by type (resume, cover_letter)
+- `useDocuments(type?)` — list documents, optionally filter by type (resume, cover-letter)
 - `useDocument(id)` — single document
 - `useCreateDocument()` — create new (text-based) document
 - `useUpdateDocument()` — update content, name, tags
@@ -1546,13 +1546,13 @@ describe("ArchiveDialog", () => {
 describe("useCreateEvent", () => {
   it("transitions application from applied to interviewing when interview event created", async () => {
     // Mock: application.status = "applied"
-    // Action: create event with type = "screening_interview"
+    // Action: create event with type = "screening-interview"
     // Assert: application.update called with { status: "interviewing" }
   });
 
   it("does not transition if application already interviewing", async () => {
     // Mock: application.status = "interviewing"
-    // Action: create event with type = "technical_interview"
+    // Action: create event with type = "technical-interview"
     // Assert: application.update NOT called
   });
 });

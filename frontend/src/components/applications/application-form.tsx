@@ -48,10 +48,10 @@ const STATUS_OPTIONS = [
 
 const WORK_TYPE_OPTIONS = [
   "remote",
-  "Hybrid (1 day)",
-  "Hybrid (2 day)",
-  "Hybrid (3 day)",
-  "Hybrid (4 day)",
+  "hybrid-1day",
+  "hybrid-2day",
+  "hybrid-3day",
+  "hybrid-4day",
   "onsite",
 ] as const;
 

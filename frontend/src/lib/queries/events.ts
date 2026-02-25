@@ -27,11 +27,11 @@ export type { Event };
 // ---------------------------------------------------------------------------
 
 const INTERVIEW_TYPES = [
-  "screening_interview",
-  "technical_interview",
-  "behavioral_interview",
-  "online_test",
-  "take_home",
+  "screening-interview",
+  "technical-interview",
+  "behavioral-interview",
+  "online-test",
+  "take-home",
   "onsite",
 ] as const;
 

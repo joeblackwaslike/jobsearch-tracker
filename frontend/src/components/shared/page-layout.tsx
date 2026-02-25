@@ -1,5 +1,5 @@
-import { SidePanel } from "./side-panel";
 import { cn } from "@/lib/utils";
+import { SidePanel } from "./side-panel";
 
 type SidePanelWidth = "sm" | "md" | "lg" | "xl";
 

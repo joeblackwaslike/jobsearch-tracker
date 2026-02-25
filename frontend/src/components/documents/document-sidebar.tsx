@@ -1,19 +1,19 @@
-import * as React from "react";
 import {
-  FileTextIcon,
-  FileIcon,
-  UploadIcon,
-  PlusIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  FileIcon,
+  FileTextIcon,
+  PlusIcon,
   SearchIcon,
+  UploadIcon,
 } from "lucide-react";
+import * as React from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { type Document, useCreateDocument, useDocuments } from "@/lib/queries/documents";
 import { cn } from "@/lib/utils";
-import { useDocuments, useCreateDocument, type Document } from "@/lib/queries/documents";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -72,7 +72,7 @@ function typeIcon(type: string) {
   switch (type) {
     case "resume":
       return <FileTextIcon className="size-4 shrink-0" />;
-    case "cover_letter":
+    case "cover-letter":
       return <FileIcon className="size-4 shrink-0" />;
     default:
       return <FileIcon className="size-4 shrink-0" />;
@@ -94,9 +94,7 @@ function DocumentItem({
       onClick={onSelect}
       className={cn(
         "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-left transition-colors",
-        selected
-          ? "bg-accent text-accent-foreground"
-          : "hover:bg-muted text-foreground"
+        selected ? "bg-accent text-accent-foreground" : "hover:bg-muted text-foreground",
       )}
     >
       {typeIcon(doc.type)}
@@ -115,22 +113,14 @@ function DocumentItem({
 // ---------------------------------------------------------------------------
 
 function EmptySection({ label }: { label: string }) {
-  return (
-    <p className="px-4 py-2 text-xs text-muted-foreground italic">
-      No {label} yet
-    </p>
-  );
+  return <p className="px-4 py-2 text-xs text-muted-foreground italic">No {label} yet</p>;
 }
 
 // ---------------------------------------------------------------------------
 // Sidebar
 // ---------------------------------------------------------------------------
 
-export function DocumentSidebar({
-  selectedId,
-  onSelect,
-  onUploadClick,
-}: DocumentSidebarProps) {
+export function DocumentSidebar({ selectedId, onSelect, onUploadClick }: DocumentSidebarProps) {
   const [search, setSearch] = React.useState("");
   const { data: documents = [], isLoading } = useDocuments();
   const createDocument = useCreateDocument();
@@ -142,10 +132,8 @@ export function DocumentSidebar({
   }, [documents, search]);
 
   const resumes = filtered.filter((d) => d.type === "resume");
-  const coverLetters = filtered.filter((d) => d.type === "cover_letter");
-  const others = filtered.filter(
-    (d) => d.type !== "resume" && d.type !== "cover_letter"
-  );
+  const coverLetters = filtered.filter((d) => d.type === "cover-letter");
+  const others = filtered.filter((d) => d.type !== "resume" && d.type !== "cover-letter");
 
   const handleNewDocument = () => {
     createDocument.mutate(
@@ -154,7 +142,7 @@ export function DocumentSidebar({
         onSuccess: (doc) => {
           onSelect(doc.id);
         },
-      }
+      },
     );
   };
 
@@ -174,12 +162,7 @@ export function DocumentSidebar({
 
         {/* Action buttons */}
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-1"
-            onClick={onUploadClick}
-          >
+          <Button variant="outline" size="sm" className="flex-1" onClick={onUploadClick}>
             <UploadIcon className="size-4 mr-1" />
             Upload
           </Button>
@@ -199,9 +182,7 @@ export function DocumentSidebar({
       {/* Document list */}
       <ScrollArea className="flex-1">
         {isLoading ? (
-          <p className="px-4 py-8 text-sm text-muted-foreground text-center">
-            Loading...
-          </p>
+          <p className="px-4 py-8 text-sm text-muted-foreground text-center">Loading...</p>
         ) : (
           <div className="space-y-2 pb-4">
             <CollapsibleSection title="Resumes" count={resumes.length}>

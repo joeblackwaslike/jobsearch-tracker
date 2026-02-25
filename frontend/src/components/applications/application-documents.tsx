@@ -1,14 +1,11 @@
+import { PaperclipIcon, XIcon } from "lucide-react";
 import { useState } from "react";
-import { XIcon, PaperclipIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  useApplicationDocuments,
-  useDetachDocument,
-} from "@/lib/queries/application-documents";
-import { useSnapshotDocument } from "@/lib/queries/documents";
 import { DocumentPicker } from "@/components/documents/document-picker";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useApplicationDocuments, useDetachDocument } from "@/lib/queries/application-documents";
+import { useSnapshotDocument } from "@/lib/queries/documents";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -16,7 +13,7 @@ import { DocumentPicker } from "@/components/documents/document-picker";
 
 const TYPE_LABELS: Record<string, string> = {
   resume: "Resume",
-  cover_letter: "Cover Letter",
+  "cover-letter": "Cover Letter",
   other: "Other",
 };
 
@@ -27,7 +24,7 @@ function typeLabel(type: string | null | undefined): string {
 
 const TYPE_VARIANT: Record<string, "default" | "secondary" | "outline"> = {
   resume: "default",
-  cover_letter: "secondary",
+  "cover-letter": "secondary",
   other: "outline",
 };
 
@@ -87,9 +84,7 @@ export function ApplicationDocuments({ applicationId }: ApplicationDocumentsProp
           </Button>
         </CardHeader>
         <CardContent>
-          {isLoading && (
-            <p className="text-sm text-muted-foreground">Loading documents...</p>
-          )}
+          {isLoading && <p className="text-sm text-muted-foreground">Loading documents...</p>}
 
           {!isLoading && documents.length === 0 && (
             <p className="text-sm text-muted-foreground">No documents attached</p>
@@ -103,12 +98,8 @@ export function ApplicationDocuments({ applicationId }: ApplicationDocumentsProp
                   className="flex items-center justify-between rounded-md border px-3 py-2"
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-sm font-medium truncate">
-                      {doc.name}
-                    </span>
-                    <Badge variant={typeVariant(doc.type)}>
-                      {typeLabel(doc.type)}
-                    </Badge>
+                    <span className="text-sm font-medium truncate">{doc.name}</span>
+                    <Badge variant={typeVariant(doc.type)}>{typeLabel(doc.type)}</Badge>
                     {doc.linked_at && (
                       <span className="text-xs text-muted-foreground">
                         {formatDate(doc.linked_at)}

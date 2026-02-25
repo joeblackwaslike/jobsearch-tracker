@@ -1,17 +1,6 @@
-import {
-  FilterIcon,
-  TrendingUpIcon,
-  PieChartIcon,
-  TargetIcon,
-} from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import type { LucideIcon } from "lucide-react";
+import { FilterIcon, PieChartIcon, TargetIcon, TrendingUpIcon } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 // ---------------------------------------------------------------------------
 // Config

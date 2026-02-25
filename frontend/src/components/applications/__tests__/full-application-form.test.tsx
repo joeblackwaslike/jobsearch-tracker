@@ -43,7 +43,7 @@ describe("resume auto-fill and label", () => {
     localStorage.setItem("tracker:default_resume_id", "some-doc-id");
     render(<FullApplicationForm open={true} onOpenChange={vi.fn()} />);
     // DocumentTypePicker value should be null (showing "None"), not the stored ID
-    const picker = document.querySelector("select, [role='combobox']");
+    const _picker = document.querySelector("select, [role='combobox']");
     // The resume picker should not show a pre-selected document
     expect(screen.queryByText("some-doc-id")).not.toBeInTheDocument();
   });
@@ -78,13 +78,15 @@ describe("modal overflow regression", () => {
 describe("source field placement", () => {
   it("renders Source inside the Job Details fieldset", () => {
     render(<FullApplicationForm open={true} onOpenChange={vi.fn()} />);
-    const jobDetails = screen.getByText("Job Details").closest("fieldset")!;
+    const jobDetails = screen.getByText("Job Details").closest("fieldset") as HTMLElement;
     expect(within(jobDetails).getByText("Source")).toBeInTheDocument();
   });
 
   it("does not render Source in the Additional Information fieldset", () => {
     render(<FullApplicationForm open={true} onOpenChange={vi.fn()} />);
-    const additional = screen.getByText("Additional Information").closest("fieldset")!;
+    const additional = screen
+      .getByText("Additional Information")
+      .closest("fieldset") as HTMLElement;
     expect(within(additional).queryByText("Source")).not.toBeInTheDocument();
   });
 });

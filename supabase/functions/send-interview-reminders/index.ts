@@ -12,12 +12,12 @@ const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")!;
 const APP_URL = Deno.env.get("APP_URL") ?? "https://thrive.app";
 
 const TYPE_LABELS: Record<string, string> = {
-  screening_interview: "Screening Interview",
-  technical_interview: "Technical Interview",
-  behavioral_interview: "Behavioral Interview",
-  online_test: "Online Test",
-  take_home: "Take Home",
-  onsite: "Onsite Interview",
+  "screening-interview": "Screening Interview",
+  "technical-interview": "Technical Interview",
+  "behavioral-interview": "Behavioral Interview",
+  "online-test": "Online Test",
+  "take-home": "Take Home",
+  "onsite": "Onsite Interview",
 };
 
 Deno.serve(async (_req) => {

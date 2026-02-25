@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor } from "@/test/test-utils";
 import { ArchiveDialog } from "../archive-dialog";
 
@@ -28,9 +28,7 @@ describe("ArchiveDialog", () => {
 
   it("renders the archive trigger button", () => {
     render(<ArchiveDialog applicationId="app-1" />);
-    expect(
-      screen.getByTitle("Archive application")
-    ).toBeInTheDocument();
+    expect(screen.getByTitle("Archive application")).toBeInTheDocument();
   });
 
   it("renders three archive reasons when opened", async () => {
@@ -48,9 +46,7 @@ describe("ArchiveDialog", () => {
     const onArchived = vi.fn();
     const user = userEvent.setup();
 
-    render(
-      <ArchiveDialog applicationId="app-1" onArchived={onArchived} />
-    );
+    render(<ArchiveDialog applicationId="app-1" onArchived={onArchived} />);
 
     await user.click(screen.getByTitle("Archive application"));
     await user.click(screen.getByText("Received rejection"));

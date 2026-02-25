@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { EventDetail } from "../event-detail";
+import { describe, expect, it, vi } from "vitest";
 import type { EventWithApplication } from "@/lib/queries/events";
+import { EventDetail } from "../event-detail";
 
 vi.mock("@/lib/queries/event-contacts", () => ({
   useEventContacts: vi.fn(() => ({ data: [] })),
@@ -9,7 +9,7 @@ vi.mock("@/lib/queries/event-contacts", () => ({
 
 const mockEvent: EventWithApplication = {
   id: "1",
-  type: "technical_interview",
+  type: "technical-interview",
   status: "scheduled",
   scheduled_at: "2026-02-25T10:00:00Z",
   duration_minutes: 60,

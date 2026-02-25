@@ -1,9 +1,5 @@
-import { describe, it, expect } from "vitest";
-import {
-  applicationTableSchema,
-  companyTableSchema,
-  eventTableSchema,
-} from "./table-schemas";
+import { describe, expect, it } from "vitest";
+import { applicationTableSchema, companyTableSchema, eventTableSchema } from "./table-schemas";
 
 describe("table-schemas", () => {
   describe("applicationTableSchema", () => {

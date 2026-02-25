@@ -1,16 +1,11 @@
-import * as React from "react";
-import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { MenuIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { DocumentSidebar } from "@/components/documents/document-sidebar";
+import * as React from "react";
 import { DocumentEditor } from "@/components/documents/document-editor";
+import { DocumentSidebar } from "@/components/documents/document-sidebar";
 import { UploadDialog } from "@/components/documents/upload-dialog";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 // ---------------------------------------------------------------------------
 // Route definition
@@ -73,11 +68,7 @@ function DocumentsPage() {
 
       {/* Mobile sidebar trigger */}
       <div className="md:hidden absolute top-3 left-3 z-10">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setMobileOpen(true)}
-        >
+        <Button variant="outline" size="sm" onClick={() => setMobileOpen(true)}>
           <MenuIcon className="size-4 mr-1" />
           Documents
         </Button>

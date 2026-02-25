@@ -1,12 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
 import { Check, ChevronsUpDown, Loader2, Plus } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Command,
   CommandEmpty,
@@ -15,11 +9,9 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import {
-  useSearchCompanies,
-  useCreateCompany,
-  type Company,
-} from "@/lib/queries/companies";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { type Company, useCreateCompany, useSearchCompanies } from "@/lib/queries/companies";
+import { cn } from "@/lib/utils";
 
 // ---------------------------------------------------------------------------
 // Props
@@ -65,16 +57,14 @@ export function CompanyCombobox({
   const createCompany = useCreateCompany();
 
   const hasExactMatch =
-    companies?.some(
-      (c) => c.name.toLowerCase() === searchText.toLowerCase()
-    ) ?? false;
+    companies?.some((c) => c.name.toLowerCase() === searchText.toLowerCase()) ?? false;
 
   const handleSelect = useCallback(
     (company: Pick<Company, "id" | "name">) => {
       onSelect(company);
       setOpen(false);
     },
-    [onSelect]
+    [onSelect],
   );
 
   const handleCreate = useCallback(async () => {
@@ -125,7 +115,7 @@ export function CompanyCombobox({
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        value?.id === company.id ? "opacity-100" : "opacity-0"
+                        value?.id === company.id ? "opacity-100" : "opacity-0",
                       )}
                     />
                     {company.name}
@@ -136,10 +126,7 @@ export function CompanyCombobox({
 
             {searchText.length >= 1 && !hasExactMatch && (
               <CommandGroup>
-                <CommandItem
-                  onSelect={handleCreate}
-                  disabled={createCompany.isPending}
-                >
+                <CommandItem onSelect={handleCreate} disabled={createCompany.isPending}>
                   {createCompany.isPending ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (

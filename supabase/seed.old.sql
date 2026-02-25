@@ -14,27 +14,6 @@ DO $$
 DECLARE
   v_user_id UUID;
 
-  -- Company IDs (deterministic for referencing below)
-  v_stripe_id    UUID := 'a0000000-0000-0000-0000-000000000001';
-  v_vercel_id    UUID := 'a0000000-0000-0000-0000-000000000002';
-  v_supabase_id  UUID := 'a0000000-0000-0000-0000-000000000003';
-  v_figma_id     UUID := 'a0000000-0000-0000-0000-000000000004';
-  v_linear_id    UUID := 'a0000000-0000-0000-0000-000000000005';
-
-  -- Application IDs
-  v_app_stripe_sr  UUID := 'b0000000-0000-0000-0000-000000000001';
-  v_app_stripe_be  UUID := 'b0000000-0000-0000-0000-000000000002';
-  v_app_vercel_fe  UUID := 'b0000000-0000-0000-0000-000000000003';
-  v_app_supabase   UUID := 'b0000000-0000-0000-0000-000000000004';
-  v_app_figma      UUID := 'b0000000-0000-0000-0000-000000000005';
-  v_app_linear     UUID := 'b0000000-0000-0000-0000-000000000006';
-  v_app_vercel_pd  UUID := 'b0000000-0000-0000-0000-000000000007';
-
-  -- Document IDs
-  v_doc_resume UUID := 'c0000000-0000-0000-0000-000000000001';
-  v_doc_cover  UUID := 'c0000000-0000-0000-0000-000000000002';
-  v_doc_portfolio UUID := 'c0000000-0000-0000-0000-000000000003';
-
 BEGIN
   -- ---------------------------------------------------------
   -- Resolve user
@@ -239,7 +218,7 @@ BEGIN
     -- Stripe Senior FE: technical interview (scheduled)
     (
       v_user_id, v_app_stripe_sr,
-      'technical_interview', 'scheduled',
+      'technical-interview', 'scheduled',
       'Technical Interview - Frontend Systems',
       'Live coding session focused on building a payment form component with accessibility considerations.',
       'https://meet.google.com/xyz-abcd-efg',
@@ -248,7 +227,7 @@ BEGIN
     -- Stripe Senior FE: system design (TBD)
     (
       v_user_id, v_app_stripe_sr,
-      'technical_interview', 'pending',
+      'technical-interview', 'pending',
       'System Design Interview',
       'System design round focusing on frontend architecture. To be scheduled after technical interview.',
       NULL,
@@ -265,7 +244,7 @@ BEGIN
     ),
     (
       v_user_id, v_app_vercel_fe,
-      'technical_interview', 'completed',
+      'technical-interview', 'completed',
       'Technical Interview - React & Next.js',
       'Pair programming session building a dashboard component with Next.js App Router.',
       NULL,
@@ -290,7 +269,7 @@ BEGIN
     ),
     (
       v_user_id, v_app_figma,
-      'technical_interview', 'scheduled',
+      'technical-interview', 'scheduled',
       'Design Challenge Presentation',
       'Present take-home design challenge to a panel of 3 designers. Prepare a 20-minute presentation.',
       'https://figma.zoom.us/j/123456789',
@@ -322,7 +301,7 @@ Education:
     ),
     (
       v_doc_cover, v_user_id,
-      'Generic Cover Letter', 'cover_letter',
+      'Generic Cover Letter', 'cover-letter',
       'Dear Hiring Manager,
 
 I am writing to express my strong interest in the [Position] role at [Company]. With over 6 years of experience building modern web applications, I bring a combination of technical expertise and product sensibility that I believe would be valuable to your team.
@@ -351,7 +330,7 @@ Jane Doe',
   INSERT INTO application_documents (application_id, document_id, name, type, content, uri, mime_type, revision)
   VALUES
     (v_app_stripe_sr, v_doc_resume, 'Software Engineer Resume - 2026', 'resume', '', NULL, 'application/pdf', 'v3'),
-    (v_app_stripe_sr, v_doc_cover, 'Stripe Cover Letter', 'cover_letter', 'Customized cover letter for Stripe Senior Frontend Engineer position.', NULL, 'text/plain', 'v1'),
+    (v_app_stripe_sr, v_doc_cover, 'Stripe Cover Letter', 'cover-letter', 'Customized cover letter for Stripe Senior Frontend Engineer position.', NULL, 'text/plain', 'v1'),
     (v_app_vercel_fe, v_doc_resume, 'Software Engineer Resume - 2026', 'resume', '', NULL, 'application/pdf', 'v3'),
     (v_app_figma, v_doc_resume, 'Software Engineer Resume - 2026', 'resume', '', NULL, 'application/pdf', 'v3'),
     (v_app_figma, v_doc_portfolio, 'Design Portfolio', 'other', '', 'https://janedoe.design', 'text/uri-list', 'v1');

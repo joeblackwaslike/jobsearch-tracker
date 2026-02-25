@@ -24,7 +24,7 @@ const mockEvents = [
     id: "evt-1",
     user_id: "u1",
     application_id: "app-1",
-    type: "screening_interview",
+    type: "screening-interview",
     status: "scheduled",
     title: "Phone screen with HR",
     description: "Discuss role",

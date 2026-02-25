@@ -566,7 +566,7 @@ import { DocumentTypePicker } from "../document-type-picker";
 
 const mockDocuments = [
   { id: "d1", name: "Resume 2025.pdf", type: "resume", archived_at: null },
-  { id: "d2", name: "Cover Letter.pdf", type: "cover_letter", archived_at: null },
+  { id: "d2", name: "Cover Letter.pdf", type: "cover-letter", archived_at: null },
 ];
 
 vi.mock("@/lib/queries/documents", () => ({
@@ -1272,9 +1272,9 @@ describe("title placeholder", () => {
 });
 
 describe("default status and auto-switch", () => {
-  it("defaults status to availability_requested", () => {
+  it("defaults status to availability-requested", () => {
     render(<ScheduleDialog open onOpenChange={vi.fn()} />);
-    expect(screen.getByDisplayValue("availability_requested") ||
+    expect(screen.getByDisplayValue("availability-requested") ||
            screen.getByText("Availability Requested")).toBeInTheDocument();
   });
 
@@ -1285,11 +1285,11 @@ describe("default status and auto-switch", () => {
     // Assert status select now shows "Scheduled"
   });
 
-  it("reverts to availability_requested when date is cleared", async () => {
+  it("reverts to availability-requested when date is cleared", async () => {
     render(<ScheduleDialog open onOpenChange={vi.fn()} />);
     // Fill date + time (triggers auto-switch to "scheduled")
     // Clear date
-    // Assert status reverts to "availability_requested"
+    // Assert status reverts to "availability-requested"
   });
 });
 ```
@@ -1345,10 +1345,10 @@ const onSubmit = async (values: ScheduleFormValues) => {
 
 ```typescript
 // In schema:
-status: z.string().default("availability_requested"),
+status: z.string().default("availability-requested"),
 
 // In defaultValues:
-status: "availability_requested",
+status: "availability-requested",
 ```
 
 2. Add a `useEffect` that watches date and time, auto-switching status only between the two managed states:
@@ -1360,18 +1360,18 @@ const watchedTime = watch("time");
 useEffect(() => {
   const currentStatus = watch("status");
   if (watchedDate && watchedTime) {
-    if (currentStatus === "availability_requested") {
+    if (currentStatus === "availability-requested") {
       setValue("status", "scheduled");
     }
   } else {
     if (currentStatus === "scheduled") {
-      setValue("status", "availability_requested");
+      setValue("status", "availability-requested");
     }
   }
 }, [watchedDate, watchedTime]); // eslint-disable-line react-hooks/exhaustive-deps
 ```
 
-This only auto-switches between `"availability_requested"` and `"scheduled"`. If the user manually sets a different status (e.g. `"completed"`), the effect leaves it alone.
+This only auto-switches between `"availability-requested"` and `"scheduled"`. If the user manually sets a different status (e.g. `"completed"`), the effect leaves it alone.
 
 **Step 5: Run tests**
 

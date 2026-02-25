@@ -1,23 +1,15 @@
 import { useNavigate } from "@tanstack/react-router";
 import {
-  CalendarIcon,
-  SendIcon,
-  PhoneIcon,
-  CodeIcon,
-  UsersIcon,
-  MonitorIcon,
-  GiftIcon,
-  XCircleIcon,
-  FileTextIcon,
   ActivityIcon,
+  CalendarIcon,
+  CodeIcon,
+  FileTextIcon,
+  MonitorIcon,
+  PhoneIcon,
+  SendIcon,
+  UsersIcon,
 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRecentActivity } from "@/lib/queries/dashboard";
 import type { EventWithApplication } from "@/lib/queries/events";
@@ -45,26 +37,22 @@ function relativeTime(dateString: string): string {
 
 const EVENT_TYPE_ICONS: Record<string, typeof ActivityIcon> = {
   applied: SendIcon,
-  screening_interview: PhoneIcon,
-  technical_interview: CodeIcon,
-  behavioral_interview: UsersIcon,
-  online_test: MonitorIcon,
-  take_home: FileTextIcon,
+  "screening-interview": PhoneIcon,
+  "technical-interview": CodeIcon,
+  "behavioral-interview": UsersIcon,
+  "online-test": MonitorIcon,
+  "take-home": FileTextIcon,
   onsite: CalendarIcon,
-  offer: GiftIcon,
-  rejection: XCircleIcon,
 };
 
 const EVENT_TYPE_LABELS: Record<string, string> = {
   applied: "Applied",
-  screening_interview: "Screening interview",
-  technical_interview: "Technical interview",
-  behavioral_interview: "Behavioral interview",
-  online_test: "Online test",
-  take_home: "Take home",
+  "screening-interview": "Screening interview",
+  "technical-interview": "Technical interview",
+  "behavioral-interview": "Behavioral interview",
+  "online-test": "Online test",
+  "take-home": "Take home",
   onsite: "Onsite interview",
-  offer: "Offer received",
-  rejection: "Rejection",
 };
 
 function describeEvent(event: EventWithApplication): string {
@@ -93,6 +81,7 @@ export function RecentActivity() {
         {isLoading ? (
           <div className="space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: skeletal loading state
               <div key={i} className="flex items-center gap-3">
                 <div className="size-8 animate-pulse rounded-full bg-muted" />
                 <div className="flex-1 space-y-1">
@@ -132,9 +121,7 @@ export function RecentActivity() {
                       <Icon className="size-4 text-muted-foreground" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm leading-tight truncate">
-                        {describeEvent(event)}
-                      </p>
+                      <p className="text-sm leading-tight truncate">{describeEvent(event)}</p>
                       <p className="text-xs text-muted-foreground mt-0.5">
                         {relativeTime(event.created_at)}
                       </p>

@@ -88,6 +88,7 @@ describe("CompanyDirectory", () => {
     vi.mocked(useCompanies).mockReturnValue({
       data: { data: mockCompanies, count: 2 },
       isLoading: false,
+      // biome-ignore lint/suspicious/noExplicitAny: mock data
     } as any);
   });
 
@@ -114,6 +115,7 @@ describe("CompanyDirectory", () => {
     vi.mocked(useCompanies).mockReturnValue({
       data: { data: [], count: 0 },
       isLoading: false,
+      // biome-ignore lint/suspicious/noExplicitAny: mock data
     } as any);
 
     render(<CompanyDirectory {...cardViewProps} />);

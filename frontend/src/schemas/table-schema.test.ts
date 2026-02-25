@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import type { TableSchema, ColumnSchema, ColumnType, SchemaData } from "./table-schema";
+import { describe, expect, it } from "vitest";
+import type { ColumnSchema, SchemaData, TableSchema } from "./table-schema";
 
 describe("TableSchema Types", () => {
   it("allows valid schema definition with columns array", () => {
@@ -7,7 +7,14 @@ describe("TableSchema Types", () => {
       columns: [
         { id: "id", header: "ID", type: "text", sortable: true, minWidth: 100 },
         { id: "name", header: "Name", type: "text", sortable: true, minWidth: 200 },
-        { id: "status", header: "Status", type: "enum", sortable: true, minWidth: 150, options: ["active", "inactive", "pending"] },
+        {
+          id: "status",
+          header: "Status",
+          type: "enum",
+          sortable: true,
+          minWidth: 150,
+          options: ["active", "inactive", "pending"],
+        },
       ],
     };
 
@@ -166,9 +173,30 @@ describe("TableSchema Types", () => {
         { id: "id", header: "ID", type: "text", sortable: true, minWidth: 100 },
         { id: "name", header: "Name", type: "text", sortable: true, minWidth: 200, grow: 2 },
         { id: "createdAt", header: "Created At", type: "datetime", sortable: true, minWidth: 150 },
-        { id: "status", header: "Status", type: "enum", sortable: true, minWidth: 120, options: ["active", "inactive"] },
-        { id: "priority", header: "Priority", type: "number", sortable: true, minWidth: 100, align: "right" },
-        { id: "actions", header: "Actions", type: "text", sortable: false, minWidth: 150, cell: (row) => `actions:${row.id}` },
+        {
+          id: "status",
+          header: "Status",
+          type: "enum",
+          sortable: true,
+          minWidth: 120,
+          options: ["active", "inactive"],
+        },
+        {
+          id: "priority",
+          header: "Priority",
+          type: "number",
+          sortable: true,
+          minWidth: 100,
+          align: "right",
+        },
+        {
+          id: "actions",
+          header: "Actions",
+          type: "text",
+          sortable: false,
+          minWidth: 150,
+          cell: (row) => `actions:${row.id}`,
+        },
       ],
     };
 

@@ -128,7 +128,7 @@ describe("ApplicationTable", () => {
 
     const row = screen.getByText("Senior Engineer").closest("tr");
     expect(row).not.toBeNull();
-    await user.click(row!);
+    await user.click(row as HTMLElement);
 
     expect(navigateMock).toHaveBeenCalledWith({
       to: "/applications/app-1",

@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
 
 type SidePanelWidth = "sm" | "md" | "lg" | "xl";
 
@@ -44,9 +44,11 @@ export function SidePanel({
   if (isMobile) {
     return (
       <div className="fixed inset-0 z-50 flex flex-col items-end">
-        <div
+        <button
+          type="button"
           data-testid="side-panel-backdrop"
           className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+          aria-label="Dismiss panel"
           onClick={onClose}
         />
         <div className="relative flex w-full flex-col border-t bg-background shadow-xl transition-transform duration-300 ease-in-out max-h-[80vh]">
@@ -66,9 +68,11 @@ export function SidePanel({
 
   return (
     <div className="fixed inset-0 z-50 flex">
-      <div
+      <button
+        type="button"
         data-testid="side-panel-backdrop"
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        aria-label="Dismiss panel"
         onClick={onClose}
       />
       <aside

@@ -1,7 +1,7 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { CompanyDetail } from "../company-detail";
+import { describe, expect, it } from "vitest";
 import type { Company } from "@/lib/queries/companies";
+import { CompanyDetail } from "../company-detail";
 
 const mockCompany = {
   id: "1",

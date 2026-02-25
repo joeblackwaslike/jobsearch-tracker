@@ -1,23 +1,15 @@
+import { LinkIcon, MailIcon, PencilIcon, PhoneIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+  type Contact,
   useContacts,
   useCreateContact,
-  useUpdateContact,
   useDeleteContact,
-  type Contact,
+  useUpdateContact,
 } from "@/lib/queries/contacts";
-import {
-  PencilIcon,
-  TrashIcon,
-  PlusIcon,
-  MailIcon,
-  PhoneIcon,
-  LinkIcon,
-  XIcon,
-} from "lucide-react";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -154,12 +146,7 @@ function ContactForm({
         />
       </div>
       <div className="flex gap-2 justify-end">
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={onCancel}
-        >
+        <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
           Cancel
         </Button>
         <Button
@@ -196,9 +183,7 @@ function ContactRow({
         <div className="flex items-center gap-2">
           <span className="font-medium text-sm truncate">{contact.name}</span>
           {contact.title && (
-            <span className="text-xs text-muted-foreground truncate">
-              {contact.title}
-            </span>
+            <span className="text-xs text-muted-foreground truncate">{contact.title}</span>
           )}
         </div>
         <div className="flex items-center gap-3 mt-0.5">
@@ -307,11 +292,7 @@ export function CompanyContacts({ companyId }: CompanyContactsProps) {
   };
 
   if (isLoading) {
-    return (
-      <div className="text-sm text-muted-foreground py-2">
-        Loading contacts...
-      </div>
-    );
+    return <div className="text-sm text-muted-foreground py-2">Loading contacts...</div>;
   }
 
   return (
@@ -344,7 +325,7 @@ export function CompanyContacts({ companyId }: CompanyContactsProps) {
             onDelete={() => handleDelete(contact.id)}
             isDeleting={deleteContact.isPending}
           />
-        )
+        ),
       )}
 
       {showAddForm && (
@@ -357,12 +338,7 @@ export function CompanyContacts({ companyId }: CompanyContactsProps) {
       )}
 
       {!showAddForm && (
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => setShowAddForm(true)}
-        >
+        <Button type="button" variant="outline" size="sm" onClick={() => setShowAddForm(true)}>
           <PlusIcon className="h-4 w-4 mr-1" />
           Add Contact
         </Button>

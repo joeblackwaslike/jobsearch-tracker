@@ -62,10 +62,7 @@ function EventsPage() {
 
   // Look up selected event from either list
   const selectedEvent = useMemo(
-    () =>
-      selectedId
-        ? ([...upcoming, ...past].find((e) => e.id === selectedId) ?? null)
-        : null,
+    () => (selectedId ? ([...upcoming, ...past].find((e) => e.id === selectedId) ?? null) : null),
     [selectedId, upcoming, past],
   );
 

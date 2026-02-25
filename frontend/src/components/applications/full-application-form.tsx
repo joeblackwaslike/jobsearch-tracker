@@ -13,7 +13,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { UrlInput } from "@/components/ui/url-input";
 import { Label } from "@/components/ui/label";
 import { SalaryRangeSlider } from "@/components/ui/salary-range-slider";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -25,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TagInput } from "@/components/ui/tag-input";
+import { UrlInput } from "@/components/ui/url-input";
 import { useCreateApplication } from "@/lib/queries/applications";
 import type { Company } from "@/lib/queries/companies";
 import { useSnapshotDocument } from "@/lib/queries/documents";
@@ -370,11 +370,7 @@ export function FullApplicationForm({
                     name="url"
                     control={control}
                     render={({ field }) => (
-                      <UrlInput
-                        id="full-url"
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
+                      <UrlInput id="full-url" value={field.value} onChange={field.onChange} />
                     )}
                   />
                 </div>

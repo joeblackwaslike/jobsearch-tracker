@@ -1,19 +1,16 @@
 import {
-  BriefcaseIcon,
-  CalendarIcon,
-  TrendingUpIcon,
   BarChartIcon,
-  GiftIcon,
-  XCircleIcon,
-  UsersIcon,
+  BriefcaseIcon,
   BuildingIcon,
+  CalendarIcon,
+  GiftIcon,
   type LucideIcon,
+  TrendingUpIcon,
+  UsersIcon,
+  XCircleIcon,
 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
-import { useDashboardStats, type DashboardStats } from "@/lib/queries/dashboard";
+import { Card, CardContent } from "@/components/ui/card";
+import { type DashboardStats, useDashboardStats } from "@/lib/queries/dashboard";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -70,9 +67,7 @@ export function StatsCards() {
                   {isLoading ? (
                     <div className="h-8 w-16 animate-pulse rounded bg-muted" />
                   ) : (
-                    <p className="text-2xl font-bold">
-                      {formatValue(value, card.format)}
-                    </p>
+                    <p className="text-2xl font-bold">{formatValue(value, card.format)}</p>
                   )}
                 </div>
                 <Icon className="size-5 text-muted-foreground" />

@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { StatsCards } from "@/components/dashboard/stats-cards";
-import { QuickActions } from "@/components/dashboard/quick-actions";
-import { RecentActivity } from "@/components/dashboard/recent-activity";
 import {
   ApplicationFunnelChart,
   ApplicationTrendsChart,
   DistributionChart,
   SuccessMetricsChart,
 } from "@/components/dashboard/chart-placeholders";
+import { QuickActions } from "@/components/dashboard/quick-actions";
+import { RecentActivity } from "@/components/dashboard/recent-activity";
+import { StatsCards } from "@/components/dashboard/stats-cards";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: DashboardPage,
@@ -18,9 +18,7 @@ function DashboardPage() {
     <div className="space-y-6 p-4 md:p-8">
       <div>
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Overview of your job search progress
-        </p>
+        <p className="text-muted-foreground">Overview of your job search progress</p>
       </div>
 
       {/* Stats cards row */}

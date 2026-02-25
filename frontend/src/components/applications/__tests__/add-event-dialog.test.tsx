@@ -33,7 +33,7 @@ const mockEvent = {
   id: "evt-1",
   user_id: "u1",
   application_id: "app-1",
-  type: "technical_interview",
+  type: "technical-interview",
   status: "scheduled",
   title: "System design round",
   description: "Whiteboard session",

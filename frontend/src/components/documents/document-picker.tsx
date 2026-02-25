@@ -1,11 +1,6 @@
 import { useMemo } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useDocuments } from "@/lib/queries/documents";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -24,14 +19,14 @@ interface DocumentPickerProps {
 
 const GROUP_LABELS: Record<string, string> = {
   resume: "Resumes",
-  cover_letter: "Cover Letters",
+  "cover-letter": "Cover Letters",
   other: "Other",
 };
 
-const GROUP_ORDER = ["resume", "cover_letter", "other"];
+const GROUP_ORDER = ["resume", "cover-letter", "other"];
 
 function groupKey(type: string | null | undefined): string {
-  if (type === "resume" || type === "cover_letter") return type;
+  if (type === "resume" || type === "cover-letter") return type;
   return "other";
 }
 
@@ -39,12 +34,7 @@ function groupKey(type: string | null | undefined): string {
 // Component
 // ---------------------------------------------------------------------------
 
-export function DocumentPicker({
-  open,
-  onOpenChange,
-  onSelect,
-  excludeIds,
-}: DocumentPickerProps) {
+export function DocumentPicker({ open, onOpenChange, onSelect, excludeIds }: DocumentPickerProps) {
   const { data: documents, isLoading } = useDocuments();
 
   const filtered = useMemo(() => {
@@ -63,7 +53,7 @@ export function DocumentPicker({
     }
     return GROUP_ORDER.filter((k) => map.has(k)).map((k) => ({
       label: GROUP_LABELS[k],
-      docs: map.get(k)!,
+      docs: map.get(k) ?? [],
     }));
   }, [filtered]);
 
@@ -90,9 +80,7 @@ export function DocumentPicker({
         {!isLoading &&
           groups.map((group) => (
             <div key={group.label}>
-              <h3 className="text-sm font-medium text-muted-foreground mb-1">
-                {group.label}
-              </h3>
+              <h3 className="text-sm font-medium text-muted-foreground mb-1">{group.label}</h3>
               <ul className="space-y-1">
                 {group.docs.map((doc) => (
                   <li key={doc.id}>

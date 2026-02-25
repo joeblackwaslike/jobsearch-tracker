@@ -1,10 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { GeneralTab } from "@/components/settings/general-tab";
-import { useUpdateSettings } from "@/lib/queries/settings";
 import { useTheme } from "@/components/layout/theme-provider";
+import { GeneralTab } from "@/components/settings/general-tab";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useUpdateSettings } from "@/lib/queries/settings";
 
 const searchSchema = z.object({
   tab: z.enum(["general", "data", "integrations", "about"]).catch("general"),
@@ -62,10 +62,18 @@ function SettingsPage() {
 
       <Tabs value={tab} onValueChange={handleTabChange}>
         <TabsList className="w-full sm:w-auto">
-          <TabsTrigger value="general" className="flex-1 sm:flex-initial">General</TabsTrigger>
-          <TabsTrigger value="data" className="flex-1 sm:flex-initial">Data</TabsTrigger>
-          <TabsTrigger value="integrations" className="flex-1 sm:flex-initial">Integrations</TabsTrigger>
-          <TabsTrigger value="about" className="flex-1 sm:flex-initial">About</TabsTrigger>
+          <TabsTrigger value="general" className="flex-1 sm:flex-initial">
+            General
+          </TabsTrigger>
+          <TabsTrigger value="data" className="flex-1 sm:flex-initial">
+            Data
+          </TabsTrigger>
+          <TabsTrigger value="integrations" className="flex-1 sm:flex-initial">
+            Integrations
+          </TabsTrigger>
+          <TabsTrigger value="about" className="flex-1 sm:flex-initial">
+            About
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="general">

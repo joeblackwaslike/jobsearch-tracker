@@ -8,11 +8,11 @@ import { useEventContacts } from "@/lib/queries/event-contacts";
 import type { EventWithApplication } from "@/lib/queries/events";
 
 const EVENT_TYPE_LABELS: Record<string, string> = {
-  screening_interview: "Screening Interview",
-  technical_interview: "Technical Interview",
-  behavioral_interview: "Behavioral Interview",
-  online_test: "Online Test",
-  take_home: "Take Home Assignment",
+  "screening-interview": "Screening Interview",
+  "technical-interview": "Technical Interview",
+  "behavioral-interview": "Behavioral Interview",
+  "online-test": "Online Test",
+  "take-home": "Take Home Assignment",
   onsite: "Onsite Interview",
 };
 
@@ -21,9 +21,9 @@ const EVENT_STATUS_COLORS: Record<string, string> = {
   completed: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
   cancelled: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
   rescheduled: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
-  availability_requested: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  availability_submitted: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
-  no_show: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
+  "availability-requested": "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+  "availability-submitted": "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
+  "no-show": "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
 };
 
 interface EventDetailProps {

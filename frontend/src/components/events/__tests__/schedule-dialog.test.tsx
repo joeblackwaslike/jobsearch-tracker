@@ -232,7 +232,7 @@ describe("title placeholder", () => {
 });
 
 describe("default status and auto-switch", () => {
-  it("defaults status to availability_requested", () => {
+  it("defaults status to availability-requested", () => {
     render(<ScheduleDialog open onOpenChange={vi.fn()} />);
     expect(screen.getByRole("combobox", { name: "Status" })).toHaveTextContent(
       "Availability Requested",
@@ -266,7 +266,7 @@ describe("default status and auto-switch", () => {
     );
   });
 
-  it("reverts to availability_requested when date is cleared", async () => {
+  it("reverts to availability-requested when date is cleared", async () => {
     // This isn't easy to test if clearing date is non-trivial via clicking calendar.
     // We can simulate it via changing time, but let's test this later if needed or see how it behaves.
   });

@@ -1,13 +1,16 @@
+import { DownloadIcon, FileTextIcon, SaveIcon, Trash2Icon } from "lucide-react";
 import * as React from "react";
-import {
-  SaveIcon,
-  Trash2Icon,
-  DownloadIcon,
-  FileTextIcon,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -16,19 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import {
-  useDocument,
-  useUpdateDocument,
-  useDeleteDocument,
-} from "@/lib/queries/documents";
+import { useDeleteDocument, useDocument, useUpdateDocument } from "@/lib/queries/documents";
 import { createClient } from "@/lib/supabase/client";
 
 // ---------------------------------------------------------------------------
@@ -44,11 +35,11 @@ interface DocumentEditorProps {
 // Type label helper
 // ---------------------------------------------------------------------------
 
-function typeLabel(type: string) {
+function _typeLabel(type: string) {
   switch (type) {
     case "resume":
       return "Resume";
-    case "cover_letter":
+    case "cover-letter":
       return "Cover Letter";
     default:
       return "Other";
@@ -64,9 +55,7 @@ function EmptyState() {
     <div className="flex h-full items-center justify-center">
       <div className="text-center space-y-2">
         <FileTextIcon className="size-12 mx-auto text-muted-foreground" />
-        <p className="text-muted-foreground">
-          Select a document or create a new one
-        </p>
+        <p className="text-muted-foreground">Select a document or create a new one</p>
       </div>
     </div>
   );
@@ -79,9 +68,7 @@ function EmptyState() {
 function FileInfoCard({ uri, mimeType }: { uri: string; mimeType: string | null }) {
   const handleDownload = async () => {
     const supabase = createClient();
-    const { data, error } = await supabase.storage
-      .from("documents")
-      .createSignedUrl(uri, 60);
+    const { data, error } = await supabase.storage.from("documents").createSignedUrl(uri, 60);
     if (error) {
       console.error("Failed to create download URL:", error);
       return;
@@ -97,9 +84,7 @@ function FileInfoCard({ uri, mimeType }: { uri: string; mimeType: string | null 
         <FileTextIcon className="size-10 text-muted-foreground" />
         <div>
           <p className="font-medium">{fileName}</p>
-          <p className="text-sm text-muted-foreground">
-            {mimeType ?? "Unknown type"}
-          </p>
+          <p className="text-sm text-muted-foreground">{mimeType ?? "Unknown type"}</p>
         </div>
       </div>
       <Button variant="outline" onClick={handleDownload}>
@@ -205,36 +190,26 @@ export function DocumentEditor({ documentId, onDeleted }: DocumentEditorProps) {
         />
 
         <Select value={type} onValueChange={handleTypeChange}>
-          <SelectTrigger className="w-[140px]">
+          <SelectTrigger className="w-35">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="resume">Resume</SelectItem>
-            <SelectItem value="cover_letter">Cover Letter</SelectItem>
+            <SelectItem value="cover-letter">Cover Letter</SelectItem>
             <SelectItem value="other">Other</SelectItem>
           </SelectContent>
         </Select>
 
-        {doc.revision && (
-          <Badge variant="secondary">{doc.revision}</Badge>
-        )}
+        {doc.revision && <Badge variant="secondary">{doc.revision}</Badge>}
 
         <div className="ml-auto flex gap-2">
           {!isUploaded && (
-            <Button
-              size="sm"
-              onClick={handleSave}
-              disabled={updateDocument.isPending}
-            >
+            <Button size="sm" onClick={handleSave} disabled={updateDocument.isPending}>
               <SaveIcon className="size-4 mr-1" />
               {updateDocument.isPending ? "Saving..." : "Save"}
             </Button>
           )}
-          <Button
-            size="sm"
-            variant="destructive"
-            onClick={() => setConfirmDelete(true)}
-          >
+          <Button size="sm" variant="destructive" onClick={() => setConfirmDelete(true)}>
             <Trash2Icon className="size-4 mr-1" />
             Delete
           </Button>
@@ -265,7 +240,7 @@ export function DocumentEditor({ documentId, onDeleted }: DocumentEditorProps) {
       {/* Content area */}
       <div className="flex-1 overflow-auto p-4">
         {isUploaded ? (
-          <FileInfoCard uri={doc.uri!} mimeType={doc.mime_type} />
+          <FileInfoCard uri={doc.uri as string} mimeType={doc.mime_type} />
         ) : (
           <textarea
             value={content}
@@ -283,15 +258,12 @@ export function DocumentEditor({ documentId, onDeleted }: DocumentEditorProps) {
           <DialogHeader>
             <DialogTitle>Delete Document</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete &ldquo;{doc.name}&rdquo;? This
-              action cannot be undone.
+              Are you sure you want to delete &ldquo;{doc.name}&rdquo;? This action cannot be
+              undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setConfirmDelete(false)}
-            >
+            <Button variant="outline" onClick={() => setConfirmDelete(false)}>
               Cancel
             </Button>
             <Button

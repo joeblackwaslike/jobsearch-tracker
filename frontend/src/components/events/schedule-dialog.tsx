@@ -4,8 +4,8 @@ import { CalendarIcon, CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import { DurationCombobox } from "@/components/events/duration-combobox";
 import { ContactCombobox } from "@/components/events/contact-combobox";
+import { DurationCombobox } from "@/components/events/duration-combobox";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -25,7 +25,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { UrlInput } from "@/components/ui/url-input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -35,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { UrlInput } from "@/components/ui/url-input";
 import { type ApplicationListItem, useApplications } from "@/lib/queries/applications";
 import type { Contact } from "@/lib/queries/contacts";
 import { useAddEventContact } from "@/lib/queries/event-contacts";
@@ -46,22 +46,22 @@ import { cn } from "@/lib/utils";
 // ---------------------------------------------------------------------------
 
 const EVENT_TYPE_OPTIONS = [
-  { value: "screening_interview", label: "Screening Interview" },
-  { value: "technical_interview", label: "Technical Interview" },
-  { value: "behavioral_interview", label: "Behavioral Interview" },
-  { value: "online_test", label: "Online Test" },
-  { value: "take_home", label: "Take Home" },
+  { value: "screening-interview", label: "Screening Interview" },
+  { value: "technical-interview", label: "Technical Interview" },
+  { value: "behavioral-interview", label: "Behavioral Interview" },
+  { value: "online-test", label: "Online Test" },
+  { value: "take-home", label: "Take Home" },
   { value: "onsite", label: "Onsite" },
 ] as const;
 
 const EVENT_STATUS_OPTIONS = [
-  { value: "availability_requested", label: "Availability Requested" },
-  { value: "availability_submitted", label: "Availability Submitted" },
+  { value: "availability-requested", label: "Availability Requested" },
+  { value: "availability-submitted", label: "Availability Submitted" },
   { value: "scheduled", label: "Scheduled" },
   { value: "completed", label: "Completed" },
   { value: "cancelled", label: "Cancelled" },
   { value: "rescheduled", label: "Rescheduled" },
-  { value: "no_show", label: "No Show" },
+  { value: "no-show", label: "No Show" },
 ] as const;
 
 // ---------------------------------------------------------------------------
@@ -71,7 +71,7 @@ const EVENT_STATUS_OPTIONS = [
 const scheduleFormSchema = z.object({
   application_id: z.string().min(1, "Application is required"),
   type: z.string().min(1, "Type is required"),
-  status: z.string().default("availability_requested"),
+  status: z.string().default("availability-requested"),
   title: z.string().default(""),
   date: z.string().default(""),
   time: z.string().default(""),
@@ -103,9 +103,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
   const [appSearch, setAppSearch] = useState("");
   const [comboboxOpen, setComboboxOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [selectedContacts, setSelectedContacts] = useState<Pick<Contact, "id" | "name">[]>(
-    [],
-  );
+  const [selectedContacts, setSelectedContacts] = useState<Pick<Contact, "id" | "name">[]>([]);
 
   const { data: applicationsData } = useApplications({
     search: appSearch || undefined,
@@ -126,8 +124,8 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
     resolver: zodResolver(scheduleFormSchema as any),
     defaultValues: {
       application_id: "",
-      type: "screening_interview",
-      status: "availability_requested",
+      type: "screening-interview",
+      status: "availability-requested",
       title: "",
       date: "",
       time: "",
@@ -152,12 +150,12 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
   useEffect(() => {
     const currentStatus = watch("status");
     if (watchedDate && watchedTime) {
-      if (currentStatus === "availability_requested") {
+      if (currentStatus === "availability-requested") {
         setValue("status", "scheduled");
       }
     } else {
       if (currentStatus === "scheduled") {
-        setValue("status", "availability_requested");
+        setValue("status", "availability-requested");
       }
     }
   }, [watchedDate, watchedTime, setValue, watch]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -227,9 +225,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Add Event</DialogTitle>
-          <DialogDescription>
-            Schedule a new event for an existing application.
-          </DialogDescription>
+          <DialogDescription>Schedule a new event for an existing application.</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -298,7 +294,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
             <div className="space-y-2">
               <Label>Type *</Label>
               <Select
-                value={watch("type") ?? "screening_interview"}
+                value={watch("type") ?? "screening-interview"}
                 onValueChange={(v) => setValue("type", v, { shouldValidate: true })}
               >
                 <SelectTrigger className="w-full" aria-label="Type">
@@ -319,7 +315,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
             <div className="space-y-2">
               <Label>Status</Label>
               <Select
-                value={watch("status") ?? "availability_requested"}
+                value={watch("status") ?? "availability-requested"}
                 onValueChange={(v) => setValue("status", v)}
               >
                 <SelectTrigger className="w-full" aria-label="Status">

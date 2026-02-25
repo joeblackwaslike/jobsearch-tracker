@@ -154,13 +154,15 @@ describe("ApplicationForm", () => {
 describe("source field placement", () => {
   it("renders Source inside the Job Details fieldset", () => {
     render(<ApplicationForm open={true} onOpenChange={vi.fn()} application={null} />);
-    const jobDetails = screen.getByText("Job Details").closest("fieldset")!;
+    const jobDetails = screen.getByText("Job Details").closest("fieldset") as HTMLElement;
     expect(within(jobDetails).getByText("Source")).toBeInTheDocument();
   });
 
   it("does not render Source in the Additional Information fieldset", () => {
     render(<ApplicationForm open={true} onOpenChange={vi.fn()} application={null} />);
-    const additional = screen.getByText("Additional Information").closest("fieldset")!;
+    const additional = screen
+      .getByText("Additional Information")
+      .closest("fieldset") as HTMLElement;
     expect(within(additional).queryByText("Source")).not.toBeInTheDocument();
   });
 });

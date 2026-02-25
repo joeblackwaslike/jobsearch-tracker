@@ -1,7 +1,7 @@
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod/v3";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod/v3";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -59,9 +59,7 @@ export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
           autoComplete="email"
           {...register("email")}
         />
-        {errors.email && (
-          <p className="text-sm text-destructive">{errors.email.message}</p>
-        )}
+        {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -73,15 +71,11 @@ export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
           autoComplete="current-password"
           {...register("password")}
         />
-        {errors.password && (
-          <p className="text-sm text-destructive">{errors.password.message}</p>
-        )}
+        {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
       </div>
 
       {error && (
-        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-          {error}
-        </div>
+        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
       )}
 
       <Button type="submit" className="w-full" disabled={loading}>

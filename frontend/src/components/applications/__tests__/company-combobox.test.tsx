@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@/test/test-utils";
 import { CompanyCombobox } from "../company-combobox";
 
@@ -39,12 +39,7 @@ describe("CompanyCombobox", () => {
   });
 
   it("renders with selected company name when value is provided", () => {
-    render(
-      <CompanyCombobox
-        value={{ id: "c1", name: "Acme Corp" }}
-        onSelect={onSelect}
-      />
-    );
+    render(<CompanyCombobox value={{ id: "c1", name: "Acme Corp" }} onSelect={onSelect} />);
 
     expect(screen.getByText("Acme Corp")).toBeInTheDocument();
   });
@@ -58,9 +53,7 @@ describe("CompanyCombobox", () => {
   });
 
   it("is disabled when the disabled prop is true", () => {
-    render(
-      <CompanyCombobox value={null} onSelect={onSelect} disabled />
-    );
+    render(<CompanyCombobox value={null} onSelect={onSelect} disabled />);
 
     expect(screen.getByRole("combobox")).toBeDisabled();
   });
@@ -71,8 +64,6 @@ describe("CompanyCombobox", () => {
 
     await user.click(screen.getByRole("combobox"));
 
-    expect(
-      screen.getByPlaceholderText("Search companies...")
-    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Search companies...")).toBeInTheDocument();
   });
 });
