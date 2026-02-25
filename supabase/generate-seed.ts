@@ -66,3 +66,83 @@ const contacts = sampleContacts.map((c) => ({
   ...c,
   id: randomUUID(),
 }));
+
+// ---------------------------------------------------------------------------
+// Event tracks
+// ---------------------------------------------------------------------------
+
+function appByStatus(status: string, skip = 0) {
+  return applications.filter((a) => a.status === status)[skip];
+}
+
+// Borrow url/duration from sampleInterviews FIFO by type
+const srcQueues = new Map<string, Array<{ url?: string; duration_minutes?: number }>>();
+for (const e of sampleInterviews) {
+  const q = srcQueues.get(e.type) ?? [];
+  q.push(e);
+  srcQueues.set(e.type, q);
+}
+const srcPtrs = new Map<string, number>();
+function borrow(type: string) {
+  const q = srcQueues.get(type) ?? [];
+  const i = srcPtrs.get(type) ?? 0;
+  srcPtrs.set(type, i + 1);
+  return { url: q[i]?.url ?? null, duration_minutes: q[i]?.duration_minutes ?? null };
+}
+
+const tracks = [
+  // Track 1 — interviewing[0]: in progress, technical upcoming
+  { appId: appByStatus("interviewing", 0)?.id ?? "", events: [
+    { type: "screening-interview",  status: "completed", scheduled_at: "2026-01-15T10:00:00Z" },
+    { type: "behavioral-interview", status: "completed", scheduled_at: "2026-01-22T14:00:00Z" },
+    { type: "technical-interview",  status: "scheduled", scheduled_at: "2026-02-05T15:00:00Z" },
+  ]},
+  // Track 2 — interviewing[1]: onsite upcoming
+  { appId: appByStatus("interviewing", 1)?.id ?? "", events: [
+    { type: "screening-interview",  status: "completed", scheduled_at: "2026-01-10T10:00:00Z" },
+    { type: "technical-interview",  status: "completed", scheduled_at: "2026-01-18T14:00:00Z" },
+    { type: "behavioral-interview", status: "completed", scheduled_at: "2026-01-25T11:00:00Z" },
+    { type: "onsite",               status: "scheduled", scheduled_at: "2026-02-12T09:00:00Z" },
+  ]},
+  // Track 3 — offer[0]: full pipeline completed
+  { appId: appByStatus("offer", 0)?.id ?? "", events: [
+    { type: "screening-interview",  status: "completed", scheduled_at: "2025-11-01T10:00:00Z" },
+    { type: "technical-interview",  status: "completed", scheduled_at: "2025-11-10T14:00:00Z" },
+    { type: "behavioral-interview", status: "completed", scheduled_at: "2025-11-18T15:00:00Z" },
+    { type: "onsite",               status: "completed", scheduled_at: "2025-11-25T09:00:00Z" },
+  ]},
+  // Track 4 — accepted[0]: 3-round pipeline, all completed
+  { appId: appByStatus("accepted", 0)?.id ?? "", events: [
+    { type: "screening-interview",  status: "completed", scheduled_at: "2025-10-01T10:00:00Z" },
+    { type: "behavioral-interview", status: "completed", scheduled_at: "2025-10-10T14:00:00Z" },
+    { type: "technical-interview",  status: "completed", scheduled_at: "2025-10-18T15:00:00Z" },
+  ]},
+  // Track 5 — rejected[0]: process ended after technical
+  { appId: appByStatus("rejected", 0)?.id ?? "", events: [
+    { type: "screening-interview",  status: "completed", scheduled_at: "2025-11-15T10:00:00Z" },
+    { type: "technical-interview",  status: "completed", scheduled_at: "2025-11-22T14:00:00Z" },
+  ]},
+  // Track 6 — interviewing[2]: just started
+  { appId: appByStatus("interviewing", 2)?.id ?? "", events: [
+    { type: "screening-interview",  status: "completed", scheduled_at: "2026-01-20T10:00:00Z" },
+    { type: "behavioral-interview", status: "scheduled", scheduled_at: "2026-02-03T14:00:00Z" },
+  ]},
+];
+
+const events = tracks.flatMap((track) =>
+  track.events.map((e) => {
+    const meta = borrow(e.type);
+    return {
+      id: randomUUID(),
+      application_id: track.appId,
+      type: e.type,
+      status: e.status,
+      scheduled_at: e.scheduled_at,
+      url: meta.url,
+      duration_minutes: meta.duration_minutes,
+      title: null as string | null,
+      description: null as string | null,
+      notes: "",
+    };
+  })
+);
