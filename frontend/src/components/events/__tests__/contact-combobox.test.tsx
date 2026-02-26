@@ -1,5 +1,6 @@
+import { waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@/test/test-utils";
+import { fireEvent, render, screen } from "@/test/test-utils";
 import { ContactCombobox } from "../contact-combobox";
 
 // Mock the contacts query
@@ -55,5 +56,14 @@ describe("ContactCombobox", () => {
     const removeButton = screen.getByLabelText("Remove Alice Smith");
     await user.click(removeButton);
     expect(onRemove).toHaveBeenCalledWith("c1");
+  });
+
+  it("focuses search input when combobox opens", async () => {
+    render(<ContactCombobox companyId="c1" selectedContactIds={[]} onAdd={vi.fn()} />);
+    fireEvent.click(screen.getByRole("combobox"));
+    const searchInput = screen.getByPlaceholderText("Search by name...");
+    await waitFor(() => {
+      expect(document.activeElement).toBe(searchInput);
+    });
   });
 });

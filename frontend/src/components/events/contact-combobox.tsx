@@ -1,5 +1,5 @@
 import { Check, ChevronsUpDown, Loader2, Plus, X } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -62,10 +62,27 @@ export function ContactCombobox({
   const [contactMethod, setContactMethod] = useState<ContactMethod | "">("");
   const [contactValue, setContactValue] = useState("");
 
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const newContactNameRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedTerm(searchText), 300);
     return () => clearTimeout(timer);
   }, [searchText]);
+
+  useEffect(() => {
+    if (open) {
+      const timer = setTimeout(() => searchInputRef.current?.focus(), 0);
+      return () => clearTimeout(timer);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (creating) {
+      const timer = setTimeout(() => newContactNameRef.current?.focus(), 0);
+      return () => clearTimeout(timer);
+    }
+  }, [creating]);
 
   const { data: contacts, isLoading } = useSearchContacts(debouncedTerm, companyId);
   const createContact = useCreateContact();
@@ -157,6 +174,7 @@ export function ContactCombobox({
         <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
           <Command shouldFilter={false}>
             <CommandInput
+              ref={searchInputRef}
               placeholder="Search by name..."
               value={searchText}
               onValueChange={setSearchText}
@@ -215,6 +233,7 @@ export function ContactCombobox({
             <Label htmlFor="new-contact-name">Name *</Label>
             <Input
               id="new-contact-name"
+              ref={newContactNameRef}
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
             />
