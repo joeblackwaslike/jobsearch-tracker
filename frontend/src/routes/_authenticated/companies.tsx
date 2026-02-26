@@ -29,6 +29,7 @@ import { companyTableSchema } from "@/schemas/table-schemas";
 
 interface CompaniesSearch {
   search?: string;
+  detail?: string;
 }
 
 const PAGE_SIZE = 20;
@@ -38,8 +39,9 @@ const PAGE_SIZE = 20;
 // ---------------------------------------------------------------------------
 
 export const Route = createFileRoute("/_authenticated/companies")({
-  validateSearch: (search: Record<string, unknown>): CompaniesSearch => ({
-    search: (search.search as string) || undefined,
+validateSearch: (search: Record<string, unknown>): CompaniesSearch => ({
+  search: (search.search as string) || undefined,
+  detail: (search.detail as string) || undefined,
   }),
   component: CompaniesPage,
 });
@@ -57,7 +59,6 @@ function CompaniesPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [formMode, setFormMode] = useState<"create" | "edit">("create");
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   // Debounce search input → URL
   useEffect(() => {
@@ -86,7 +87,7 @@ function CompaniesPage() {
     pageSize: PAGE_SIZE,
   });
 
-  const { data: selectedCompany } = useCompany(selectedId ?? "");
+  const { data: selectedCompany } = useCompany(searchParams.detail ?? "");
 
   const companies = data?.data ?? [];
   const totalCount = data?.count ?? 0;
@@ -121,7 +122,9 @@ function CompaniesPage() {
   return (
     <PageLayout
       detailPanel={selectedCompany ? <CompanyDetail company={selectedCompany} /> : null}
-      onDetailClose={() => setSelectedId(null)}
+      onDetailClose={() =>
+        navigate({ to: "/companies", search: (prev: CompaniesSearch) => ({ ...prev, detail: undefined }) })
+      }
       detailHeaderActions={
         selectedCompany ? (
           <>
@@ -227,8 +230,10 @@ function CompaniesPage() {
         <UniversalTable
           data={companies}
           schema={companyTableSchema as unknown as TableSchema<Company>}
-          onRowClick={(company) => setSelectedId((company as Company).id)}
-          selectedId={selectedId}
+          onRowClick={(company) =>
+            navigate({ to: "/companies", search: (prev: CompaniesSearch) => ({ ...prev, detail: (company as Company).id }) })
+          }
+          selectedId={searchParams.detail ?? null}
           rowActions={(company) => (
             <>
             <Button

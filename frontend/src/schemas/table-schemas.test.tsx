@@ -133,10 +133,9 @@ describe("table-schemas", () => {
       expect(col?.minWidth).toBe(100);
     });
 
-    it("tags column has cell renderer", () => {
-      const col = companyTableSchema.columns.find((c) => c.id === "tags");
-      expect(col?.cell).toBeDefined();
-      expect(typeof col?.cell).toBe("function");
+    it("does not include a tags column", () => {
+      const ids = companyTableSchema.columns.map((c) => c.id);
+      expect(ids).not.toContain("tags");
     });
   });
 
