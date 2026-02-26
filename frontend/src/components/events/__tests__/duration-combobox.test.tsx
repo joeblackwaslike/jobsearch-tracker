@@ -92,4 +92,11 @@ describe("DurationCombobox", () => {
     await user.keyboard("{Enter}");
     expect(onChange).toHaveBeenLastCalledWith(77);
   });
+
+  it("opens when ArrowDown is pressed on trigger", async () => {
+    render(<DurationCombobox value={undefined} onChange={vi.fn()} />);
+    const trigger = screen.getByRole("combobox", { name: /duration/i });
+    fireEvent.keyDown(trigger, { key: "ArrowDown" });
+    expect(await screen.findByText("15 min")).toBeInTheDocument();
+  });
 });

@@ -67,6 +67,12 @@ export function DurationCombobox({ value, onChange }: DurationComboboxProps) {
           aria-label="Duration"
           className="w-full justify-between font-normal"
           onPointerDown={(e) => e.preventDefault()}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+              e.preventDefault();
+              setOpen(true);
+            }
+          }}
         >
           {value != null ? formatDuration(value) : "Select duration..."}
           <ChevronsUpDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
