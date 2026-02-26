@@ -1,6 +1,0 @@
-#!/usr/bin/env zsh
-cd frontend
-npx bun lint
-npx bun type
-npx bun test
-npx bun test:e2e

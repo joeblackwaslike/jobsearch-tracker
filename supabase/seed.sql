@@ -19,7 +19,7 @@ BEGIN
     is_super_admin, is_sso_user, is_anonymous
   ) VALUES (
     v_user_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
-    'seed@example.com', crypt('password123', gen_salt('bf')),
+    'seed@example.com', crypt('testing', gen_salt('bf')),
     NOW(), NOW(), NOW(),
     '{"provider":"email","providers":["email"]}',
     '{}',
