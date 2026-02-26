@@ -230,6 +230,20 @@ function CompaniesPage() {
           onRowClick={(company) => setSelectedId((company as Company).id)}
           selectedId={selectedId}
           rowActions={(company) => (
+            <>
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              aria-label="Edit company"
+              onClick={(e) => {
+                e.stopPropagation();
+                setFormMode("edit");
+                setEditingCompany(company as Company);
+                setFormOpen(true);
+              }}
+            >
+              <PencilIcon className="size-3.5" />
+            </Button>
             <Button
               variant="ghost"
               size="icon-xs"
@@ -238,6 +252,7 @@ function CompaniesPage() {
             >
               <ArchiveIcon className="size-3.5" />
             </Button>
+            </>
           )}
         />
 
