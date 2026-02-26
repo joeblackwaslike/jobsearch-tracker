@@ -172,9 +172,10 @@ function OverviewTab({ company }: { company: Company }) {
           )}
           {(
             [
-              ["Work-Life Balance", "work_life_balance"],
+              ["Work-Life Balance", "workLifeBalance"],
               ["Compensation", "compensation"],
-              ["Career Growth", "career_growth"],
+              ["Career Growth", "careerGrowth"],
+              ["Culture", "culture"],
               ["Management", "management"],
             ] as [string, string][]
           ).map(([label, key]) =>

@@ -105,4 +105,25 @@ describe("CompanyDetail", () => {
     expect(screen.getByText("TypeScript")).toBeInTheDocument();
     expect(screen.getByText("AWS")).toBeInTheDocument();
   });
+  it("renders work-life balance and career growth ratings from camelCase keys", () => {
+    render(
+      <CompanyDetail
+        company={{
+          ...mockCompany,
+          ratings: {
+            overall: 4.2,
+            workLifeBalance: 4.0,
+            compensation: 4.5,
+            careerGrowth: 4.3,
+            culture: 4.1,
+            management: 3.9,
+          } as unknown as null,
+        }}
+      />,
+    );
+    expect(screen.getByText("Work-Life Balance")).toBeInTheDocument();
+    expect(screen.getByText("Career Growth")).toBeInTheDocument();
+    expect(screen.getByText("Culture")).toBeInTheDocument();
+    expect(screen.getByText("Management")).toBeInTheDocument();
+  });
 });
