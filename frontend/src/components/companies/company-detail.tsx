@@ -102,9 +102,9 @@ function OverviewTab({ company }: { company: Company }) {
   return (
     <div className="space-y-6">
       {/* Data Quality */}
-      <div className="space-y-2">
+      <div className="rounded-md border bg-muted/30 p-3 space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">Data Quality</span>
+          <span className="text-lg font-medium">Data Quality</span>
           <span className={cn("rounded-full px-2 py-0.5 text-xs font-medium", quality.color)}>
             {quality.label}
           </span>
@@ -120,7 +120,6 @@ function OverviewTab({ company }: { company: Company }) {
           />
         </div>
       </div>
-
       {/* Key-value grid */}
       {(company.industry || company.size || company.founded) && (
         <div className="grid grid-cols-2 gap-x-4 gap-y-3">
@@ -148,7 +147,7 @@ function OverviewTab({ company }: { company: Company }) {
       {/* Ratings */}
       {ratings && Object.keys(ratings).length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-medium">Ratings</p>
+          <p className="text-lg font-medium">Ratings</p>
           {ratings.overall != null && (
             <div className="flex items-center justify-between">
               <span className="text-sm">Overall</span>
@@ -192,7 +191,7 @@ function OverviewTab({ company }: { company: Company }) {
       {/* Description */}
       {company.description && (
         <div className="space-y-1">
-          <p className="text-sm font-medium">Description</p>
+          <p className="text-lg font-medium">Description</p>
           <p className="text-sm text-muted-foreground whitespace-pre-wrap">{company.description}</p>
         </div>
       )}
@@ -217,14 +216,14 @@ function ResearchTab({ company }: { company: Company }) {
     <div className="space-y-5">
       {company.culture && (
         <div className="space-y-1">
-          <p className="text-sm font-medium">Culture</p>
+          <p className="text-lg font-medium">Culture</p>
           <p className="text-sm text-muted-foreground whitespace-pre-wrap">{company.culture}</p>
         </div>
       )}
 
       {techStack.length > 0 && (
         <div className="space-y-1.5">
-          <p className="text-sm font-medium">Tech Stack</p>
+          <p className="text-lg font-medium">Tech Stack</p>
           <div className="flex flex-wrap gap-1.5">
             {techStack.map((item) => (
               <span
@@ -240,7 +239,7 @@ function ResearchTab({ company }: { company: Company }) {
 
       {benefits.length > 0 && (
         <div className="space-y-1.5">
-          <p className="text-sm font-medium">Benefits</p>
+          <p className="text-lg font-medium">Benefits</p>
           <div className="flex flex-wrap gap-1.5">
             {benefits.map((item) => (
               <span
@@ -257,7 +256,7 @@ function ResearchTab({ company }: { company: Company }) {
       {(pros.length > 0 || cons.length > 0) && (
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
-            <p className="text-sm font-medium text-green-600">Pros</p>
+            <p className="text-lg font-medium text-green-600">Pros</p>
             <ul className="space-y-0.5">
               {pros.map((item) => (
                 <li key={item} className="flex items-start gap-1.5 text-sm text-muted-foreground">
@@ -268,7 +267,7 @@ function ResearchTab({ company }: { company: Company }) {
             </ul>
           </div>
           <div className="space-y-1">
-            <p className="text-sm font-medium text-red-600">Cons</p>
+            <p className="text-lg font-medium text-red-600">Cons</p>
             <ul className="space-y-0.5">
               {cons.map((item) => (
                 <li key={item} className="flex items-start gap-1.5 text-sm text-muted-foreground">
