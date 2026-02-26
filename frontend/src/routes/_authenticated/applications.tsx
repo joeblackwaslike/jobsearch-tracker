@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import type { SortingState } from "@tanstack/react-table";
-import { BookmarkIcon, ChevronLeftIcon, ChevronRightIcon, PlusIcon, ZapIcon } from "lucide-react";
+import { BookmarkIcon, ChevronLeftIcon, ChevronRightIcon, PencilIcon, PlusIcon, ZapIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { z } from "zod";
 import { ApplicationDetail } from "@/components/applications/application-detail";
@@ -10,6 +10,7 @@ import {
 } from "@/components/applications/application-filters";
 import { ApplicationForm } from "@/components/applications/application-form";
 import { ApplicationStats } from "@/components/applications/application-stats";
+import { ArchiveDialog } from "@/components/applications/archive-dialog";
 import { EasyAddForm } from "@/components/applications/easy-add-form";
 import { FullApplicationForm } from "@/components/applications/full-application-form";
 import { PageLayout } from "@/components/shared/page-layout";
@@ -111,6 +112,7 @@ function ApplicationsPage() {
   const [bookmarkOpen, setBookmarkOpen] = useState(false);
   const [easyAddOpen, setEasyAddOpen] = useState(false);
   const [editingApp, setEditingApp] = useState<ApplicationListItem | null>(null);
+  const [editingSelectedApp, setEditingSelectedApp] = useState<ApplicationWithCompany | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   // Derive state from URL params
@@ -205,6 +207,18 @@ function ApplicationsPage() {
       detailPanel={selectedApp ? <ApplicationDetail application={selectedApp} /> : null}
       onDetailClose={() => setSelectedId(null)}
       detailWidth="lg"
+      detailHeaderActions={
+        selectedApp ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Edit application"
+            onClick={() => setEditingSelectedApp(selectedApp)}
+          >
+            <PencilIcon className="size-4" />
+          </Button>
+        ) : undefined
+      }
     >
       <div className="space-y-4">
         {/* Header */}
@@ -255,6 +269,12 @@ function ApplicationsPage() {
           onSortingChange={handleSortingChange}
           onRowClick={(app) => setSelectedId((app as ApplicationListItem).id)}
           selectedId={selectedId}
+          rowActions={(app) => (
+            <ArchiveDialog
+              applicationId={(app as ApplicationListItem).id}
+              onArchived={() => setSelectedId(null)}
+            />
+          )}
         />
 
         {/* Pagination */}
@@ -314,6 +334,13 @@ function ApplicationsPage() {
             if (!open) setEditingApp(null);
           }}
           application={editingApp as ApplicationWithCompany | null}
+        />
+        <ApplicationForm
+          open={!!editingSelectedApp}
+          onOpenChange={(open) => {
+            if (!open) setEditingSelectedApp(null);
+          }}
+          application={editingSelectedApp}
         />
       </div>
     </PageLayout>
