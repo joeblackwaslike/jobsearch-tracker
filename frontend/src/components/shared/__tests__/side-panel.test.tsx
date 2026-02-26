@@ -48,4 +48,26 @@ describe("SidePanel", () => {
     fireEvent.click(closeButton);
     expect(onClose).toHaveBeenCalledTimes(1);
   });
+
+  it("renders headerActions to the left of the close button", () => {
+    render(
+      <SidePanel
+        isOpen={true}
+        onClose={vi.fn()}
+        headerActions={<button type="button">Edit</button>}
+      >
+        <div>Content</div>
+      </SidePanel>,
+    );
+    expect(screen.getByRole("button", { name: "Edit" })).toBeInTheDocument();
+  });
+
+  it("does not render a 'Details' heading", () => {
+    render(
+      <SidePanel isOpen={true} onClose={vi.fn()}>
+        <div>Content</div>
+      </SidePanel>,
+    );
+    expect(screen.queryByText("Details")).not.toBeInTheDocument();
+  });
 });

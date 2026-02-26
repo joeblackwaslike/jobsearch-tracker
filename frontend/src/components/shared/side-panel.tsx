@@ -11,6 +11,7 @@ interface SidePanelProps {
   children: React.ReactNode;
   width?: SidePanelWidth;
   position?: "right" | "left";
+  headerActions?: React.ReactNode;
 }
 
 const WIDTH_CLASSES: Record<SidePanelWidth, string> = {
@@ -26,6 +27,7 @@ export function SidePanel({
   children,
   width = "md",
   position = "right",
+  headerActions,
 }: SidePanelProps) {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -51,9 +53,9 @@ export function SidePanel({
           aria-label="Dismiss panel"
           onClick={onClose}
         />
-        <div className="relative flex w-full flex-col border-t bg-background shadow-xl transition-transform duration-300 ease-in-out max-h-[80vh]">
-          <div className="flex items-center justify-between border-b p-4">
-            <h2 className="text-lg font-semibold">Details</h2>
+        <div className="relative flex w-full flex-col border-t bg-background shadow-xl max-h-[80vh]">
+          <div className="flex shrink-0 items-center justify-end gap-1 border-b p-2">
+            {headerActions}
             <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close">
               <X className="size-5" />
             </Button>
@@ -67,29 +69,29 @@ export function SidePanel({
   const positionClass = position === "right" ? "right-0" : "left-0";
 
   return (
-    <div className="fixed inset-0 z-50 flex">
+    <>
       <button
         type="button"
         data-testid="side-panel-backdrop"
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
         aria-label="Dismiss panel"
         onClick={onClose}
       />
       <aside
         className={cn(
-          "relative flex h-full w-full max-w-full flex-col border-l bg-background shadow-xl transition-transform duration-300 ease-in-out",
+          "fixed inset-y-0 z-50 flex flex-col border-l bg-background shadow-xl",
           WIDTH_CLASSES[width],
           positionClass,
         )}
       >
-        <div className="flex items-center justify-between border-b p-4">
-          <h2 className="text-lg font-semibold">Details</h2>
+        <div className="flex shrink-0 items-center justify-end gap-1 border-b p-2">
+          {headerActions}
           <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close">
             <X className="size-5" />
           </Button>
         </div>
         <div className="flex-1 overflow-y-auto p-4">{children}</div>
       </aside>
-    </div>
+    </>
   );
 }
