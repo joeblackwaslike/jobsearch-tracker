@@ -53,6 +53,13 @@ const EVENT_TYPE_OPTIONS = [
   { value: "online-test", label: "Online Test" },
   { value: "take-home", label: "Take Home" },
   { value: "onsite", label: "Onsite" },
+  { value: "received-offer", label: "Received Offer" },
+  { value: "accepted-offer", label: "Accepted Offer" },
+  { value: "rejected-offer", label: "Rejected Offer" },
+  { value: "offer-withdrawn", label: "Offer Withdrawn" },
+  { value: "follow-up", label: "Follow Up" },
+  { value: "hiring-manager", label: "Hiring Manager" },
+  { value: "peer-interview", label: "Peer Interview" },
 ] as const;
 
 const EVENT_STATUS_OPTIONS = [

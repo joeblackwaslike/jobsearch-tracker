@@ -1,16 +1,23 @@
 import {
+  AlertTriangle,
   Building,
+  CheckCircle,
   ChevronDown,
   ChevronRight,
   Code,
+  DollarSign,
   ExternalLink,
   Gift,
   Home,
   Monitor,
   Pencil,
   Phone,
+  RefreshCw,
   Trash2,
+  User2,
   Users,
+  Users2,
+  XCircle,
 } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -41,6 +48,13 @@ const EVENT_TYPE_CONFIG: Record<
   "take-home": { label: "Take Home", icon: Home },
   onsite: { label: "Onsite", icon: Building },
   offer: { label: "Offer", icon: Gift },
+  "received-offer": { label: "Received Offer", icon: DollarSign },
+  "accepted-offer": { label: "Accepted Offer", icon: CheckCircle },
+  "rejected-offer": { label: "Rejected Offer", icon: XCircle },
+  "offer-withdrawn": { label: "Offer Withdrawn", icon: AlertTriangle },
+  "follow-up": { label: "Follow Up", icon: RefreshCw },
+  "hiring-manager": { label: "Hiring Manager", icon: User2 },
+  "peer-interview": { label: "Peer Interview", icon: Users2 },
 };
 
 const STATUS_VARIANT: Record<string, "default" | "secondary" | "outline" | "destructive"> = {

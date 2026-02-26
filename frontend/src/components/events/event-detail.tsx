@@ -14,6 +14,13 @@ const EVENT_TYPE_LABELS: Record<string, string> = {
   "online-test": "Online Test",
   "take-home": "Take Home Assignment",
   onsite: "Onsite Interview",
+  "received-offer": "Received Offer",
+  "accepted-offer": "Accepted Offer",
+  "rejected-offer": "Rejected Offer",
+  "offer-withdrawn": "Offer Withdrawn",
+  "follow-up": "Follow Up",
+  "hiring-manager": "Hiring Manager",
+  "peer-interview": "Peer Interview",
 };
 
 const EVENT_STATUS_COLORS: Record<string, string> = {
