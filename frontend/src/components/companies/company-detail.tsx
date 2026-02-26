@@ -10,9 +10,9 @@ import {
   TrendingUp,
 } from "lucide-react";
 import type React from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { useApplicationsByCompany } from "@/lib/queries/applications";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { DetailLayout } from "@/components/shared/detail-layout";
 import { formatDate } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
@@ -283,45 +283,38 @@ function ResearchTab({ company }: { company: Company }) {
   );
 }
 
-function AppsTab({ companyId }: { companyId: string }) {
-  const { data: result } = useApplicationsByCompany(companyId);
-  const apps = result?.data ?? [];
-
+function AppsTab({
+  apps,
+  onAppClick,
+}: {
+  apps: { id: string; position: string; status: string; applied_at: string | null }[];
+  onAppClick: (appId: string) => void;
+}) {
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <span className="text-sm text-muted-foreground">
-          {apps.length} application{apps.length !== 1 ? "s" : ""}
-        </span>
-        <Button variant="outline" size="sm" asChild>
-          <a href="/applications">
-            <Link2 className="size-3.5" />
-            All Applications
-          </a>
-        </Button>
-      </div>
-
+    <div className="space-y-2">
       {apps.length === 0 && (
         <p className="text-sm text-muted-foreground">No applications linked to this company.</p>
       )}
-
-      <div className="space-y-2">
-        {apps.map((app) => (
-          <div key={app.id} className="rounded-md border p-3">
-            <div className="flex items-start justify-between gap-2">
-              <p className="text-sm font-medium">{app.position}</p>
-              <Badge variant="secondary" className="shrink-0 text-xs">
-                {app.status}
-              </Badge>
-            </div>
-            {app.applied_at && (
-              <p className="mt-1 text-xs text-muted-foreground">
-                Applied {formatDate(app.applied_at)}
-              </p>
-            )}
+      {apps.map((app) => (
+        <button
+          key={app.id}
+          type="button"
+          className="w-full rounded-md border p-3 text-left transition-colors hover:bg-muted/50"
+          onClick={() => onAppClick(app.id)}
+        >
+          <div className="flex items-start justify-between gap-2">
+            <p className="text-sm font-medium">{app.position}</p>
+            <Badge variant="secondary" className="shrink-0 text-xs">
+              {app.status}
+            </Badge>
           </div>
-        ))}
-      </div>
+          {app.applied_at && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              Applied {formatDate(app.applied_at)}
+            </p>
+          )}
+        </button>
+      ))}
     </div>
   );
 }
@@ -361,6 +354,10 @@ function LinksTab({ links }: { links: CompanyLink[] }) {
 // ---------------------------------------------------------------------------
 
 export function CompanyDetail({ company }: CompanyDetailProps) {
+  const navigate = useNavigate();
+  const { data: appsResult } = useApplicationsByCompany(company.id);
+  const apps = appsResult?.data ?? [];
+
   const LINK_NAMES: Record<string, string> = {
     website: "Website",
     careers: "Careers Page",
@@ -400,8 +397,15 @@ export function CompanyDetail({ company }: CompanyDetailProps) {
     },
     {
       id: "apps",
-      label: "Apps",
-      content: <AppsTab companyId={company.id} />,
+      label: `Apps (${apps.length})`,
+      content: (
+        <AppsTab
+          apps={apps}
+          onAppClick={(appId) =>
+            navigate({ to: "/applications", search: { detail: appId } })
+          }
+        />
+      ),
     },
     {
       id: "links",

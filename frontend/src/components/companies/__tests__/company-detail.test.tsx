@@ -9,6 +9,11 @@ vi.mock("@/lib/queries/applications", () => ({
   useApplicationsByCompany: () => ({ data: { data: [], count: 0 } }),
 }));
 
+vi.mock("@tanstack/react-router", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@tanstack/react-router")>();
+  return { ...actual, useNavigate: () => vi.fn() };
+});
+
 const mockCompany = {
   id: "1",
   name: "Test Company",
