@@ -1,10 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
+  ArchiveIcon,
   BarChart3,
   Building2,
   CheckCircle,
   ChevronLeftIcon,
   ChevronRightIcon,
+  PencilIcon,
   Plus,
   Search,
   Star,
@@ -17,7 +19,7 @@ import { UniversalTable } from "@/components/shared/universal-table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { type Company, useCompanies, useCompany } from "@/lib/queries/companies";
+import { type Company, useArchiveCompany, useCompanies, useCompany } from "@/lib/queries/companies";
 import type { TableSchema } from "@/schemas/table-schema";
 import { companyTableSchema } from "@/schemas/table-schemas";
 
@@ -108,6 +110,8 @@ function CompaniesPage() {
     return count > 0 ? (sum / count).toFixed(1) : "--";
   })();
 
+  const archiveCompany = useArchiveCompany();
+
   const handleOpenCreate = useCallback(() => {
     setFormMode("create");
     setEditingCompany(null);
@@ -118,6 +122,32 @@ function CompaniesPage() {
     <PageLayout
       detailPanel={selectedCompany ? <CompanyDetail company={selectedCompany} /> : null}
       onDetailClose={() => setSelectedId(null)}
+      detailHeaderActions={
+        selectedCompany ? (
+          <>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Edit company"
+              onClick={() => {
+                setFormMode("edit");
+                setEditingCompany(selectedCompany);
+                setFormOpen(true);
+              }}
+            >
+              <PencilIcon className="size-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Archive company"
+              onClick={() => archiveCompany.mutate({ id: selectedCompany.id })}
+            >
+              <ArchiveIcon className="size-4" />
+            </Button>
+          </>
+        ) : undefined
+      }
     >
       <div className="space-y-6">
         {/* Header */}
@@ -199,6 +229,16 @@ function CompaniesPage() {
           schema={companyTableSchema as unknown as TableSchema<Company>}
           onRowClick={(company) => setSelectedId((company as Company).id)}
           selectedId={selectedId}
+          rowActions={(company) => (
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              aria-label="Archive company"
+              onClick={() => archiveCompany.mutate({ id: (company as Company).id })}
+            >
+              <ArchiveIcon className="size-3.5" />
+            </Button>
+          )}
         />
 
         {/* Pagination */}
