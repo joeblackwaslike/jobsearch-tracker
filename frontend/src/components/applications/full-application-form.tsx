@@ -25,7 +25,9 @@ import {
 } from "@/components/ui/select";
 import { TagInput } from "@/components/ui/tag-input";
 import { UrlInput } from "@/components/ui/url-input";
-import { useCreateApplication } from "@/lib/queries/applications";
+import { BookmarkIcon } from "lucide-react";
+import type { ApplicationWithCompany } from "@/lib/queries/applications";
+import { useCreateApplication, useUpdateApplication } from "@/lib/queries/applications";
 import type { Company } from "@/lib/queries/companies";
 import { useSnapshotDocument } from "@/lib/queries/documents";
 import { CityCombobox } from "./city-combobox";
@@ -99,6 +101,7 @@ interface FullApplicationFormProps {
   onSuccess?: () => void;
   prefill?: { company?: string; position?: string; url?: string };
   defaultStatus?: string;
+  application?: ApplicationWithCompany | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -138,9 +141,12 @@ export function FullApplicationForm({
   onSuccess,
   prefill,
   defaultStatus,
+  application,
 }: FullApplicationFormProps) {
   const createApplication = useCreateApplication();
+  const updateApplication = useUpdateApplication();
   const snapshotDocument = useSnapshotDocument();
+  const isBookmarkedEdit = !!application && application.status === "bookmarked";
   const [selectedResumeId, setSelectedResumeId] = useState<string | null>(null);
 
   const {
@@ -201,6 +207,32 @@ export function FullApplicationForm({
   const handleCompanySelect = (company: Pick<Company, "id" | "name">) => {
     setValue("company_id", company.id, { shouldValidate: true });
     setValue("company_name", company.name);
+  };
+
+  const handleBookmark = async () => {
+    const values = watch();
+    if (!values.company_id || !values.position) return;
+    await createApplication.mutateAsync({
+      company_id: values.company_id,
+      position: values.position,
+      url: values.url || null,
+      status: "bookmarked",
+      employment_type: "full-time",
+      applied_at: null,
+    });
+    onSuccess?.();
+    onOpenChange(false);
+  };
+
+  const handleSetApplied = async () => {
+    if (!application) return;
+    await updateApplication.mutateAsync({
+      id: application.id,
+      status: "applied",
+      applied_at: new Date().toISOString(),
+    });
+    onSuccess?.();
+    onOpenChange(false);
   };
 
   const onSubmit = async (values: FullApplicationValues) => {
@@ -441,14 +473,38 @@ export function FullApplicationForm({
                 </div>
               </fieldset>
 
-              <DialogFooter className="mt-4">
-                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? "Saving..." : "Add Application"}
-                </Button>
-              </DialogFooter>
+              {isBookmarkedEdit ? (
+                <DialogFooter className="mt-4">
+                  <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                    Cancel
+                  </Button>
+                  <Button type="button" onClick={handleSetApplied}>
+                    Set to Applied
+                  </Button>
+                </DialogFooter>
+              ) : (
+                <DialogFooter className="mt-4">
+                  <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    disabled={
+                      !watch("company_id") || !watch("position") || createApplication.isPending
+                    }
+                    onClick={handleBookmark}
+                    aria-label="Bookmark for later"
+                    title="Bookmark for later"
+                  >
+                    <BookmarkIcon className="size-4" />
+                  </Button>
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? "Saving..." : "New Application"}
+                  </Button>
+                </DialogFooter>
+              )}
             </div>
           </ScrollArea>
         </form>
