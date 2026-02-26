@@ -350,35 +350,47 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      tabIndex={-1}
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !selectedDate && "text-muted-foreground",
-                      )}
-                      aria-label="Pick a date"
+                <div className="flex gap-2">
+                  <Input
+                    type="date"
+                    className="flex-1"
+                    value={watch("date")}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setValue("date", val, { shouldValidate: true });
+                      setSelectedDate(val ? new Date(`${val}T00:00:00`) : undefined);
+                    }}
+                  />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        tabIndex={-1}
+                        aria-label="Open date picker"
+                        type="button"
+                      >
+                        <CalendarIcon className="size-4" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-auto p-0"
+                      align="end"
+                      onOpenAutoFocus={(e) => e.preventDefault()}
                     >
-                      <CalendarIcon className="mr-2 size-4" />
-                      {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={selectedDate}
-                      onSelect={(date) => {
-                        setSelectedDate(date);
-                        setValue("date", date ? format(date, "yyyy-MM-dd") : "", {
-                          shouldValidate: true,
-                        });
-                      }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                      <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={(date) => {
+                          setSelectedDate(date);
+                          setValue("date", date ? format(date, "yyyy-MM-dd") : "", {
+                            shouldValidate: true,
+                          });
+                        }}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="schedule-time">Time</Label>
