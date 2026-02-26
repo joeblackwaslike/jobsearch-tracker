@@ -394,7 +394,12 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
               </div>
               <div className="space-y-2">
                 <Label htmlFor="schedule-time">Time</Label>
-                <Input id="schedule-time" type="time" {...register("time")} />
+                <Input
+                  id="schedule-time"
+                  type="time"
+                  className="[&::-webkit-calendar-picker-indicator]:hidden"
+                  {...register("time")}
+                />
               </div>
             </div>
 
