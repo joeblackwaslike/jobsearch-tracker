@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
-import { CalendarIcon, PlusIcon, SearchIcon } from "lucide-react";
+import { CalendarIcon, PencilIcon, PlusIcon, SearchIcon } from "lucide-react";
 import { useMemo, useState } from "react";
+import { AddEventDialog } from "@/components/applications/add-event-dialog";
 import { EventDetail } from "@/components/events/event-detail";
 import { ScheduleDialog } from "@/components/events/schedule-dialog";
 import { PageLayout } from "@/components/shared/page-layout";
@@ -8,7 +9,12 @@ import { UniversalTable } from "@/components/shared/universal-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { type EventWithApplication, usePastEvents, useUpcomingEvents } from "@/lib/queries/events";
+import {
+  type Event,
+  type EventWithApplication,
+  usePastEvents,
+  useUpcomingEvents,
+} from "@/lib/queries/events";
 import type { TableSchema } from "@/schemas/table-schema";
 import { eventTableSchema } from "@/schemas/table-schemas";
 
@@ -48,6 +54,7 @@ function EventsPage() {
   const [search, setSearch] = useState("");
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
   const { data: upcoming = [] } = useUpcomingEvents();
   const { data: past = [] } = usePastEvents();
@@ -72,6 +79,18 @@ function EventsPage() {
     <PageLayout
       detailPanel={selectedEvent ? <EventDetail event={selectedEvent} /> : null}
       onDetailClose={() => setSelectedId(null)}
+      detailHeaderActions={
+        selectedEvent ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Edit event"
+            onClick={() => setEditingEvent(selectedEvent)}
+          >
+            <PencilIcon className="size-4" />
+          </Button>
+        ) : undefined
+      }
     >
       <div className="space-y-6">
         {/* Header */}
@@ -138,6 +157,15 @@ function EventsPage() {
 
         {/* Schedule dialog */}
         <ScheduleDialog open={scheduleOpen} onOpenChange={setScheduleOpen} />
+        <AddEventDialog
+          open={!!editingEvent}
+          onOpenChange={(open) => {
+            if (!open) setEditingEvent(null);
+          }}
+          applicationId={editingEvent?.application_id ?? ""}
+          mode="edit"
+          event={editingEvent}
+        />
       </div>
     </PageLayout>
   );
