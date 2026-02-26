@@ -943,6 +943,8 @@ const sampleCompanies: Array<Company> = [
         workLifeBalance: 4.0,
         compensation: 4.5,
         careerGrowth: 4.3,
+        culture: 4.0,
+        management: 4.1,
       },
     },
     {
@@ -959,6 +961,8 @@ const sampleCompanies: Array<Company> = [
         overall: 3.8,
         workLifeBalance: 3.5,
         compensation: 4.0,
+        culture: 3.6,
+        management: 3.4,
       },
     },
     {
@@ -976,6 +980,8 @@ const sampleCompanies: Array<Company> = [
         workLifeBalance: 4.2,
         compensation: 4.8,
         careerGrowth: 4.6,
+        culture: 4.3,
+        management: 4.4,
       },
     },
     {
@@ -993,6 +999,8 @@ const sampleCompanies: Array<Company> = [
         workLifeBalance: 4.3,
         compensation: 4.2,
         careerGrowth: 4.0,
+        culture: 4.2,
+        management: 4.0,
       },
     },
     {
@@ -1010,6 +1018,8 @@ const sampleCompanies: Array<Company> = [
         workLifeBalance: 4.6,
         compensation: 4.1,
         careerGrowth: 4.2,
+        culture: 4.5,
+        management: 4.2,
       },
     },
     {
@@ -1028,6 +1038,8 @@ const sampleCompanies: Array<Company> = [
         workLifeBalance: 4.4,
         compensation: 3.7,
         careerGrowth: 3.9,
+        culture: 4.1,
+        management: 3.8,
       },
     },
     {
@@ -1045,6 +1057,8 @@ const sampleCompanies: Array<Company> = [
         workLifeBalance: 3.8,
         compensation: 4.6,
         careerGrowth: 4.4,
+        culture: 4.1,
+        management: 4.0,
       },
     },
     {
@@ -1062,6 +1076,8 @@ const sampleCompanies: Array<Company> = [
         workLifeBalance: 4.0,
         compensation: 4.4,
         careerGrowth: 4.1,
+        culture: 4.0,
+        management: 4.1,
       },
     },
     {
@@ -1078,6 +1094,8 @@ const sampleCompanies: Array<Company> = [
         overall: 3.9,
         workLifeBalance: 4.1,
         compensation: 4.0,
+        culture: 3.8,
+        management: 3.7,
       },
     },
     {
@@ -1095,6 +1113,8 @@ const sampleCompanies: Array<Company> = [
         workLifeBalance: 3.6,
         compensation: 4.7,
         careerGrowth: 4.5,
+        culture: 4.0,
+        management: 3.9,
       },
     },
     {
@@ -1111,6 +1131,8 @@ const sampleCompanies: Array<Company> = [
         overall: 3.8,
         workLifeBalance: 4.2,
         compensation: 3.6,
+        culture: 3.9,
+        management: 3.6,
       },
     },
     {
@@ -1127,6 +1149,8 @@ const sampleCompanies: Array<Company> = [
         overall: 3.9,
         workLifeBalance: 3.5,
         compensation: 4.5,
+        culture: 3.7,
+        management: 3.6,
       },
     },
     {
@@ -1143,6 +1167,8 @@ const sampleCompanies: Array<Company> = [
         overall: 4.0,
         workLifeBalance: 3.4,
         compensation: 3.8,
+        culture: 3.8,
+        management: 3.5,
       },
     },
   ];
