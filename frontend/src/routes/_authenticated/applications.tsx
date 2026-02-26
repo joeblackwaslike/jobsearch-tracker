@@ -53,6 +53,7 @@ const applicationsSearchSchema = z.object({
   sort: z.string().optional().catch(undefined),
   page: z.coerce.number().optional().catch(1),
   pageSize: z.coerce.number().optional().catch(25),
+  detail: z.string().optional().catch(undefined),
 });
 
 type ApplicationsSearch = z.infer<typeof applicationsSearchSchema>;
@@ -112,7 +113,6 @@ function ApplicationsPage() {
   const [easyAddOpen, setEasyAddOpen] = useState(false);
   const [editingApp, setEditingApp] = useState<ApplicationListItem | null>(null);
   const [editingSelectedApp, setEditingSelectedApp] = useState<ApplicationWithCompany | null>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   // Derive state from URL params
   const page = searchParams.page ?? 1;
@@ -142,7 +142,7 @@ function ApplicationsPage() {
   };
 
   const { data: result, isLoading } = useApplications(queryFilters);
-  const { data: selectedApp } = useApplication(selectedId ?? "");
+  const { data: selectedApp } = useApplication(searchParams.detail ?? "");
 
   const applications = result?.data ?? [];
   const totalCount = result?.count ?? 0;
@@ -204,7 +204,9 @@ function ApplicationsPage() {
   return (
     <PageLayout
       detailPanel={selectedApp ? <ApplicationDetail application={selectedApp} /> : null}
-      onDetailClose={() => setSelectedId(null)}
+      onDetailClose={() =>
+        navigate({ to: "/applications", search: (prev: ApplicationsSearch) => ({ ...prev, detail: undefined }), replace: true })
+      }
       detailWidth="lg"
       detailHeaderActions={
         selectedApp ? (
@@ -257,12 +259,16 @@ function ApplicationsPage() {
           schema={applicationTableSchema as unknown as TableSchema<ApplicationListItem>}
           sorting={sorting}
           onSortingChange={handleSortingChange}
-          onRowClick={(app) => setSelectedId((app as ApplicationListItem).id)}
-          selectedId={selectedId}
+          onRowClick={(app) =>
+            navigate({ to: "/applications", search: (prev: ApplicationsSearch) => ({ ...prev, detail: (app as ApplicationListItem).id }) })
+          }
+          selectedId={searchParams.detail ?? null}
           rowActions={(app) => (
             <ArchiveDialog
               applicationId={(app as ApplicationListItem).id}
-              onArchived={() => setSelectedId(null)}
+              onArchived={() =>
+                navigate({ to: "/applications", search: (prev: ApplicationsSearch) => ({ ...prev, detail: undefined }), replace: true })
+              }
             />
           )}
         />
