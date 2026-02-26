@@ -6,7 +6,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -28,6 +28,7 @@ interface UniversalTableProps<T extends object> {
   onRowClick?: (row: T) => void;
   selectedId?: string | null;
   className?: string;
+  rowActions?: (row: T) => React.ReactNode;
 }
 
 export function UniversalTable<T extends object>({
@@ -38,9 +39,10 @@ export function UniversalTable<T extends object>({
   onRowClick,
   selectedId,
   className = "",
+  rowActions,
 }: UniversalTableProps<T>) {
   const columns = useMemo<ColumnDef<T>[]>(() => {
-    return schema.columns.map((col) => ({
+    const cols: ColumnDef<T>[] = schema.columns.map((col) => ({
       id: col.id,
       header: col.header,
       enableSorting: col.sortable,
@@ -52,7 +54,26 @@ export function UniversalTable<T extends object>({
             return <DefaultCell value={value} type={col.type} />;
           },
     }));
-  }, [schema]);
+
+    if (rowActions) {
+      cols.push({
+        id: "__actions__",
+        header: "",
+        enableSorting: false,
+        size: 72,
+        cell: ({ row }) => (
+          <div
+            className="flex items-center justify-end gap-1"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {rowActions(row.original as T)}
+          </div>
+        ),
+      });
+    }
+
+    return cols;
+  }, [schema, rowActions]);
 
   const table = useReactTable({
     data,
@@ -129,12 +150,13 @@ export function UniversalTable<T extends object>({
                 )}
               </TableHead>
             ))}
+            {rowActions && <TableHead style={{ width: "72px" }} />}
           </TableRow>
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={schema.columns.length} className="h-32 text-center">
+              <TableCell colSpan={schema.columns.length + (rowActions ? 1 : 0)} className="h-32 text-center">
                 <div className="flex flex-col items-center gap-1">
                   <p className="text-muted-foreground">No records found</p>
                   <p className="text-xs text-muted-foreground/70">
