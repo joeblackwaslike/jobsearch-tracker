@@ -204,31 +204,7 @@ export const companyTableSchema = {
           {data.researched ? "Yes" : "No"}
         </Badge>
       ),
-    },
-    {
-      id: "tags",
-      header: "Tags",
-      type: "text" as const,
-      sortable: false,
-      minWidth: 150,
-      grow: 1,
-      cell: (data: { tags: string[] }) => {
-        const tags = data.tags || [];
-        if (tags.length === 0) return <span className="text-muted-foreground">-</span>;
-        return (
-          <div className="flex flex-wrap gap-1">
-            {tags.slice(0, 2).map((tag) => (
-              <Badge key={tag} variant="outline" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-            {tags.length > 2 && (
-              <span className="text-xs text-muted-foreground">+{tags.length - 2}</span>
-            )}
-          </div>
-        );
-      },
-    },
+    }
   ],
 } as const;
 
