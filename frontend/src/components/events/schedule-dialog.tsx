@@ -347,6 +347,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
+                      tabIndex={-1}
                       className={cn(
                         "w-full justify-start text-left font-normal",
                         !selectedDate && "text-muted-foreground",
