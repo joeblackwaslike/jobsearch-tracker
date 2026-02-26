@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { BookmarkIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -80,6 +81,21 @@ export function EasyAddForm({ open, onOpenChange, onSuccess, prefill }: EasyAddF
     setValue("company_name", company.name);
   };
 
+  const handleBookmark = async () => {
+    const values = watch();
+    if (!values.company_id || !values.position) return;
+    await createApplication.mutateAsync({
+      company_id: values.company_id,
+      position: values.position,
+      url: values.url || null,
+      status: "bookmarked",
+      employment_type: "full-time",
+      applied_at: null,
+    });
+    onSuccess?.();
+    onOpenChange(false);
+  };
+
   const onSubmit = async (values: EasyAddValues) => {
     const newApp = await createApplication.mutateAsync({
       company_id: values.company_id,
@@ -155,6 +171,17 @@ export function EasyAddForm({ open, onOpenChange, onSuccess, prefill }: EasyAddF
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              disabled={!watch("company_id") || !watch("position") || createApplication.isPending}
+              onClick={handleBookmark}
+              aria-label="Bookmark for later"
+              title="Bookmark for later"
+            >
+              <BookmarkIcon className="size-4" />
             </Button>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Saving..." : "Add Application"}
