@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import type { SortingState } from "@tanstack/react-table";
-import { BookmarkIcon, ChevronLeftIcon, ChevronRightIcon, PencilIcon, PlusIcon, ZapIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, PencilIcon, PlusIcon, ZapIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { z } from "zod";
 import { ApplicationDetail } from "@/components/applications/application-detail";
@@ -109,7 +109,6 @@ function ApplicationsPage() {
   const navigate = useNavigate();
 
   const [formOpen, setFormOpen] = useState(false);
-  const [bookmarkOpen, setBookmarkOpen] = useState(false);
   const [easyAddOpen, setEasyAddOpen] = useState(false);
   const [editingApp, setEditingApp] = useState<ApplicationListItem | null>(null);
   const [editingSelectedApp, setEditingSelectedApp] = useState<ApplicationWithCompany | null>(null);
@@ -230,15 +229,6 @@ function ApplicationsPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              aria-label="Bookmark job"
-              title="Bookmark"
-              onClick={() => setBookmarkOpen(true)}
-            >
-              <BookmarkIcon className="size-4" />
-            </Button>
             <Button variant="outline" onClick={() => setEasyAddOpen(true)}>
               <ZapIcon className="size-4" />
               Easy Add
@@ -322,11 +312,6 @@ function ApplicationsPage() {
 
         {/* Dialogs */}
         <FullApplicationForm open={formOpen} onOpenChange={setFormOpen} />
-        <FullApplicationForm
-          open={bookmarkOpen}
-          onOpenChange={setBookmarkOpen}
-          defaultStatus="bookmarked"
-        />
         <EasyAddForm open={easyAddOpen} onOpenChange={setEasyAddOpen} />
         <ApplicationForm
           open={!!editingApp}
