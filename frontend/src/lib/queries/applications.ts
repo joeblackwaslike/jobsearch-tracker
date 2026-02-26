@@ -32,6 +32,7 @@ export interface ApplicationsFilters {
   interest?: string;
   workType?: string;
   employmentType?: string;
+  companyId?: string;
   includeArchived?: boolean;
   page?: number;
   pageSize?: number;
@@ -50,6 +51,7 @@ export function applicationsQueryOptions(filters: ApplicationsFilters = {}) {
     interest,
     workType,
     employmentType,
+    companyId,
     includeArchived = false,
     page = 1,
     pageSize = 25,
@@ -59,7 +61,7 @@ export function applicationsQueryOptions(filters: ApplicationsFilters = {}) {
   return queryOptions({
     queryKey: [
       "applications",
-      { search, status, interest, workType, employmentType, includeArchived, page, pageSize, sort },
+      { search, status, interest, workType, employmentType, companyId, includeArchived, page, pageSize, sort },
     ],
     queryFn: async () => {
       let query = supabase
@@ -89,6 +91,10 @@ export function applicationsQueryOptions(filters: ApplicationsFilters = {}) {
 
       if (employmentType) {
         query = query.eq("employment_type", employmentType);
+      }
+
+      if (companyId) {
+        query = query.eq("company_id", companyId);
       }
 
       const from = (page - 1) * pageSize;
@@ -126,6 +132,13 @@ export function applicationQueryOptions(id: string) {
 
 export function useApplications(filters: ApplicationsFilters = {}) {
   return useQuery(applicationsQueryOptions(filters));
+}
+
+export function useApplicationsByCompany(companyId: string) {
+  return useQuery({
+    ...applicationsQueryOptions({ companyId, pageSize: 100 }),
+    enabled: !!companyId,
+  });
 }
 
 export function useApplication(id: string) {

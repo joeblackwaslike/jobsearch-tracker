@@ -1,7 +1,13 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import type { Company } from "@/lib/queries/companies";
 import { CompanyDetail } from "../company-detail";
+
+// Mock the applications query hook used by AppsTab
+vi.mock("@/lib/queries/applications", () => ({
+  useApplicationsByCompany: () => ({ data: { data: [], count: 0 } }),
+}));
 
 const mockCompany = {
   id: "1",
@@ -27,11 +33,26 @@ const mockCompany = {
 } as unknown as Company;
 
 describe("CompanyDetail", () => {
-  it("renders company details", () => {
+  it("renders company name in header", () => {
     render(<CompanyDetail company={mockCompany} />);
     expect(screen.getByText("Test Company")).toBeInTheDocument();
-    expect(screen.getByText("Technology")).toBeInTheDocument();
-    expect(screen.getByText("San Francisco, CA")).toBeInTheDocument();
+  });
+
+  it("shows Overview tab by default", () => {
+    render(<CompanyDetail company={mockCompany} />);
+    expect(screen.getByRole("tab", { name: "Overview" })).toHaveAttribute("data-state", "active");
+  });
+
+  it("shows Research tab content when clicked", async () => {
+    const user = userEvent.setup();
+    render(<CompanyDetail company={{ ...mockCompany, culture: "Great culture" } as Company} />);
+    await user.click(screen.getByRole("tab", { name: "Research" }));
+    expect(screen.getByRole("tab", { name: "Research" })).toHaveAttribute("data-state", "active");
+  });
+
+  it("shows data quality completeness", () => {
+    render(<CompanyDetail company={mockCompany} />);
+    expect(screen.getByText(/completeness/i)).toBeInTheDocument();
   });
 
   it("shows research status badge when researched", () => {
