@@ -141,7 +141,7 @@ function CompaniesPage() {
               variant="ghost"
               size="icon"
               aria-label="Archive company"
-              onClick={() => archiveCompany.mutate({ id: selectedCompany.id })}
+              onClick={() => archiveCompany.mutate(selectedCompany.id)}
             >
               <ArchiveIcon className="size-4" />
             </Button>
@@ -234,7 +234,7 @@ function CompaniesPage() {
               variant="ghost"
               size="icon-xs"
               aria-label="Archive company"
-              onClick={() => archiveCompany.mutate({ id: (company as Company).id })}
+              onClick={() => archiveCompany.mutate((company as Company).id)}
             >
               <ArchiveIcon className="size-3.5" />
             </Button>
