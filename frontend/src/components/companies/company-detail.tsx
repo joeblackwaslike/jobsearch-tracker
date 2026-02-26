@@ -92,7 +92,12 @@ const LINK_TYPE_ICONS: Record<string, React.ComponentType<{ className?: string }
 function OverviewTab({ company }: { company: Company }) {
   const pct = calcCompleteness(company);
   const quality = qualityLabel(pct);
-  const ratings = company.ratings as Record<string, number> | null;
+  const ratingsRaw = company.ratings as Record<string, unknown> | null;
+  const ratings = ratingsRaw
+    ? (Object.fromEntries(
+        Object.entries(ratingsRaw).map(([k, v]) => [k, Number(v)]),
+      ) as Record<string, number>)
+    : null;
 
   return (
     <div className="space-y-6">
