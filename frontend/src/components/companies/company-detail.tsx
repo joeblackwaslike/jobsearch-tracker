@@ -361,7 +361,18 @@ function LinksTab({ links }: { links: CompanyLink[] }) {
 // ---------------------------------------------------------------------------
 
 export function CompanyDetail({ company }: CompanyDetailProps) {
-  const links = (Array.isArray(company.links) ? company.links : []) as CompanyLink[];
+  const LINK_NAMES: Record<string, string> = {
+    website: "Website",
+    careers: "Careers Page",
+    news: "News",
+    linkedin: "LinkedIn",
+    glassdoor: "Glassdoor",
+    crunchbase: "Crunchbase",
+  };
+  const rawLinks = (company.links as Record<string, string> | null) ?? {};
+  const links: CompanyLink[] = Object.entries(rawLinks)
+    .filter(([, url]) => Boolean(url))
+    .map(([type, url]) => ({ type, name: LINK_NAMES[type] ?? type, url }));
   const websiteLink = links.find((l) => l.type === "website");
   const tags = Array.isArray(company.tags) ? (company.tags as string[]) : [];
 

@@ -79,4 +79,18 @@ describe("CompanyDetail", () => {
     );
     expect(screen.getByText("Great company to work for")).toBeInTheDocument();
   });
+  it("renders links in links tab when stored as flat object", async () => {
+    const user = userEvent.setup();
+    render(
+      <CompanyDetail
+        company={{
+          ...mockCompany,
+          links: { website: "https://example.com", careers: "https://example.com/jobs" } as unknown as null,
+        }}
+      />,
+    );
+    await user.click(screen.getByRole("tab", { name: "Links" }));
+    expect(screen.getByText("Website")).toBeInTheDocument();
+    expect(screen.getByText("Careers Page")).toBeInTheDocument();
+  });
 });
