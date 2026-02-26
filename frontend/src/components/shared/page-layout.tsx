@@ -1,4 +1,3 @@
-import { cn } from "@/lib/utils";
 import { SidePanel } from "./side-panel";
 
 type SidePanelWidth = "sm" | "md" | "lg" | "xl";
@@ -9,6 +8,7 @@ interface PageLayoutProps {
   onDetailClose?: () => void;
   detailWidth?: SidePanelWidth;
   showDetailPanel?: boolean;
+  detailHeaderActions?: React.ReactNode;
 }
 
 export function PageLayout({
@@ -17,18 +17,17 @@ export function PageLayout({
   onDetailClose = () => {},
   detailWidth = "md",
   showDetailPanel = !!detailPanel,
+  detailHeaderActions,
 }: PageLayoutProps) {
   return (
-    <div className="flex h-full w-full">
-      <div
-        className={cn(
-          "flex-1 transition-all duration-300 ease-in-out",
-          showDetailPanel && "pr-[480px]",
-        )}
+    <div className="relative flex h-full w-full overflow-hidden">
+      <div className="flex-1 min-w-0 overflow-y-auto">{children}</div>
+      <SidePanel
+        isOpen={showDetailPanel}
+        onClose={onDetailClose}
+        width={detailWidth}
+        headerActions={detailHeaderActions}
       >
-        <div className="h-full overflow-y-auto">{children}</div>
-      </div>
-      <SidePanel isOpen={showDetailPanel} onClose={onDetailClose} width={detailWidth}>
         {detailPanel}
       </SidePanel>
     </div>
