@@ -64,7 +64,7 @@ function DocumentsPage() {
   return (
     <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
       {/* Desktop sidebar */}
-      <div className="hidden md:flex w-[320px] shrink-0">{sidebarContent}</div>
+      <div className="hidden md:flex h-full w-[320px] shrink-0">{sidebarContent}</div>
 
       {/* Mobile sidebar trigger */}
       <div className="md:hidden absolute top-3 left-3 z-10">
