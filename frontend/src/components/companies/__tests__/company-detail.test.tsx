@@ -60,10 +60,10 @@ describe("CompanyDetail", () => {
     expect(screen.getByText("Researched")).toBeInTheDocument();
   });
 
-  it("renders tags as badges", () => {
+  it("does not render tags as badges in the header", () => {
     render(<CompanyDetail company={mockCompany} />);
-    expect(screen.getByText("startup")).toBeInTheDocument();
-    expect(screen.getByText("remote")).toBeInTheDocument();
+    expect(screen.queryByText("startup")).not.toBeInTheDocument();
+    expect(screen.queryByText("remote")).not.toBeInTheDocument();
   });
 
   it("hides researched badge when not researched", () => {

@@ -375,8 +375,6 @@ export function CompanyDetail({ company }: CompanyDetailProps) {
     .filter(([, url]) => Boolean(url))
     .map(([type, url]) => ({ type, name: LINK_NAMES[type] ?? type, url }));
   const websiteLink = links.find((l) => l.type === "website");
-  const tags = Array.isArray(company.tags) ? (company.tags as string[]) : [];
-
   const meta = [
     company.location && { icon: <MapPin className="size-3.5" />, text: company.location },
     websiteLink && {
@@ -385,21 +383,10 @@ export function CompanyDetail({ company }: CompanyDetailProps) {
       href: websiteLink.url,
     },
   ].filter(Boolean) as DetailMeta[];
+  const badges = company.researched ? (
+    <Badge className="bg-foreground text-background text-xs">Researched</Badge>
+  ) : null;
 
-  const badges = (
-    <>
-      {company.researched && (
-        <Badge variant="default" className="text-xs">
-          Researched
-        </Badge>
-      )}
-      {tags.map((tag) => (
-        <Badge key={tag} variant="outline" className="text-xs">
-          {tag}
-        </Badge>
-      ))}
-    </>
-  );
 
   const tabs = [
     {
