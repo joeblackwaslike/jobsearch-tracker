@@ -70,12 +70,6 @@ export function ContactCombobox({
     return () => clearTimeout(timer);
   }, [searchText]);
 
-  useEffect(() => {
-    if (open) {
-      const timer = setTimeout(() => searchInputRef.current?.focus(), 0);
-      return () => clearTimeout(timer);
-    }
-  }, [open]);
 
   useEffect(() => {
     if (creating) {
@@ -171,7 +165,14 @@ export function ContactCombobox({
             <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+        <PopoverContent
+          className="w-[--radix-popover-trigger-width] p-0"
+          align="start"
+          onOpenAutoFocus={(e) => {
+            e.preventDefault();
+            searchInputRef.current?.focus();
+          }}
+        >
           <Command shouldFilter={false}>
             <CommandInput
               ref={searchInputRef}
