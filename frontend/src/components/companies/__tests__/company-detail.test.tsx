@@ -93,4 +93,16 @@ describe("CompanyDetail", () => {
     expect(screen.getByText("Website")).toBeInTheDocument();
     expect(screen.getByText("Careers Page")).toBeInTheDocument();
   });
+  it("renders individual tech stack badges from comma-separated string", async () => {
+    const user = userEvent.setup();
+    render(
+      <CompanyDetail
+        company={{ ...mockCompany, tech_stack: "React, TypeScript, AWS" } as Company}
+      />,
+    );
+    await user.click(screen.getByRole("tab", { name: "Research" }));
+    expect(screen.getByText("React")).toBeInTheDocument();
+    expect(screen.getByText("TypeScript")).toBeInTheDocument();
+    expect(screen.getByText("AWS")).toBeInTheDocument();
+  });
 });

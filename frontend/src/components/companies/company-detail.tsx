@@ -41,7 +41,7 @@ type DetailMeta = {
 function parseList(raw: string | null): string[] {
   if (!raw) return [];
   return raw
-    .split("\n")
+    .split(/[,\n]/)
     .map((s) => s.trim())
     .filter(Boolean);
 }
