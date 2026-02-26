@@ -34,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { UrlInput } from "@/components/ui/url-input";
 import { type ApplicationListItem, useApplications } from "@/lib/queries/applications";
 import type { Contact } from "@/lib/queries/contacts";
@@ -229,6 +230,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)}>
+          <ScrollArea className="max-h-[calc(85vh-10rem)] pr-3">
           <div className="space-y-4 py-4">
             {/* Application selector */}
             <div className="space-y-2">
@@ -437,6 +439,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
               </div>
             )}
           </div>
+          </ScrollArea>
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
