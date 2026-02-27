@@ -143,8 +143,8 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
           </Button>
           <Button variant="outline" size="sm" asChild>
             <Link
-              to="/companies/$companyId"
-              params={{ companyId: application.company_id }}
+              to="/companies"
+              search={{ detail: application.company_id }}
             >
               <BuildingIcon className="size-4" />
               View Company
