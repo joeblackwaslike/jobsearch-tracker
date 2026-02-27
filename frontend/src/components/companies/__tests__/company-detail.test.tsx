@@ -95,7 +95,8 @@ describe("CompanyDetail", () => {
       />,
     );
     await user.click(screen.getByRole("tab", { name: "Links" }));
-    expect(screen.getByText("Website")).toBeInTheDocument();
+    // Website is shown in the header, not the links tab
+    expect(screen.queryByText("Website")).not.toBeInTheDocument();
     expect(screen.getByText("Careers Page")).toBeInTheDocument();
   });
   it("renders individual tech stack badges from comma-separated string", async () => {
