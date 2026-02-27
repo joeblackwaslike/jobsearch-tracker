@@ -140,12 +140,10 @@ describe("ScheduleDialog", () => {
     expect(screen.getByText("3 hr")).toBeInTheDocument();
   });
 
-  it("renders a date picker button instead of a raw date input", () => {
-    // Native date input should be gone
-    const { container } = render(<ScheduleDialog open onOpenChange={vi.fn()} />);
-    expect(container.querySelector('input[type="date"]')).not.toBeInTheDocument();
-    // Date picker trigger button should exist
-    expect(screen.getByRole("button", { name: /pick a date/i })).toBeInTheDocument();
+  it("renders a native date input (no calendar button)", () => {
+    render(<ScheduleDialog open onOpenChange={vi.fn()} />);
+    expect(document.querySelector('input[type="date"]')).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /pick a date/i })).not.toBeInTheDocument();
   });
 
   it("renders description as a single-line input (not textarea)", () => {
@@ -245,11 +243,9 @@ describe("default status and auto-switch", () => {
 
     render(<ScheduleDialog open onOpenChange={vi.fn()} />);
 
-    // Fill in date
-    await user.click(screen.getByRole("button", { name: /pick a date/i }));
-    // Just click 15th
-    const dateCell = await screen.findByText("15", { selector: "button" });
-    await user.click(dateCell);
+    // Fill in date via native input
+    const dateInput = document.querySelector('input[type="date"]') as HTMLInputElement;
+    await user.type(dateInput, "2026-03-15");
 
     // Fill in time
     const timeInput = screen.getByLabelText(/time/i);
@@ -260,7 +256,6 @@ describe("default status and auto-switch", () => {
     await waitFor(() => {
       expect(screen.getByRole("combobox", { name: "Status" })).toHaveTextContent("Scheduled");
     });
-    // And "Availability Requested" is gone
     expect(screen.getByRole("combobox", { name: "Status" })).not.toHaveTextContent(
       "Availability Requested",
     );

@@ -1,13 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
-import { CalendarIcon, CheckIcon, ChevronsUpDownIcon } from "lucide-react";
+import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { ContactCombobox } from "@/components/events/contact-combobox";
 import { DurationCombobox } from "@/components/events/duration-combobox";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Command,
   CommandEmpty,
@@ -110,7 +108,6 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
   const addContact = useAddEventContact();
   const [appSearch, setAppSearch] = useState("");
   const [comboboxOpen, setComboboxOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedContacts, setSelectedContacts] = useState<Pick<Contact, "id" | "name">[]>([]);
 
   const { data: applicationsData } = useApplications({
@@ -214,7 +211,6 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
 
     reset();
     setSelectedContacts([]);
-    setSelectedDate(undefined);
     onSuccess?.();
     onOpenChange(false);
   };
@@ -223,7 +219,6 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
     if (!newOpen) {
       reset();
       setSelectedContacts([]);
-      setSelectedDate(undefined);
     }
     onOpenChange(newOpen);
   };
@@ -350,47 +345,13 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Date</Label>
-                <div className="flex gap-2">
-                  <Input
-                    type="date"
-                    className="flex-1"
-                    value={watch("date")}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setValue("date", val, { shouldValidate: true });
-                      setSelectedDate(val ? new Date(`${val}T00:00:00`) : undefined);
-                    }}
-                  />
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        tabIndex={-1}
-                        aria-label="Open date picker"
-                        type="button"
-                      >
-                        <CalendarIcon className="size-4" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto p-0"
-                      align="end"
-                      onOpenAutoFocus={(e) => e.preventDefault()}
-                    >
-                      <Calendar
-                        mode="single"
-                        selected={selectedDate}
-                        onSelect={(date) => {
-                          setSelectedDate(date);
-                          setValue("date", date ? format(date, "yyyy-MM-dd") : "", {
-                            shouldValidate: true,
-                          });
-                        }}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
+                <Input
+                  type="date"
+                  value={watch("date")}
+                  onChange={(e) => {
+                    setValue("date", e.target.value, { shouldValidate: true });
+                  }}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="schedule-time">Time</Label>
