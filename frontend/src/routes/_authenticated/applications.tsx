@@ -210,14 +210,17 @@ function ApplicationsPage() {
       detailWidth="lg"
       detailHeaderActions={
         selectedApp ? (
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Edit application"
-            onClick={() => setEditingSelectedApp(selectedApp)}
-          >
-            <PencilIcon className="size-4" />
-          </Button>
+          <>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Edit application"
+              onClick={() => setEditingSelectedApp(selectedApp)}
+            >
+              <PencilIcon className="size-4" />
+            </Button>
+            <ArchiveDialog applicationId={selectedApp.id} />
+          </>
         ) : undefined
       }
     >

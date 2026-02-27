@@ -15,7 +15,6 @@ import type { ApplicationWithCompany } from "@/lib/queries/applications";
 import { useEvents } from "@/lib/queries/events";
 import { AddEventDialog } from "./add-event-dialog";
 import { ApplicationDocuments } from "./application-documents";
-import { ArchiveDialog } from "./archive-dialog";
 import { EventTimeline } from "./event-timeline";
 
 // ---------------------------------------------------------------------------
@@ -143,7 +142,6 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
               View Company
             </Link>
           </Button>
-          <ArchiveDialog applicationId={application.id} />
         </div>
       </div>
 
