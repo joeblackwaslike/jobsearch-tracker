@@ -44,9 +44,9 @@ const linksSchema = z.object({
 
 const ratingsSchema = z.object({
   overall: z.string().default(""),
-  work_life: z.string().default(""),
+  workLifeBalance: z.string().default(""),
   compensation: z.string().default(""),
-  growth: z.string().default(""),
+  careerGrowth: z.string().default(""),
   management: z.string().default(""),
   culture: z.string().default(""),
 });
@@ -73,9 +73,9 @@ const companyFormSchema = z.object({
   tech_stack: z.string().default(""),
   ratings: ratingsSchema.default({
     overall: "",
-    work_life: "",
+    workLifeBalance: "",
     compensation: "",
-    growth: "",
+    careerGrowth: "",
     management: "",
     culture: "",
   }),
@@ -196,9 +196,9 @@ function companyToFormValues(company: Company): CompanyFormValues {
     tech_stack: company.tech_stack ?? "",
     ratings: {
       overall: ratings.overall ?? "",
-      work_life: ratings.work_life ?? "",
+      workLifeBalance: ratings.workLifeBalance ?? ratings.work_life ?? "",
       compensation: ratings.compensation ?? "",
-      growth: ratings.growth ?? "",
+      careerGrowth: ratings.careerGrowth ?? ratings.growth ?? "",
       management: ratings.management ?? "",
       culture: ratings.culture ?? "",
     },
@@ -366,24 +366,25 @@ export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: Co
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Location</Label>
-                  <CityCombobox
-                    value={watch("location") ?? ""}
-                    onChange={(v) => setValue("location", v)}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="founded">Founded (year)</Label>
-                  <Input
-                    id="founded"
-                    type="number"
-                    placeholder="e.g. 2012"
-                    min={1800}
-                    max={2099}
-                    {...register("founded")}
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Location</Label>
+                    <CityCombobox
+                      value={watch("location") ?? ""}
+                      onChange={(v) => setValue("location", v)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="founded">Founded (year)</Label>
+                    <Input
+                      id="founded"
+                      type="number"
+                      placeholder="e.g. 2012"
+                      min={1800}
+                      max={2099}
+                      {...register("founded")}
+                    />
+                  </div>
                 </div>
               </fieldset>
 
@@ -426,9 +427,9 @@ export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: Co
                   {(
                     [
                       ["ratings.overall", "Overall"],
-                      ["ratings.work_life", "Work-Life Balance"],
+                      ["ratings.workLifeBalance", "Work-Life Balance"],
                       ["ratings.compensation", "Compensation"],
-                      ["ratings.growth", "Career Growth"],
+                      ["ratings.careerGrowth", "Career Growth"],
                       ["ratings.management", "Management"],
                       ["ratings.culture", "Culture"],
                     ] as const
@@ -456,7 +457,7 @@ export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: Co
                     <Label htmlFor="culture">Culture</Label>
                     <textarea
                       id="culture"
-                      className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex min-h-[90px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       {...register("culture")}
                     />
                   </div>
@@ -464,7 +465,7 @@ export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: Co
                     <Label htmlFor="benefits">Benefits</Label>
                     <textarea
                       id="benefits"
-                      className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex min-h-[90px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       {...register("benefits")}
                     />
                   </div>
@@ -475,7 +476,7 @@ export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: Co
                     <Label htmlFor="pros">Pros</Label>
                     <textarea
                       id="pros"
-                      className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex min-h-[90px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       {...register("pros")}
                     />
                   </div>
@@ -483,7 +484,7 @@ export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: Co
                     <Label htmlFor="cons">Cons</Label>
                     <textarea
                       id="cons"
-                      className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex min-h-[90px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       {...register("cons")}
                     />
                   </div>
