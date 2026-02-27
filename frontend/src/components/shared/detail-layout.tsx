@@ -44,7 +44,7 @@ export function DetailLayout({ icon, name, meta = [], badges, tabs, defaultTab }
                     href={item.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 hover:text-foreground hover:underline"
+                    className="flex items-center gap-1 text-foreground hover:underline"
                   >
                     {item.text}
                     <ExternalLink className="size-3" />
