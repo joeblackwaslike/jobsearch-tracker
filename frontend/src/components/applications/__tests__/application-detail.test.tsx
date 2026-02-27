@@ -155,7 +155,14 @@ describe("ApplicationDetail", () => {
     render(<ApplicationDetail application={mockApplication} />);
 
     expect(screen.getByRole("button", { name: /Edit Application/i })).toBeVisible();
-    expect(screen.getByRole("button", { name: /Edit Company/i })).toBeVisible();
+  });
+
+  it("renders View Company link", () => {
+    render(<ApplicationDetail application={mockApplication} />);
+    const link = screen.getByRole("link", { name: /view company/i });
+    expect(link).toBeVisible();
+    // The TanStack Router Link mock renders href={to}, which will be the template string
+    // Just verify the link exists and is visible
   });
 
   it("renders Details card with application fields", () => {

@@ -7,7 +7,6 @@ import {
   PlusIcon,
 } from "lucide-react";
 import { useState } from "react";
-import { CompanyForm } from "@/components/companies/company-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -97,7 +96,6 @@ interface ApplicationDetailProps {
 
 export function ApplicationDetail({ application }: ApplicationDetailProps) {
   const [editAppOpen, setEditAppOpen] = useState(false);
-  const [editCompanyOpen, setEditCompanyOpen] = useState(false);
   const [addEventOpen, setAddEventOpen] = useState(false);
 
   const { data: events = [], isLoading: eventsLoading } = useEvents(application.id);
@@ -143,9 +141,14 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
             <PencilIcon className="size-4" />
             Edit Application
           </Button>
-          <Button variant="outline" size="sm" onClick={() => setEditCompanyOpen(true)}>
-            <BuildingIcon className="size-4" />
-            Edit Company
+          <Button variant="outline" size="sm" asChild>
+            <Link
+              to="/companies/$companyId"
+              params={{ companyId: application.company_id }}
+            >
+              <BuildingIcon className="size-4" />
+              View Company
+            </Link>
           </Button>
           <ArchiveDialog applicationId={application.id} />
         </div>
@@ -268,13 +271,6 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
 
       {/* Dialogs */}
       <ApplicationForm open={editAppOpen} onOpenChange={setEditAppOpen} application={application} />
-
-      <CompanyForm
-        open={editCompanyOpen}
-        onOpenChange={setEditCompanyOpen}
-        mode="edit"
-        company={application.company}
-      />
 
       <AddEventDialog
         open={addEventOpen}
