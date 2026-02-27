@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import {
   BuildingIcon,
-  ChevronDownIcon,
   ChevronRightIcon,
   ExternalLinkIcon,
   PencilIcon,
@@ -13,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { MarkdownContent } from "@/components/ui/markdown-content";
 import type { ApplicationWithCompany } from "@/lib/queries/applications";
 import { useEvents } from "@/lib/queries/events";
 import { AddEventDialog } from "./add-event-dialog";
@@ -99,7 +99,6 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
   const [editAppOpen, setEditAppOpen] = useState(false);
   const [editCompanyOpen, setEditCompanyOpen] = useState(false);
   const [addEventOpen, setAddEventOpen] = useState(false);
-  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
 
   const { data: events = [], isLoading: eventsLoading } = useEvents(application.id);
 
@@ -204,22 +203,6 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
                   <dd>{formatDate(application.created_at)}</dd>
                 </div>
               )}
-              {application.url && (
-                <div className="flex justify-between">
-                  <dt className="text-muted-foreground">URL</dt>
-                  <dd>
-                    <a
-                      href={application.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-primary hover:underline"
-                    >
-                      View posting
-                      <ExternalLinkIcon className="size-3" />
-                    </a>
-                  </dd>
-                </div>
-              )}
             </dl>
 
             {/* Tags */}
@@ -235,32 +218,28 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
           </CardContent>
         </Card>
 
+        {/* Job URL */}
+        {application.url && (
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-muted-foreground truncate flex-1">{application.url}</span>
+            <Button variant="outline" size="sm" asChild>
+              <a href={application.url} target="_blank" rel="noopener noreferrer">
+                <ExternalLinkIcon className="size-3.5 mr-1" />
+                Open
+              </a>
+            </Button>
+          </div>
+        )}
+
         {/* Job description */}
         {application.job_description && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">
-                <button
-                  type="button"
-                  className="flex items-center gap-1 hover:underline"
-                  onClick={() => setDescriptionExpanded(!descriptionExpanded)}
-                >
-                  {descriptionExpanded ? (
-                    <ChevronDownIcon className="size-4" />
-                  ) : (
-                    <ChevronRightIcon className="size-4" />
-                  )}
-                  Job Description
-                </button>
-              </CardTitle>
+              <CardTitle className="text-base">Job Description</CardTitle>
             </CardHeader>
-            {descriptionExpanded && (
-              <CardContent>
-                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                  {application.job_description}
-                </p>
-              </CardContent>
-            )}
+            <CardContent>
+              <MarkdownContent content={application.job_description} />
+            </CardContent>
           </Card>
         )}
       </div>

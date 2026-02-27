@@ -174,4 +174,21 @@ describe("ApplicationDetail", () => {
     expect(screen.getByRole("heading", { level: 2, name: "Timeline" })).toBeVisible();
     expect(screen.getByRole("button", { name: /Add Event/i })).toBeVisible();
   });
+
+  it("renders job posting URL with Open button above job description", () => {
+    render(<ApplicationDetail application={mockApplication} />);
+    // URL text is visible
+    expect(screen.getByText("https://example.com/job")).toBeVisible();
+    // Open button links to the URL
+    const openLink = screen.getByRole("link", { name: /open/i });
+    expect(openLink).toHaveAttribute("href", "https://example.com/job");
+  });
+
+  it("renders job description as always-visible markdown without toggle", () => {
+    render(<ApplicationDetail application={mockApplication} />);
+    // Content is visible without any click needed
+    expect(screen.getByText("Build amazing things")).toBeVisible();
+    // No toggle button for job description
+    expect(screen.queryByRole("button", { name: /job description/i })).not.toBeInTheDocument();
+  });
 });
