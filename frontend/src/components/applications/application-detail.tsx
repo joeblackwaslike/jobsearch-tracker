@@ -3,7 +3,6 @@ import {
   BuildingIcon,
   ChevronRightIcon,
   ExternalLinkIcon,
-  PencilIcon,
   PlusIcon,
 } from "lucide-react";
 import { useState } from "react";
@@ -16,7 +15,6 @@ import type { ApplicationWithCompany } from "@/lib/queries/applications";
 import { useEvents } from "@/lib/queries/events";
 import { AddEventDialog } from "./add-event-dialog";
 import { ApplicationDocuments } from "./application-documents";
-import { ApplicationForm } from "./application-form";
 import { ArchiveDialog } from "./archive-dialog";
 import { EventTimeline } from "./event-timeline";
 
@@ -95,7 +93,6 @@ interface ApplicationDetailProps {
 // ---------------------------------------------------------------------------
 
 export function ApplicationDetail({ application }: ApplicationDetailProps) {
-  const [editAppOpen, setEditAppOpen] = useState(false);
   const [addEventOpen, setAddEventOpen] = useState(false);
 
   const { data: events = [], isLoading: eventsLoading } = useEvents(application.id);
@@ -137,10 +134,6 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
 
         {/* Action buttons */}
         <div className="flex items-center gap-2 flex-wrap">
-          <Button variant="outline" size="sm" onClick={() => setEditAppOpen(true)}>
-            <PencilIcon className="size-4" />
-            Edit Application
-          </Button>
           <Button variant="outline" size="sm" asChild>
             <Link
               to="/companies"
@@ -270,8 +263,6 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
       </div>
 
       {/* Dialogs */}
-      <ApplicationForm open={editAppOpen} onOpenChange={setEditAppOpen} application={application} />
-
       <AddEventDialog
         open={addEventOpen}
         onOpenChange={setAddEventOpen}

@@ -151,10 +151,9 @@ describe("ApplicationDetail", () => {
     expect(screen.getByText(/High\s+interest/)).toBeVisible();
   });
 
-  it("renders action buttons", () => {
+  it("does not render a standalone Edit Application button", () => {
     render(<ApplicationDetail application={mockApplication} />);
-
-    expect(screen.getByRole("button", { name: /Edit Application/i })).toBeVisible();
+    expect(screen.queryByRole("button", { name: /Edit Application/i })).not.toBeInTheDocument();
   });
 
   it("renders View Company link", () => {
