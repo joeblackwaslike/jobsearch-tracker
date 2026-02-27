@@ -1,9 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import {
+  BookmarkIcon,
   BuildingIcon,
   ChevronRightIcon,
   ExternalLinkIcon,
   PlusIcon,
+  SendIcon,
 } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -59,6 +61,7 @@ function formatDate(dateStr: string | null | undefined): string {
     month: "short",
     day: "numeric",
     year: "numeric",
+    timeZone: "UTC",
   });
 }
 
@@ -191,10 +194,10 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
                   <dd>{application.source}</dd>
                 </div>
               )}
-              {application.created_at && (
+              {application.applied_at && (
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Applied</dt>
-                  <dd>{formatDate(application.created_at)}</dd>
+                  <dd>{formatDate(application.applied_at)}</dd>
                 </div>
               )}
             </dl>
@@ -251,6 +254,33 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
             <PlusIcon className="size-4" />
             Add Event
           </Button>
+        </div>
+
+        {/* Timeline milestones */}
+        <div className="space-y-0">
+          {/* Bookmarked milestone */}
+          <div className="flex gap-4">
+            <div className="relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full border bg-background">
+              <BookmarkIcon className="size-4 text-muted-foreground" />
+            </div>
+            <div className="flex-1 pb-6">
+              <p className="text-sm font-medium">Bookmarked</p>
+              <p className="text-xs text-muted-foreground">{formatDate(application.created_at)}</p>
+            </div>
+          </div>
+
+          {/* Applied milestone */}
+          {application.applied_at && (
+            <div className="flex gap-4">
+              <div className="relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full border bg-background">
+                <SendIcon className="size-4 text-muted-foreground" />
+              </div>
+              <div className="flex-1 pb-6">
+                <p className="text-sm font-medium">Applied</p>
+                <p className="text-xs text-muted-foreground">{formatDate(application.applied_at)}</p>
+              </div>
+            </div>
+          )}
         </div>
 
         {eventsLoading ? (

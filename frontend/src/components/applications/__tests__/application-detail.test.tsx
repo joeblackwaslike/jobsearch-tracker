@@ -197,4 +197,38 @@ describe("ApplicationDetail", () => {
     // No toggle button for job description
     expect(screen.queryByRole("button", { name: /job description/i })).not.toBeInTheDocument();
   });
+
+  it("renders 'Bookmarked' milestone in timeline", () => {
+    render(<ApplicationDetail application={mockApplication} />);
+    expect(screen.getByText("Bookmarked")).toBeVisible();
+    // created_at is "2026-01-15T00:00:00Z"
+    expect(screen.getByText(/Jan 15, 2026/)).toBeVisible();
+  });
+
+  it("does not render 'Applied' milestone when applied_at is null", () => {
+    render(<ApplicationDetail application={mockApplication} />);
+    // mockApplication.applied_at is null — no Applied milestone paragraph (badge text is separate)
+    const appliedMilestones = screen
+      .queryAllByText("Applied")
+      .filter((el) => el.tagName === "P");
+    expect(appliedMilestones).toHaveLength(0);
+  });
+
+  it("renders 'Applied' milestone when applied_at is set", () => {
+    const appliedApp = {
+      ...mockApplication,
+      applied_at: "2026-01-20T00:00:00Z",
+    };
+    render(<ApplicationDetail application={appliedApp} />);
+    // Find the timeline milestone paragraph (distinct from the status badge)
+    const appliedMilestones = screen
+      .getAllByText("Applied")
+      .filter((el) => el.tagName === "P");
+    expect(appliedMilestones).toHaveLength(1);
+    expect(appliedMilestones[0]).toBeVisible();
+    // Date appears in both Details card and milestone; check at least one is visible
+    const dateEls = screen.getAllByText(/Jan 20, 2026/);
+    expect(dateEls.length).toBeGreaterThanOrEqual(1);
+    expect(dateEls[0]).toBeVisible();
+  });
 });
