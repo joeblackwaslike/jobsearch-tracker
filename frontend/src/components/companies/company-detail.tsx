@@ -17,6 +17,7 @@ import { DetailLayout } from "@/components/shared/detail-layout";
 import { formatDate } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 import type { Company } from "@/lib/queries/companies";
+import { MarkdownContent } from "@/components/ui/markdown-content";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -120,6 +121,14 @@ function OverviewTab({ company }: { company: Company }) {
           />
         </div>
       </div>
+      {/* Description */}
+      {company.description && (
+        <div className="space-y-1">
+          <p className="text-lg font-medium">Description</p>
+          <MarkdownContent content={company.description} />
+        </div>
+      )}
+
       {/* Key-value grid */}
       {(company.industry || company.size || company.founded) && (
         <div className="grid grid-cols-2 gap-x-4 gap-y-3">
@@ -187,14 +196,6 @@ function OverviewTab({ company }: { company: Company }) {
           )}
         </div>
       )}
-
-      {/* Description */}
-      {company.description && (
-        <div className="space-y-1">
-          <p className="text-lg font-medium">Description</p>
-          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{company.description}</p>
-        </div>
-      )}
     </div>
   );
 }
@@ -217,7 +218,7 @@ function ResearchTab({ company }: { company: Company }) {
       {company.culture && (
         <div className="space-y-1">
           <p className="text-lg font-medium">Culture</p>
-          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{company.culture}</p>
+          <MarkdownContent content={company.culture} />
         </div>
       )}
 
@@ -299,7 +300,7 @@ function AppsTab({
         <button
           key={app.id}
           type="button"
-          className="w-full rounded-md border p-3 text-left transition-colors hover:bg-muted/50"
+          className="w-full cursor-pointer rounded-md border p-3 text-left transition-colors hover:bg-muted/50"
           onClick={() => onAppClick(app.id)}
         >
           <div className="flex items-start justify-between gap-2">
@@ -319,14 +320,24 @@ function AppsTab({
   );
 }
 
+const LINK_SORT_ORDER = ["careers", "news", "linkedin", "glassdoor", "crunchbase"];
+
 function LinksTab({ links }: { links: CompanyLink[] }) {
-  if (links.length === 0) {
+  const sorted = links
+    .filter((l) => l.type !== "website")
+    .sort((a, b) => {
+      const ai = LINK_SORT_ORDER.indexOf(a.type);
+      const bi = LINK_SORT_ORDER.indexOf(b.type);
+      return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+    });
+
+  if (sorted.length === 0) {
     return <p className="text-sm text-muted-foreground">No links added.</p>;
   }
 
   return (
     <div className="space-y-2">
-      {links.map((link, i) => {
+      {sorted.map((link, i) => {
         const Icon = LINK_TYPE_ICONS[link.type] ?? Globe;
         return (
           <a
