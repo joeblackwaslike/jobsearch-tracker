@@ -174,8 +174,8 @@ export function useCreateApplication() {
       if (error) throw error;
       return data as Application;
     },
-    onSuccess: () => {
-      toast.success("Application added.");
+    onSuccess: (data) => {
+      toast.success(data.status === "bookmarked" ? "Bookmarked." : "Application added.");
     },
     onError: () => {
       toast.error("Failed to add application.");
