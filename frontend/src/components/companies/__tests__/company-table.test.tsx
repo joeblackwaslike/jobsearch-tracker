@@ -4,10 +4,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Company } from "@/lib/queries/companies";
 import { CompanyTable } from "../company-table";
 
-const mockArchiveMutate = vi.fn();
-
 vi.mock("@/lib/queries/companies", () => ({
-  useArchiveCompany: () => ({ mutate: mockArchiveMutate, isPending: false }),
+  useArchiveCompany: () => ({ mutate: vi.fn(), isPending: false }),
 }));
 
 const companies = [
@@ -48,21 +46,9 @@ describe("CompanyTable", () => {
     expect(onEdit).toHaveBeenCalledWith(companies[0]);
   });
 
-  it("calls onEdit when pencil icon is clicked", async () => {
+  it("does not render edit or archive action buttons", () => {
     render(<CompanyTable data={companies} onEdit={onEdit} />);
-    await userEvent.click(screen.getByTitle("Edit company"));
-    expect(onEdit).toHaveBeenCalledWith(companies[0]);
-  });
-
-  it("calls useArchiveCompany.mutate when archive icon is clicked", async () => {
-    render(<CompanyTable data={companies} onEdit={onEdit} />);
-    await userEvent.click(screen.getByTitle("Archive company"));
-    expect(mockArchiveMutate).toHaveBeenCalledWith("c1");
-  });
-
-  it("archive button click does not trigger row click (stops propagation)", async () => {
-    render(<CompanyTable data={companies} onEdit={onEdit} />);
-    await userEvent.click(screen.getByTitle("Archive company"));
-    expect(onEdit).not.toHaveBeenCalled();
+    expect(screen.queryByTitle("Edit company")).not.toBeInTheDocument();
+    expect(screen.queryByTitle("Archive company")).not.toBeInTheDocument();
   });
 });

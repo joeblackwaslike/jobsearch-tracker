@@ -1,6 +1,4 @@
-import { Archive, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -10,7 +8,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Company } from "@/lib/queries/companies";
-import { useArchiveCompany } from "@/lib/queries/companies";
 
 interface CompanyTableProps {
   data: Company[];
@@ -18,8 +15,6 @@ interface CompanyTableProps {
 }
 
 export function CompanyTable({ data, onEdit }: CompanyTableProps) {
-  const archiveCompany = useArchiveCompany();
-
   return (
     <div className="overflow-x-auto rounded-md border w-full">
       <Table>
@@ -31,7 +26,6 @@ export function CompanyTable({ data, onEdit }: CompanyTableProps) {
             <TableHead>Size</TableHead>
             <TableHead>Researched</TableHead>
             <TableHead>Tags</TableHead>
-            <TableHead className="w-24" />
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -62,34 +56,6 @@ export function CompanyTable({ data, onEdit }: CompanyTableProps) {
                     {tags.length > 2 && (
                       <span className="text-xs text-muted-foreground">+{tags.length - 2}</span>
                     )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center justify-end gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="size-8"
-                      title="Edit company"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onEdit(company);
-                      }}
-                    >
-                      <Pencil className="size-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="size-8 text-destructive hover:text-destructive"
-                      title="Archive company"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        archiveCompany.mutate(company.id);
-                      }}
-                    >
-                      <Archive className="size-4" />
-                    </Button>
                   </div>
                 </TableCell>
               </TableRow>
