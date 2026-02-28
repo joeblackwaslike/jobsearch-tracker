@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { CityCombobox } from "@/components/applications/city-combobox";
+import { IndustryCombobox } from "./industry-combobox";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -97,61 +98,6 @@ const SIZE_OPTIONS = [
   "501-1000",
   "1001-5000",
   "5000+",
-] as const;
-
-const INDUSTRY_OPTIONS = [
-  "Analytics",
-  "Engineering, Product and Design",
-  "Finance and Accounting",
-  "Human Resources",
-  "Infrastructure",
-  "Legal",
-  "Marketing",
-  "Office Management",
-  "Operations",
-  "Productivity",
-  "Recruiting and Talent",
-  "Retail",
-  "Sales",
-  "Security",
-  "Supply Chain and Logistics",
-  "Asset Management",
-  "Banking and Exchange",
-  "Consumer Finance",
-  "Credit and Lending",
-  "Insurance",
-  "Payments",
-  "Apparel and Cosmetics",
-  "Consumer Electronics",
-  "Content",
-  "Food and Beverage",
-  "Gaming",
-  "Home and Personal",
-  "Job and Career Services",
-  "Social",
-  "Transportation Services",
-  "Travel, Leisure and Tourism",
-  "Virtual and Augmented Reality",
-  "Consumer Health and Wellness",
-  "Diagnostics",
-  "Drug Discovery and Delivery",
-  "Healthcare IT",
-  "Healthcare Services",
-  "Industrial Bio",
-  "Medical Devices",
-  "Therapeutics",
-  "Education",
-  "Agriculture",
-  "Automotive",
-  "Aviation and Space",
-  "Climate",
-  "Defense",
-  "Drones",
-  "Energy",
-  "Manufacturing and Robotics",
-  "Construction",
-  "Housing and Real Estate",
-  "Government",
 ] as const;
 
 // ---------------------------------------------------------------------------
@@ -333,21 +279,10 @@ export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: Co
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Industry</Label>
-                    <Select
+                    <IndustryCombobox
                       value={watch("industry") ?? ""}
-                      onValueChange={(v) => setValue("industry", v)}
-                    >
-                      <SelectTrigger className="w-full" aria-label="Industry">
-                        <SelectValue placeholder="Select industry" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {INDUSTRY_OPTIONS.map((opt) => (
-                          <SelectItem key={opt} value={opt}>
-                            {opt}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      onChange={(v) => setValue("industry", v)}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>Size</Label>
