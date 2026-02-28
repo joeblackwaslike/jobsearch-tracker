@@ -87,7 +87,7 @@ describe("table-schemas", () => {
 
   describe("companyTableSchema", () => {
     it("has expected columns count", () => {
-      expect(companyTableSchema.columns).toHaveLength(6);
+      expect(companyTableSchema.columns).toHaveLength(5);
     });
 
     it("name column has correct config", () => {

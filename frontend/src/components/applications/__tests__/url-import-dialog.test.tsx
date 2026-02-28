@@ -20,14 +20,21 @@ describe("UrlImportDialog", () => {
   });
 
   it("shows loading state while fetching", async () => {
-    vi.mocked(fetchJobFromUrl).mockImplementation(
-      () => new Promise((resolve) => setTimeout(() => resolve({ jobUrl: "https://example.com" }), 100))
-    );
+    // Use a promise that never resolves during the test so the dialog stays open
+    let resolvePromise!: (value: { jobUrl: string }) => void;
+    const pendingPromise = new Promise<{ jobUrl: string }>((resolve) => {
+      resolvePromise = resolve;
+    });
+    vi.mocked(fetchJobFromUrl).mockImplementation(() => pendingPromise);
+
     render(<UrlImportDialog open={true} onOpenChange={vi.fn()} onImport={vi.fn()} />);
     const input = screen.getByPlaceholderText("https://...");
     await userEvent.type(input, "https://jobs.example.com/swe");
     await userEvent.click(screen.getByRole("button", { name: /import/i }));
     expect(screen.getByText(/fetching/i)).toBeInTheDocument();
+
+    // Resolve to allow cleanup
+    resolvePromise({ jobUrl: "https://example.com" });
   });
 
   it("calls onImport with extracted data on success", async () => {
