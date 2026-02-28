@@ -286,7 +286,7 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
         {eventsLoading ? (
           <p className="text-sm text-muted-foreground">Loading events...</p>
         ) : (
-          <EventTimeline events={events} applicationId={application.id} />
+          <EventTimeline events={events} applicationId={application.id} companyId={application.company_id} />
         )}
       </div>
 

@@ -94,6 +94,7 @@ function formatDate(dateStr: string | null): string {
 interface EventTimelineProps {
   events: Event[];
   applicationId: string;
+  companyId?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -140,10 +141,12 @@ function DeleteConfirmDialog({
 function EventNode({
   event,
   applicationId,
+  companyId,
   isLast,
 }: {
   event: Event;
   applicationId: string;
+  companyId?: string;
   isLast: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -257,6 +260,7 @@ function EventNode({
         open={editOpen}
         onOpenChange={setEditOpen}
         applicationId={applicationId}
+        companyId={companyId}
         mode="edit"
         event={event}
       />
@@ -276,7 +280,7 @@ function EventNode({
 // Component
 // ---------------------------------------------------------------------------
 
-export function EventTimeline({ events, applicationId }: EventTimelineProps) {
+export function EventTimeline({ events, applicationId, companyId }: EventTimelineProps) {
   if (events.length === 0) {
     return (
       <p className="text-sm text-muted-foreground py-4">
@@ -292,6 +296,7 @@ export function EventTimeline({ events, applicationId }: EventTimelineProps) {
           key={event.id}
           event={event}
           applicationId={applicationId}
+          companyId={companyId}
           isLast={index === events.length - 1}
         />
       ))}
