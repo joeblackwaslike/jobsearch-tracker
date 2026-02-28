@@ -108,6 +108,12 @@ describe("AddEventDialog", () => {
   });
 });
 
+it("renders a date picker button instead of native date input", () => {
+  render(<AddEventDialog {...defaultProps} mode="create" />);
+  const dateInput = document.querySelector('input[type="date"]');
+  expect(dateInput).not.toBeInTheDocument();
+});
+
 describe("dialog scrollability", () => {
   it("dialog content has a max-height constraint", () => {
     render(<AddEventDialog {...defaultProps} mode="create" />);

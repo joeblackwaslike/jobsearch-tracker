@@ -5,6 +5,7 @@ import { z } from "zod";
 import { ContactCombobox } from "@/components/events/contact-combobox";
 import { DurationCombobox } from "@/components/events/duration-combobox";
 import { Button } from "@/components/ui/button";
+import { DatePickerField } from "@/components/ui/date-picker-field";
 import {
   Dialog,
   DialogContent,
@@ -314,25 +315,24 @@ export function AddEventDialog({
                 </Select>
               </div>
 
-              {/* Title */}
-              <div className="space-y-2">
-                <Label htmlFor="event-title">Title</Label>
-                <Input
-                  id="event-title"
-                  placeholder="e.g. Phone screen with recruiter"
-                  {...register("title")}
-                />
-              </div>
-
               {/* Date & Time */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="event-date">Date</Label>
-                  <Input id="event-date" type="date" {...register("date")} />
+                  <Label>Date</Label>
+                  <DatePickerField
+                    value={watch("date") ?? ""}
+                    onChange={(v) => setValue("date", v, { shouldValidate: true })}
+                    placeholder="Pick a date"
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="event-time">Time</Label>
-                  <Input id="event-time" type="time" {...register("time")} />
+                  <Input
+                    id="event-time"
+                    type="time"
+                    className="[&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-datetime-edit-fields-wrapper]:p-0"
+                    {...register("time")}
+                  />
                 </div>
               </div>
 
@@ -349,6 +349,16 @@ export function AddEventDialog({
               <div className="space-y-2">
                 <Label htmlFor="event-url">Meeting URL</Label>
                 <Input id="event-url" placeholder="https://..." {...register("url")} />
+              </div>
+
+              {/* Title */}
+              <div className="space-y-2">
+                <Label htmlFor="event-title">Title</Label>
+                <Input
+                  id="event-title"
+                  placeholder="e.g. Phone screen with recruiter"
+                  {...register("title")}
+                />
               </div>
 
               {/* Description */}
