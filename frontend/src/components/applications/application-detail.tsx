@@ -258,16 +258,18 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
 
         {/* Timeline milestones */}
         <div className="space-y-0">
-          {/* Bookmarked milestone */}
-          <div className="flex gap-4">
-            <div className="relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full border bg-background">
-              <BookmarkIcon className="size-4 text-muted-foreground" />
+          {/* Bookmarked milestone — only shown when not yet applied */}
+          {!application.applied_at && (
+            <div className="flex gap-4">
+              <div className="relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full border bg-background">
+                <BookmarkIcon className="size-4 text-muted-foreground" />
+              </div>
+              <div className="flex-1 pb-6">
+                <p className="text-sm font-medium">Bookmarked</p>
+                <p className="text-xs text-muted-foreground">{formatDate(application.created_at)}</p>
+              </div>
             </div>
-            <div className="flex-1 pb-6">
-              <p className="text-sm font-medium">Bookmarked</p>
-              <p className="text-xs text-muted-foreground">{formatDate(application.created_at)}</p>
-            </div>
-          </div>
+          )}
 
           {/* Applied milestone */}
           {application.applied_at && (

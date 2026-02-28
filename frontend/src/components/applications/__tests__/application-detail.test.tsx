@@ -231,4 +231,13 @@ describe("ApplicationDetail", () => {
     expect(dateEls.length).toBeGreaterThanOrEqual(1);
     expect(dateEls[0]).toBeVisible();
   });
+
+  it("hides 'Bookmarked' milestone when applied_at is set", () => {
+    const appliedApp = {
+      ...mockApplication,
+      applied_at: "2026-01-20T00:00:00Z",
+    };
+    render(<ApplicationDetail application={appliedApp} />);
+    expect(screen.queryByText("Bookmarked")).not.toBeInTheDocument();
+  });
 });
