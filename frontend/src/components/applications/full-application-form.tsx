@@ -29,6 +29,7 @@ import { UrlInput } from "@/components/ui/url-input";
 import type { ApplicationWithCompany } from "@/lib/queries/applications";
 import { useCreateApplication, useUpdateApplication } from "@/lib/queries/applications";
 import type { Company } from "@/lib/queries/companies";
+import { useCreateCompany } from "@/lib/queries/companies";
 import { useSnapshotDocument } from "@/lib/queries/documents";
 import { type ExtractedJobData, getSourceFromUrl } from "@/lib/url-import";
 import { CityCombobox } from "./city-combobox";
@@ -149,6 +150,7 @@ export function FullApplicationForm({
   const createApplication = useCreateApplication();
   const updateApplication = useUpdateApplication();
   const snapshotDocument = useSnapshotDocument();
+  const createCompany = useCreateCompany();
   const isBookmarkedEdit = !!application && application.status === "bookmarked";
   const [selectedResumeId, setSelectedResumeId] = useState<string | null>(null);
 
@@ -207,6 +209,31 @@ export function FullApplicationForm({
       setSelectedResumeId(null);
     }
   }, [open, reset, prefill, importData, defaultStatus]);
+
+  // Auto-create company when form opens with importData.companyName
+  useEffect(() => {
+    if (!open || !importData?.companyName) return;
+
+    let cancelled = false;
+
+    async function autoCreate() {
+      try {
+        const result = await createCompany.mutateAsync({ name: importData!.companyName! });
+        if (!cancelled) {
+          setValue("company_id", result.id, { shouldValidate: true });
+          setValue("company_name", result.name);
+        }
+      } catch {
+        // Company may already exist or creation failed — user can manually select/create via combobox
+      }
+    }
+
+    autoCreate();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, importData?.companyName]);
 
   const selectedCompany = watch("company_id")
     ? { id: watch("company_id"), name: watch("company_name") }

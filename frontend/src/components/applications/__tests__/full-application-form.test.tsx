@@ -1,7 +1,9 @@
 import { within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@/test/test-utils";
+import { render, screen, waitFor } from "@/test/test-utils";
 import { FullApplicationForm } from "../full-application-form";
+
+const mockCreateCompanyMutateAsync = vi.fn().mockResolvedValue({ id: "company-1", name: "Acme Corp" });
 
 vi.mock("@/lib/queries/applications", () => ({
   useCreateApplication: () => ({
@@ -15,7 +17,7 @@ vi.mock("@/lib/queries/applications", () => ({
 }));
 vi.mock("@/lib/queries/companies", () => ({
   useSearchCompanies: () => ({ data: [], isLoading: false }),
-  useCreateCompany: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useCreateCompany: () => ({ mutateAsync: mockCreateCompanyMutateAsync, isPending: false }),
 }));
 vi.mock("@/lib/queries/documents", () => ({
   useDocuments: () => ({ data: [], isLoading: false }),
@@ -118,5 +120,52 @@ describe("source field placement", () => {
       .getByText("Additional Information")
       .closest("fieldset") as HTMLElement;
     expect(within(additional).queryByText("Source")).not.toBeInTheDocument();
+  });
+});
+
+describe("auto-create company on import", () => {
+  it("calls createCompany.mutateAsync with companyName when importData is provided", async () => {
+    mockCreateCompanyMutateAsync.mockClear();
+    render(
+      <FullApplicationForm
+        open={true}
+        onOpenChange={vi.fn()}
+        importData={{
+          jobUrl: "https://example.com/job",
+          position: "Staff Engineer",
+          companyName: "Acme Corp",
+          locations: ["Remote"],
+          workType: "remote",
+          employmentType: "full-time",
+          salaryMin: 150000,
+          salaryMax: 200000,
+          salaryCurrency: "USD",
+          jobDescription: "Build great things",
+          source: "LinkedIn",
+        }}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(mockCreateCompanyMutateAsync).toHaveBeenCalledWith({ name: "Acme Corp" });
+    });
+  });
+
+  it("does NOT call createCompany.mutateAsync when importData has no companyName", async () => {
+    mockCreateCompanyMutateAsync.mockClear();
+    render(
+      <FullApplicationForm
+        open={true}
+        onOpenChange={vi.fn()}
+        importData={{
+          jobUrl: "https://example.com/job",
+          position: "Staff Engineer",
+        }}
+      />,
+    );
+
+    // Give the effect time to fire if it were going to
+    await new Promise((r) => setTimeout(r, 50));
+    expect(mockCreateCompanyMutateAsync).not.toHaveBeenCalled();
   });
 });
