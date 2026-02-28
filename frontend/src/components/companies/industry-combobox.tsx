@@ -96,12 +96,8 @@ export function IndustryCombobox({ value, onChange }: IndustryComboboxProps) {
       </PopoverTrigger>
       <PopoverContent className="w-full p-0" align="start">
         <Command shouldFilter={false}>
-          <CommandInput
-            placeholder="Search industry..."
-            value={search}
-            onValueChange={setSearch}
-          />
-          <CommandList>
+          <CommandInput placeholder="Search industry..." value={search} onValueChange={setSearch} />
+          <CommandList className="max-h-[300px] overflow-y-auto">
             <CommandEmpty>No industry found.</CommandEmpty>
             <CommandGroup>
               {filtered.map((opt) => (

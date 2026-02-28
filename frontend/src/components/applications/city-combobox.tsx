@@ -38,7 +38,7 @@ export function CityCombobox({ value, onChange }: CityComboboxProps) {
       <PopoverContent className="w-full p-0" align="start">
         <Command>
           <CommandInput placeholder="Search city..." value={search} onValueChange={setSearch} />
-          <CommandList>
+          <CommandList className="max-h-[300px] overflow-y-auto">
             <CommandEmpty>No city found. Type to use custom value.</CommandEmpty>
             <CommandGroup>
               {(cities as string[])
