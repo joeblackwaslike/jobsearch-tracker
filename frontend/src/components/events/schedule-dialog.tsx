@@ -6,6 +6,7 @@ import { z } from "zod";
 import { ContactCombobox } from "@/components/events/contact-combobox";
 import { DurationCombobox } from "@/components/events/duration-combobox";
 import { Button } from "@/components/ui/button";
+import { DatePickerField } from "@/components/ui/date-picker-field";
 import {
   Command,
   CommandEmpty,
@@ -335,22 +336,14 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
               </Select>
             </div>
 
-            {/* Title */}
-            <div className="space-y-2">
-              <Label htmlFor="schedule-title">Title</Label>
-              <Input id="schedule-title" placeholder={titlePlaceholder} {...register("title")} />
-            </div>
-
             {/* Date & Time */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Date</Label>
-                <Input
-                  type="date"
-                  value={watch("date")}
-                  onChange={(e) => {
-                    setValue("date", e.target.value, { shouldValidate: true });
-                  }}
+                <DatePickerField
+                  value={watch("date") ?? ""}
+                  onChange={(v) => setValue("date", v, { shouldValidate: true })}
+                  placeholder="Pick a date"
                 />
               </div>
               <div className="space-y-2">
@@ -358,7 +351,7 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
                 <Input
                   id="schedule-time"
                   type="time"
-                  className="[&::-webkit-calendar-picker-indicator]:hidden"
+                  className="[&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-datetime-edit-fields-wrapper]:p-0"
                   {...register("time")}
                 />
               </div>
@@ -388,6 +381,12 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
                   />
                 )}
               />
+            </div>
+
+            {/* Title */}
+            <div className="space-y-2">
+              <Label htmlFor="schedule-title">Title</Label>
+              <Input id="schedule-title" placeholder={titlePlaceholder} {...register("title")} />
             </div>
 
             {/* Description */}
