@@ -30,6 +30,7 @@ import type { ApplicationWithCompany } from "@/lib/queries/applications";
 import { useCreateApplication, useUpdateApplication } from "@/lib/queries/applications";
 import type { Company } from "@/lib/queries/companies";
 import { useSnapshotDocument } from "@/lib/queries/documents";
+import { type ExtractedJobData, getSourceFromUrl } from "@/lib/url-import";
 import { CityCombobox } from "./city-combobox";
 import { CompanyCombobox } from "./company-combobox";
 import { SourceCombobox } from "./source-combobox";
@@ -100,6 +101,7 @@ interface FullApplicationFormProps {
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
   prefill?: { company?: string; position?: string; url?: string };
+  importData?: ExtractedJobData;
   defaultStatus?: string;
   application?: ApplicationWithCompany | null;
 }
@@ -140,6 +142,7 @@ export function FullApplicationForm({
   onOpenChange,
   onSuccess,
   prefill,
+  importData,
   defaultStatus,
   application,
 }: FullApplicationFormProps) {
@@ -182,23 +185,28 @@ export function FullApplicationForm({
     if (open) {
       reset({
         company_id: "",
-        company_name: "",
-        position: prefill?.position ?? "",
-        url: prefill?.url ?? "",
+        company_name: importData?.companyName ?? prefill?.company ?? "",
+        position: importData?.position ?? prefill?.position ?? "",
+        url: importData?.jobUrl ?? prefill?.url ?? "",
         status: defaultStatus ?? "applied",
-        work_type: "",
-        employment_type: "full-time",
-        location: "",
-        salary: { currency: "USD", period: "yearly" },
-        job_description: "",
+        work_type: importData?.workType ?? "",
+        employment_type: importData?.employmentType ?? "full-time",
+        location: importData?.location ?? "",
+        salary: {
+          min: importData?.salaryMin,
+          max: importData?.salaryMax,
+          currency: importData?.salaryCurrency ?? "USD",
+          period: "yearly",
+        },
+        job_description: importData?.jobDescription ?? "",
         interest: "medium",
-        source: "",
+        source: importData?.source ?? (prefill?.url ? getSourceFromUrl(prefill.url) : ""),
         tags: [],
         notes: "",
       });
       setSelectedResumeId(null);
     }
-  }, [open, reset, prefill, defaultStatus]);
+  }, [open, reset, prefill, importData, defaultStatus]);
 
   const selectedCompany = watch("company_id")
     ? { id: watch("company_id"), name: watch("company_name") }
@@ -275,7 +283,7 @@ export function FullApplicationForm({
                   <CompanyCombobox
                     value={selectedCompany}
                     onSelect={handleCompanySelect}
-                    initialSearchText={prefill?.company ?? ""}
+                    initialSearchText={watch("company_name") || prefill?.company || ""}
                   />
                   {errors.company_id && (
                     <p className="text-sm text-destructive">{errors.company_id.message}</p>
@@ -500,7 +508,7 @@ export function FullApplicationForm({
                   >
                     <BookmarkIcon className="size-4" />
                   </Button>
-                  <Button type="submit" disabled={isSubmitting}>
+                  <Button type="submit" disabled={isSubmitting} autoFocus={!!importData}>
                     {isSubmitting ? "Saving..." : "New Application"}
                   </Button>
                 </DialogFooter>

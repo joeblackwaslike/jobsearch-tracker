@@ -8,6 +8,10 @@ vi.mock("@/lib/queries/applications", () => ({
     mutateAsync: vi.fn().mockResolvedValue({ id: "new" }),
     isPending: false,
   }),
+  useUpdateApplication: () => ({
+    mutateAsync: vi.fn().mockResolvedValue({ id: "updated" }),
+    isPending: false,
+  }),
 }));
 vi.mock("@/lib/queries/companies", () => ({
   useSearchCompanies: () => ({ data: [], isLoading: false }),
@@ -26,7 +30,7 @@ vi.mock("@/lib/queries/documents", () => ({
 describe("FullApplicationForm", () => {
   it("renders with title New Application", () => {
     render(<FullApplicationForm open={true} onOpenChange={vi.fn()} />);
-    expect(screen.getByText("New Application")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "New Application" })).toBeInTheDocument();
   });
 
   it("shows all field group headings", () => {
@@ -70,8 +74,34 @@ describe("modal overflow regression", () => {
   it("cancel and submit buttons are inside the scroll area", () => {
     render(<FullApplicationForm open={true} onOpenChange={vi.fn()} />);
     const scrollArea = document.querySelector('[data-slot="scroll-area"]');
-    expect(scrollArea).toContainElement(screen.getByRole("button", { name: "Add Application" }));
+    expect(scrollArea).toContainElement(screen.getByRole("button", { name: "New Application" }));
     expect(scrollArea).toContainElement(screen.getByRole("button", { name: "Cancel" }));
+  });
+});
+
+describe("url import prefill", () => {
+  it("pre-fills all URL import fields when importData is provided", async () => {
+    render(
+      <FullApplicationForm
+        open={true}
+        onOpenChange={vi.fn()}
+        importData={{
+          jobUrl: "https://example.com/job",
+          position: "Staff Engineer",
+          companyName: "Acme Corp",
+          location: "Remote",
+          workType: "remote",
+          employmentType: "full-time",
+          salaryMin: 150000,
+          salaryMax: 200000,
+          salaryCurrency: "USD",
+          jobDescription: "Build great things",
+          source: "LinkedIn",
+        }}
+      />
+    );
+    expect(screen.getByDisplayValue("Staff Engineer")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("https://example.com/job")).toBeInTheDocument();
   });
 });
 
