@@ -13,21 +13,24 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 
 const SOURCE_OPTIONS = [
-  "google search",
+  "blind",
+  "builtin",
+  "dice",
+  "github",
+  "glassdoor",
   "google jobs",
+  "google search",
+  "indeed",
+  "levels",
+  "linkedin",
+  "monster",
+  "other",
+  "referral",
   "theirstack",
   "welcome to the jungle",
-  "linkedin",
   "wellfound",
-  "glassdoor",
-  "builtin",
   "workatastartup",
-  "indeed",
-  "dice",
   "ziprecruiter",
-  "levels",
-  "blind",
-  "referral",
 ];
 
 interface SourceComboboxProps {
@@ -37,9 +40,18 @@ interface SourceComboboxProps {
 
 export function SourceCombobox({ value, onChange }: SourceComboboxProps) {
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const filtered = SOURCE_OPTIONS.filter((opt) => opt.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={open}
+      onOpenChange={(o) => {
+        setOpen(o);
+        if (!o) setSearch("");
+      }}
+    >
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -52,31 +64,34 @@ export function SourceCombobox({ value, onChange }: SourceComboboxProps) {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0" align="start">
-        <Command>
+        <Command shouldFilter={false}>
           <CommandInput
             placeholder="Search or type source..."
-            value={value}
-            onValueChange={onChange}
+            value={search}
+            onValueChange={setSearch}
           />
-          <CommandList>
+          <CommandList className="max-h-[300px] overflow-y-auto">
             <CommandEmpty>
               <button
                 type="button"
                 className="px-3 py-2 text-sm w-full text-left hover:bg-accent"
                 onClick={() => {
+                  onChange(search);
+                  setSearch("");
                   setOpen(false);
                 }}
               >
-                Use &ldquo;{value}&rdquo;
+                Use &ldquo;{search}&rdquo;
               </button>
             </CommandEmpty>
             <CommandGroup>
-              {SOURCE_OPTIONS.map((option) => (
+              {filtered.map((option) => (
                 <CommandItem
                   key={option}
                   value={option}
                   onSelect={(val) => {
                     onChange(val);
+                    setSearch("");
                     setOpen(false);
                   }}
                 >
