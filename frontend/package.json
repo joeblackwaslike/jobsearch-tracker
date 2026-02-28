@@ -47,6 +47,7 @@
     "remark-gfm": "^4.0.1",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.1",
+    "turndown": "^7.2.2",
     "zod": "^4.3.6"
   },
   "pnpm": {
@@ -58,6 +59,8 @@
   "devDependencies": {
     "@biomejs/biome": "^2.4.2",
     "@playwright/test": "^1.50.0",
+    "@snaplet/copycat": "^6.0.0",
+    "@snaplet/seed": "0.98.0",
     "@tailwindcss/vite": "^4.1.18",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -65,8 +68,10 @@
     "@types/node": "^25.2.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@types/turndown": "^5.0.6",
     "@vitejs/plugin-react": "^5.1.4",
     "jsdom": "^28.1.0",
+    "postgres": "^3.4.8",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",

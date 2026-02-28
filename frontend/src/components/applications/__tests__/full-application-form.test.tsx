@@ -89,7 +89,7 @@ describe("url import prefill", () => {
           jobUrl: "https://example.com/job",
           position: "Staff Engineer",
           companyName: "Acme Corp",
-          location: "Remote",
+          locations: ["Remote"],
           workType: "remote",
           employmentType: "full-time",
           salaryMin: 150000,
@@ -98,7 +98,7 @@ describe("url import prefill", () => {
           jobDescription: "Build great things",
           source: "LinkedIn",
         }}
-      />
+      />,
     );
     expect(screen.getByDisplayValue("Staff Engineer")).toBeInTheDocument();
     expect(screen.getByDisplayValue("https://example.com/job")).toBeInTheDocument();

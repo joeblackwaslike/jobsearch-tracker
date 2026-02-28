@@ -3,7 +3,10 @@
  * Fetches job posting data from URLs and extracts relevant information
  */
 
+import TurndownService from "turndown";
 import { createClient } from "@/lib/supabase/client";
+
+const turndown = new TurndownService({ headingStyle: "atx", bulletListMarker: "-" });
 
 /**
  * Extracted job data from URL
@@ -11,7 +14,7 @@ import { createClient } from "@/lib/supabase/client";
 export interface ExtractedJobData {
   position?: string;
   companyName?: string;
-  location?: string;
+  locations?: string[];
   workType?: "remote" | "hybrid" | "onsite";
   employmentType?: "full-time" | "part-time" | "contract" | "internship";
   salaryMin?: number;
@@ -364,81 +367,7 @@ function extractFromMetaTags(html: string): Partial<ExtractedJobData> {
   const doc = parser.parseFromString(html, "text/html");
   const data: Partial<ExtractedJobData> = {};
 
-  // Try Open Graph and other meta tags
-  const metaSelectors = {
-    position: ['meta[property="og:title"]', 'meta[name="twitter:title"]', 'meta[name="title"]'],
-    companyName: ['meta[property="og:site_name"]', 'meta[name="author"]'],
-    jobDescription: [
-      'meta[property="og:description"]',
-      'meta[name="description"]',
-      'meta[name="twitter:description"]',
-    ],
-  };
-
-  for (const [field, selectors] of Object.entries(metaSelectors)) {
-    for (const selector of selectors) {
-      const meta = doc.querySelector(selector);
-      const content = meta?.getAttribute("content")?.trim();
-      if (content) {
-        (data as Record<string, unknown>)[field] = content;
-        break;
-      }
-    }
-  }
-
-  // Split combined position/company patterns like "Job Title | Company Name" or "Job Title at Company"
-  if (data.position && !data.companyName) {
-    const combinedPatterns = [
-      /^(.+?)\s*\|\s*(.+?)$/, // "Job Title | Company"
-      /^(.+?)\s+at\s+(.+?)$/i, // "Job Title at Company"
-      /^(.+?)\s*[-–—]\s*(.+?)$/, // "Job Title - Company"
-    ];
-
-    for (const pattern of combinedPatterns) {
-      const match = data.position.match(pattern);
-      if (match) {
-        const [, possibleTitle, possibleCompany] = match;
-        // Clean up and validate
-        const cleanTitle = possibleTitle.trim();
-        const cleanCompany = possibleCompany.trim();
-
-        // Only split if both parts look reasonable
-        if (cleanTitle.length > 2 && cleanCompany.length > 1) {
-          data.position = cleanTitle;
-          data.companyName = cleanCompany;
-          break;
-        }
-      }
-    }
-  }
-
-  // If position still contains location info like "in United States", try to clean it
-  if (data.position) {
-    const locationInTitle = data.position.match(/^(.+?)\s+in\s+([\w\s]+?)$/i);
-    if (locationInTitle) {
-      const [, cleanTitle, locationPart] = locationInTitle;
-      // Check if location part looks like a country/state, not part of the job title
-      const locationIndicators = [
-        "united states",
-        "usa",
-        "uk",
-        "canada",
-        "remote",
-        "california",
-        "new york",
-        "texas",
-        "florida",
-      ];
-      if (locationIndicators.some((loc) => locationPart.toLowerCase().includes(loc))) {
-        data.position = cleanTitle.trim();
-        if (!data.location) {
-          data.location = locationPart.trim();
-        }
-      }
-    }
-  }
-
-  // Try to extract from JSON-LD
+  // --- 1. JSON-LD (highest priority) ---
   const jsonLdScripts = doc.querySelectorAll('script[type="application/ld+json"]');
   for (const script of jsonLdScripts) {
     try {
@@ -450,10 +379,28 @@ function extractFromMetaTags(html: string): Partial<ExtractedJobData> {
           : null;
 
       if (jobPosting) {
-        data.position = data.position || jobPosting.title;
-        data.companyName = data.companyName || jobPosting.hiringOrganization?.name;
-        data.location = data.location || jobPosting.jobLocation?.address?.addressLocality;
-        data.jobDescription = data.jobDescription || jobPosting.description;
+        data.position = jobPosting.title;
+        data.companyName = jobPosting.hiringOrganization?.name;
+
+        // jobLocation can be a single object or an array
+        const jobLocations = Array.isArray(jobPosting.jobLocation)
+          ? jobPosting.jobLocation
+          : jobPosting.jobLocation
+            ? [jobPosting.jobLocation]
+            : [];
+        const locationStrings = jobLocations
+          .map((loc: { address?: { addressLocality?: string; addressRegion?: string } }) =>
+            [loc.address?.addressLocality, loc.address?.addressRegion].filter(Boolean).join(", "),
+          )
+          .filter(Boolean);
+        if (locationStrings.length > 0) {
+          data.locations = locationStrings;
+        }
+
+        // Description: convert HTML to markdown
+        if (jobPosting.description) {
+          data.jobDescription = turndown.turndown(jobPosting.description);
+        }
 
         if (jobPosting.baseSalary) {
           const salary = jobPosting.baseSalary;
@@ -479,23 +426,93 @@ function extractFromMetaTags(html: string): Partial<ExtractedJobData> {
         if (jobPosting.jobLocationType === "TELECOMMUTE") {
           data.workType = "remote";
         }
+
+        // If we got the key fields from JSON-LD, return early
+        if (data.position && data.companyName) {
+          return data;
+        }
       }
     } catch {
       // Invalid JSON, continue
     }
   }
 
-  // Extract from page title as fallback
+  // --- 2. Open Graph / meta tags (fallback) ---
+  const metaSelectors = {
+    position: ['meta[property="og:title"]', 'meta[name="twitter:title"]', 'meta[name="title"]'],
+    companyName: ['meta[property="og:site_name"]', 'meta[name="author"]'],
+    jobDescription: [
+      'meta[property="og:description"]',
+      'meta[name="description"]',
+      'meta[name="twitter:description"]',
+    ],
+  };
+
+  for (const [field, selectors] of Object.entries(metaSelectors)) {
+    if ((data as Record<string, unknown>)[field]) continue; // already set by JSON-LD
+    for (const selector of selectors) {
+      const meta = doc.querySelector(selector);
+      const content = meta?.getAttribute("content")?.trim();
+      if (content) {
+        (data as Record<string, unknown>)[field] = content;
+        break;
+      }
+    }
+  }
+
+  // Split combined "Job Title | Company" patterns (OG fallback only)
+  if (data.position && !data.companyName) {
+    const combinedPatterns = [
+      /^(.+?)\s*\|\s*(.+?)$/,
+      /^(.+?)\s+at\s+(.+?)$/i,
+      /^(.+?)\s*[-–—]\s*(.+?)$/,
+    ];
+    for (const pattern of combinedPatterns) {
+      const match = data.position.match(pattern);
+      if (match) {
+        const cleanTitle = match[1].trim();
+        const cleanCompany = match[2].trim();
+        if (cleanTitle.length > 2 && cleanCompany.length > 1) {
+          data.position = cleanTitle;
+          data.companyName = cleanCompany;
+          break;
+        }
+      }
+    }
+  }
+
+  // Clean "in United States" from title (OG fallback)
+  if (data.position) {
+    const locationInTitle = data.position.match(/^(.+?)\s+in\s+([\w\s]+?)$/i);
+    if (locationInTitle) {
+      const locationIndicators = [
+        "united states",
+        "usa",
+        "uk",
+        "canada",
+        "remote",
+        "california",
+        "new york",
+        "texas",
+        "florida",
+      ];
+      if (locationIndicators.some((loc) => locationInTitle[2].toLowerCase().includes(loc))) {
+        data.position = locationInTitle[1].trim();
+        if (!data.locations?.length) {
+          data.locations = [locationInTitle[2].trim()];
+        }
+      }
+    }
+  }
+
+  // Page title as last resort
   if (!data.position) {
     const title = doc.querySelector("title")?.textContent?.trim();
     if (title) {
-      // Common patterns: "Job Title at Company" or "Job Title - Company"
       const match = title.match(/^(.+?)\s*(?:at|@|-|–|—|\|)\s*(.+?)(?:\s*[-|]|$)/);
       if (match) {
         data.position = match[1].trim();
-        if (!data.companyName) {
-          data.companyName = match[2].trim();
-        }
+        if (!data.companyName) data.companyName = match[2].trim();
       } else {
         data.position = title;
       }
@@ -578,8 +595,11 @@ export async function fetchJobFromUrl(url: string): Promise<ExtractedJobData> {
       if (pattern.selectors.company && !result.companyName) {
         result.companyName = extractText(html, pattern.selectors.company);
       }
-      if (pattern.selectors.location && !result.location) {
-        result.location = extractText(html, pattern.selectors.location);
+      if (pattern.selectors.location && !result.locations?.length) {
+        const locationText = extractText(html, pattern.selectors.location);
+        if (locationText) {
+          result.locations = [locationText];
+        }
       }
       if (pattern.selectors.salary) {
         const salaryText = extractText(html, pattern.selectors.salary);
@@ -598,12 +618,11 @@ export async function fetchJobFromUrl(url: string): Promise<ExtractedJobData> {
 
     // Try generic selectors if we're still missing data
     const genericSelectors: Record<
-      keyof Pick<ExtractedJobData, "position" | "companyName" | "location" | "jobDescription">,
+      keyof Pick<ExtractedJobData, "position" | "companyName" | "jobDescription">,
       string[]
     > = {
       position: ["h1", ".job-title", '[class*="job-title"]', '[class*="position"]'],
       companyName: [".company-name", '[class*="company"]', '[class*="employer"]'],
-      location: [".location", '[class*="location"]', '[class*="address"]'],
       jobDescription: [".job-description", '[class*="description"]', ".content", "article"],
     };
 
@@ -618,10 +637,22 @@ export async function fetchJobFromUrl(url: string): Promise<ExtractedJobData> {
         }
       }
     }
+
+    // Generic location selector (array field — handle separately)
+    if (!result.locations?.length) {
+      const locationText = extractText(html, [
+        ".location",
+        '[class*="location"]',
+        '[class*="address"]',
+      ]);
+      if (locationText) {
+        result.locations = [locationText];
+      }
+    }
     console.log("result after trying to extract using generic selectors %O", result);
 
     // Detect work type and employment type from all available text
-    const fullText = [result.position, result.location, result.jobDescription, html]
+    const fullText = [result.position, ...(result.locations ?? []), result.jobDescription, html]
       .filter(Boolean)
       .join(" ");
 
@@ -658,7 +689,7 @@ export async function fetchJobFromUrl(url: string): Promise<ExtractedJobData> {
     console.log("result after trying to detect specific fields from fulltext %O", result);
 
     // Try to extract location from common patterns if still UNAVAILABLE or missing
-    if (!result.location || result.location.toUpperCase() === "UNAVAILABLE") {
+    if (!result.locations?.length || result.locations?.[0]?.toUpperCase() === "UNAVAILABLE") {
       // Look for explicit location patterns in structured data
       const locationPatterns = [
         /Locations?:([\w\s,]+?)(?:Category|Job Type|Remote|Employment|$)/i,
@@ -681,7 +712,7 @@ export async function fetchJobFromUrl(url: string): Promise<ExtractedJobData> {
             location.length < 100 &&
             !/^(Category|Job|Remote|Employment)$/i.test(location)
           ) {
-            result.location = location;
+            result.locations = [location];
             break;
           }
         }
@@ -738,8 +769,8 @@ export async function fetchJobFromUrl(url: string): Promise<ExtractedJobData> {
         ];
         if (locationIndicators.some((loc) => locationPart.toLowerCase().includes(loc))) {
           result.position = cleanTitle.trim();
-          if (!result.location || result.location.toUpperCase() === "UNAVAILABLE") {
-            result.location = locationPart.trim();
+          if (!result.locations?.length || result.locations?.[0]?.toUpperCase() === "UNAVAILABLE") {
+            result.locations = [locationPart.trim()];
           }
         }
       }

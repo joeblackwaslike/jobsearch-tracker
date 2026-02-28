@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { BookmarkIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -25,7 +26,6 @@ import {
 } from "@/components/ui/select";
 import { TagInput } from "@/components/ui/tag-input";
 import { UrlInput } from "@/components/ui/url-input";
-import { BookmarkIcon } from "lucide-react";
 import type { ApplicationWithCompany } from "@/lib/queries/applications";
 import { useCreateApplication, useUpdateApplication } from "@/lib/queries/applications";
 import type { Company } from "@/lib/queries/companies";
@@ -191,7 +191,7 @@ export function FullApplicationForm({
         status: defaultStatus ?? "applied",
         work_type: importData?.workType ?? "",
         employment_type: importData?.employmentType ?? "full-time",
-        location: importData?.location ?? "",
+        location: importData?.locations?.[0] ?? "",
         salary: {
           min: importData?.salaryMin,
           max: importData?.salaryMax,
