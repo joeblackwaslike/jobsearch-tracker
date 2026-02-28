@@ -3,6 +3,8 @@
  * Fetches job posting data from URLs and extracts relevant information
  */
 
+import { createClient } from "@/lib/supabase/client";
+
 /**
  * Extracted job data from URL
  */
@@ -10,8 +12,8 @@ export interface ExtractedJobData {
   position?: string;
   companyName?: string;
   location?: string;
-  workType?: 'remote' | 'hybrid' | 'onsite';
-  employmentType?: 'full-time' | 'part-time' | 'contract' | 'internship';
+  workType?: "remote" | "hybrid" | "onsite";
+  employmentType?: "full-time" | "part-time" | "contract" | "internship";
   salaryMin?: number;
   salaryMax?: number;
   salaryCurrency?: string;
@@ -42,106 +44,125 @@ interface JobBoardPattern {
  */
 const JOB_BOARD_PATTERNS: JobBoardPattern[] = [
   {
-    domain: 'github.careers',
-    name: 'GitHub',
+    domain: "github.careers",
+    name: "GitHub",
     selectors: {
-      title: ['h1', '.job-title', '[class*="title"]'],
-      company: ['.company-name'],
-      location: ['[class*="location"]', '.location'],
+      title: ["h1", ".job-title", '[class*="title"]'],
+      company: [".company-name"],
+      location: ['[class*="location"]', ".location"],
       salary: ['[class*="salary"]', '[class*="compensation"]'],
-      description: ['.job-description', '[class*="description"]', '#job-description'],
+      description: [".job-description", '[class*="description"]', "#job-description"],
     },
   },
   {
-    domain: 'icims.com',
-    name: 'iCIMS',
+    domain: "icims.com",
+    name: "iCIMS",
     selectors: {
-      title: ['h1', '.iCIMS_Header', '.job-title'],
-      company: ['.iCIMS_CompanyName', '.company-name'],
-      location: ['.iCIMS_JobLocation', '.location'],
-      description: ['.iCIMS_JobContent', '.job-description'],
+      title: ["h1", ".iCIMS_Header", ".job-title"],
+      company: [".iCIMS_CompanyName", ".company-name"],
+      location: [".iCIMS_JobLocation", ".location"],
+      description: [".iCIMS_JobContent", ".job-description"],
     },
   },
   {
-    domain: 'linkedin.com',
-    name: 'LinkedIn',
+    domain: "linkedin.com",
+    name: "LinkedIn",
     selectors: {
-      title: ['.top-card-layout__title', '.job-details-jobs-unified-top-card__job-title', 'h1'],
-      company: ['.topcard__org-name-link', '.job-details-jobs-unified-top-card__company-name', '.topcard__flavor'],
-      location: ['.topcard__flavor--bullet', '.job-details-jobs-unified-top-card__bullet'],
-      description: ['.description__text', '.jobs-description__content'],
+      title: [".top-card-layout__title", ".job-details-jobs-unified-top-card__job-title", "h1"],
+      company: [
+        ".topcard__org-name-link",
+        ".job-details-jobs-unified-top-card__company-name",
+        ".topcard__flavor",
+      ],
+      location: [".topcard__flavor--bullet", ".job-details-jobs-unified-top-card__bullet"],
+      description: [".description__text", ".jobs-description__content"],
     },
   },
   {
-    domain: 'indeed.com',
-    name: 'Indeed',
+    domain: "indeed.com",
+    name: "Indeed",
     selectors: {
-      title: ['.jobsearch-JobInfoHeader-title', '[data-testid="jobsearch-JobInfoHeader-title"]', 'h1'],
-      company: ['.jobsearch-CompanyInfoContainer', '[data-testid="inlineHeader-companyName"]', '.companyName'],
-      location: ['.jobsearch-JobInfoHeader-subtitle', '[data-testid="job-location"]', '.companyLocation'],
-      salary: ['[data-testid="attribute_snippet_testid"]', '.salary-snippet-container'],
-      description: ['#jobDescriptionText', '.jobsearch-jobDescriptionText'],
+      title: [
+        ".jobsearch-JobInfoHeader-title",
+        '[data-testid="jobsearch-JobInfoHeader-title"]',
+        "h1",
+      ],
+      company: [
+        ".jobsearch-CompanyInfoContainer",
+        '[data-testid="inlineHeader-companyName"]',
+        ".companyName",
+      ],
+      location: [
+        ".jobsearch-JobInfoHeader-subtitle",
+        '[data-testid="job-location"]',
+        ".companyLocation",
+      ],
+      salary: ['[data-testid="attribute_snippet_testid"]', ".salary-snippet-container"],
+      description: ["#jobDescriptionText", ".jobsearch-jobDescriptionText"],
     },
   },
   {
-    domain: 'glassdoor.com',
-    name: 'Glassdoor',
+    domain: "glassdoor.com",
+    name: "Glassdoor",
     selectors: {
-      title: ['.job-title', '[data-test="job-title"]', 'h1'],
-      company: ['.employer-name', '[data-test="employer-name"]'],
-      location: ['.location', '[data-test="emp-location"]'],
-      salary: ['.salary-estimate', '[data-test="detailSalary"]'],
-      description: ['.jobDescriptionContent', '[data-test="description"]'],
+      title: [".job-title", '[data-test="job-title"]', "h1"],
+      company: [".employer-name", '[data-test="employer-name"]'],
+      location: [".location", '[data-test="emp-location"]'],
+      salary: [".salary-estimate", '[data-test="detailSalary"]'],
+      description: [".jobDescriptionContent", '[data-test="description"]'],
     },
   },
   {
-    domain: 'greenhouse.io',
-    name: 'Greenhouse',
+    domain: "greenhouse.io", // in-url: gh_jid
+    name: "Greenhouse",
     selectors: {
-      title: ['.app-title', '.job-title', 'h1'],
-      company: ['.company-name', '.heading'],
-      location: ['.location', '.job-location'],
-      description: ['#content', '.job-description', '#job_description'],
+      title: [".app-title", ".job-title", "h1"],
+      company: [".company-name", ".heading"],
+      location: [".location", ".job-location"],
+      description: ["#content", ".job-description", "#job_description"],
+      salary: [".content-pay-transparency .pay-range"],
+      employmentType: [".job-component-list-employment_type span"],
+      workType: [".job-component-workplace-type span"],
     },
   },
   {
-    domain: 'lever.co',
-    name: 'Lever',
+    domain: "lever.co",
+    name: "Lever",
     selectors: {
-      title: ['.posting-headline h2', '.posting-title'],
-      company: ['.main-header-logo img[alt]', '.company-name'],
-      location: ['.location', '.posting-categories .sort-by-time'],
-      description: ['.posting-page .section-wrapper', '.posting-description'],
+      title: [".posting-headline h2", ".posting-title"],
+      company: [".main-header-logo img[alt]", ".company-name"],
+      location: [".location", ".posting-categories .sort-by-time"],
+      description: [".posting-page .section-wrapper", ".posting-description"],
     },
   },
   {
-    domain: 'workday.com',
-    name: 'Workday',
+    domain: "workday.com",
+    name: "Workday",
     selectors: {
-      title: ['[data-automation-id="jobPostingHeader"]', '.job-title', 'h1'],
-      company: ['.css-1h9qwzj', '.company-name'],
-      location: ['[data-automation-id="locations"]', '.location'],
-      description: ['[data-automation-id="jobPostingDescription"]', '.job-description'],
+      title: ['[data-automation-id="jobPostingHeader"]', ".job-title", "h1"],
+      company: [".css-1h9qwzj", ".company-name"],
+      location: ['[data-automation-id="locations"]', ".location"],
+      description: ['[data-automation-id="jobPostingDescription"]', ".job-description"],
     },
   },
   {
-    domain: 'monster.com',
-    name: 'Monster',
+    domain: "monster.com",
+    name: "Monster",
     selectors: {
-      title: ['.job-title', 'h1'],
-      company: ['.company-name', '.company'],
-      location: ['.location', '.job-location'],
-      description: ['#JobDescription', '.job-description'],
+      title: [".job-title", "h1"],
+      company: [".company-name", ".company"],
+      location: [".location", ".job-location"],
+      description: ["#JobDescription", ".job-description"],
     },
   },
   {
-    domain: 'ziprecruiter.com',
-    name: 'ZipRecruiter',
+    domain: "ziprecruiter.com",
+    name: "ZipRecruiter",
     selectors: {
-      title: ['.job_title', 'h1'],
-      company: ['.hiring_company', '.company_name'],
-      location: ['.location', '.job_location'],
-      description: ['.jobDescriptionSection', '.job_description'],
+      title: [".job_title", "h1"],
+      company: [".hiring_company", ".company_name"],
+      location: [".location", ".job_location"],
+      description: [".jobDescriptionSection", ".job_description"],
     },
   },
 ];
@@ -157,20 +178,22 @@ export function parseSalary(salaryText: string): {
   if (!salaryText) return {};
 
   // Currency detection (before cleaning)
-  let currency = 'USD';
+  let currency = "USD";
   const lowerText = salaryText.toLowerCase();
-  if (lowerText.includes('£') || lowerText.includes('gbp')) currency = 'GBP';
-  else if (lowerText.includes('€') || lowerText.includes('eur')) currency = 'EUR';
-  else if (lowerText.includes('cad') || /c\s*\$/i.test(salaryText)) currency = 'CAD';
-  else if (lowerText.includes('aud') || /a\s*\$/i.test(salaryText)) currency = 'AUD';
-  else if (lowerText.includes('usd') || salaryText.includes('$')) currency = 'USD';
+  if (lowerText.includes("£") || lowerText.includes("gbp")) currency = "GBP";
+  else if (lowerText.includes("€") || lowerText.includes("eur")) currency = "EUR";
+  else if (lowerText.includes("cad") || /c\s*\$/i.test(salaryText)) currency = "CAD";
+  else if (lowerText.includes("aud") || /a\s*\$/i.test(salaryText)) currency = "AUD";
+  else if (lowerText.includes("usd") || salaryText.includes("$")) currency = "USD";
 
   // Clean the text - remove currency symbols and commas
-  const cleanText = salaryText.replace(/[,$£€]/g, '').toLowerCase();
+  const cleanText = salaryText.replace(/[,$£€]/g, "").toLowerCase();
 
   // Try to match salary patterns like "$107,700.00 - $285,900.00" or "107700 - 285900"
   // Handle both integer and decimal formats
-  const rangeMatch = cleanText.match(/(\d+(?:\.\d+)?)\s*(?:k)?\s*(?:-|to|–|—)\s*(?:usd\s*)?\$?\s*(\d+(?:\.\d+)?)\s*(?:k)?/i);
+  const rangeMatch = cleanText.match(
+    /(\d+(?:\.\d+)?)\s*(?:k)?\s*(?:-|to|–|—)\s*(?:usd\s*)?\$?\s*(\d+(?:\.\d+)?)\s*(?:k)?/i,
+  );
 
   if (rangeMatch) {
     const parseNumber = (str: string, hasK: boolean): number => {
@@ -182,14 +205,15 @@ export function parseSalary(salaryText: string): {
       return num;
     };
 
-    const hasK1 = cleanText.slice(0, cleanText.indexOf(rangeMatch[2])).includes('k');
-    const hasK2 = cleanText.slice(cleanText.indexOf(rangeMatch[2])).includes('k');
+    const hasK1 = cleanText.slice(0, cleanText.indexOf(rangeMatch[2])).includes("k");
+    const hasK2 = cleanText.slice(cleanText.indexOf(rangeMatch[2])).includes("k");
 
-    let min = parseNumber(rangeMatch[1], hasK1);
-    let max = parseNumber(rangeMatch[2], hasK2);
+    const min = parseNumber(rangeMatch[1], hasK1);
+    const max = parseNumber(rangeMatch[2], hasK2);
 
     // Handle annual vs hourly
-    const isHourly = cleanText.includes('hour') || cleanText.includes('/hr') || cleanText.includes('per hr');
+    const isHourly =
+      cleanText.includes("hour") || cleanText.includes("/hr") || cleanText.includes("per hr");
     const multiplier = isHourly ? 2080 : 1;
 
     return {
@@ -204,13 +228,14 @@ export function parseSalary(salaryText: string): {
   if (!numbers || numbers.length === 0) return {};
 
   const parseNumber = (str: string): number => {
-    const hasK = str.toLowerCase().includes('k');
-    const num = parseFloat(str.replace(/k/i, ''));
+    const hasK = str.toLowerCase().includes("k");
+    const num = parseFloat(str.replace(/k/i, ""));
     return hasK ? num * 1000 : num;
   };
 
   // Handle annual vs hourly
-  const isHourly = cleanText.includes('hour') || cleanText.includes('/hr') || cleanText.includes('per hr');
+  const isHourly =
+    cleanText.includes("hour") || cleanText.includes("/hr") || cleanText.includes("per hr");
   const multiplier = isHourly ? 2080 : 1; // Convert hourly to annual (40hrs * 52 weeks)
 
   if (numbers.length >= 2) {
@@ -230,28 +255,33 @@ export function parseSalary(salaryText: string): {
 /**
  * Detect work type from text
  */
-export function detectWorkType(text: string): 'remote' | 'hybrid' | 'onsite' | undefined {
+export function detectWorkType(text: string): "remote" | "hybrid" | "onsite" | undefined {
   const lowerText = text.toLowerCase();
 
   // Check for explicit remote indicators
   if (
-    lowerText.includes('fully remote') ||
-    lowerText.includes('100% remote') ||
-    lowerText.includes('work from home') ||
-    lowerText.includes('remote-first') ||
+    lowerText.includes("fully remote") ||
+    lowerText.includes("100% remote") ||
+    lowerText.includes("work from home") ||
+    lowerText.includes("remote-first") ||
     /remote\s*:\s*yes/i.test(text) ||
     /\bremote,\s*\w/i.test(text) // "Remote, United States" pattern
   ) {
-    return 'remote';
+    return "remote";
   }
-  if (lowerText.includes('hybrid') || lowerText.includes('flexible location')) {
-    return 'hybrid';
+  if (lowerText.includes("hybrid") || lowerText.includes("flexible location")) {
+    return "hybrid";
   }
-  if (lowerText.includes('on-site') || lowerText.includes('onsite') || lowerText.includes('in-office') || lowerText.includes('in office')) {
-    return 'onsite';
+  if (
+    lowerText.includes("on-site") ||
+    lowerText.includes("onsite") ||
+    lowerText.includes("in-office") ||
+    lowerText.includes("in office")
+  ) {
+    return "onsite";
   }
-  if (lowerText.includes('remote')) {
-    return 'remote';
+  if (lowerText.includes("remote")) {
+    return "remote";
   }
 
   return undefined;
@@ -261,17 +291,19 @@ export function detectWorkType(text: string): 'remote' | 'hybrid' | 'onsite' | u
  * Detect employment type from text
  * Prioritizes explicit labels like "Employment Type: Full Time" over general mentions
  */
-export function detectEmploymentType(text: string): 'full-time' | 'part-time' | 'contract' | 'internship' | undefined {
+export function detectEmploymentType(
+  text: string,
+): "full-time" | "part-time" | "contract" | "internship" | undefined {
   // First, check for explicit employment type labels (most reliable)
   const explicitPatterns = [
-    { pattern: /employment\s*type[:\s]*(full[\s-]?time)/i, type: 'full-time' as const },
-    { pattern: /employment\s*type[:\s]*(part[\s-]?time)/i, type: 'part-time' as const },
-    { pattern: /employment\s*type[:\s]*(contract|contractor)/i, type: 'contract' as const },
-    { pattern: /employment\s*type[:\s]*(intern|internship)/i, type: 'internship' as const },
-    { pattern: /job\s*type[:\s]*(full[\s-]?time)/i, type: 'full-time' as const },
-    { pattern: /job\s*type[:\s]*(part[\s-]?time)/i, type: 'part-time' as const },
-    { pattern: /job\s*type[:\s]*(contract)/i, type: 'contract' as const },
-    { pattern: /job\s*type[:\s]*(intern)/i, type: 'internship' as const },
+    { pattern: /employment\s*type[:\s]*(full[\s-]?time)/i, type: "full-time" as const },
+    { pattern: /employment\s*type[:\s]*(part[\s-]?time)/i, type: "part-time" as const },
+    { pattern: /employment\s*type[:\s]*(contract|contractor)/i, type: "contract" as const },
+    { pattern: /employment\s*type[:\s]*(intern|internship)/i, type: "internship" as const },
+    { pattern: /job\s*type[:\s]*(full[\s-]?time)/i, type: "full-time" as const },
+    { pattern: /job\s*type[:\s]*(part[\s-]?time)/i, type: "part-time" as const },
+    { pattern: /job\s*type[:\s]*(contract)/i, type: "contract" as const },
+    { pattern: /job\s*type[:\s]*(intern)/i, type: "internship" as const },
   ];
 
   for (const { pattern, type } of explicitPatterns) {
@@ -282,17 +314,20 @@ export function detectEmploymentType(text: string): 'full-time' | 'part-time' | 
 
   // Check for position-level indicators (less reliable, but still useful)
   if (/\b(?:full[\s-]?time)\b/i.test(text) && !/internship/i.test(text.slice(0, 500))) {
-    return 'full-time';
+    return "full-time";
   }
   if (/\b(?:part[\s-]?time)\b/i.test(text)) {
-    return 'part-time';
+    return "part-time";
   }
-  if (/\b(?:contract(?:or)?|freelance)\b/i.test(text) && !/full[\s-]?time/i.test(text.slice(0, 500))) {
-    return 'contract';
+  if (
+    /\b(?:contract(?:or)?|freelance)\b/i.test(text) &&
+    !/full[\s-]?time/i.test(text.slice(0, 500))
+  ) {
+    return "contract";
   }
   // Only return internship if it's clearly in the title/header area, not in qualifications
   if (/\b(?:internship|intern\b)(?!.*experience|.*qualif)/i.test(text.slice(0, 300))) {
-    return 'internship';
+    return "internship";
   }
 
   return undefined;
@@ -304,7 +339,7 @@ export function detectEmploymentType(text: string): 'full-time' | 'part-time' | 
 function extractText(html: string, selectors: string[]): string | undefined {
   // Create a temporary DOM parser
   const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
+  const doc = parser.parseFromString(html, "text/html");
 
   for (const selector of selectors) {
     try {
@@ -326,20 +361,13 @@ function extractText(html: string, selectors: string[]): string | undefined {
  */
 function extractFromMetaTags(html: string): Partial<ExtractedJobData> {
   const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
+  const doc = parser.parseFromString(html, "text/html");
   const data: Partial<ExtractedJobData> = {};
 
   // Try Open Graph and other meta tags
   const metaSelectors = {
-    position: [
-      'meta[property="og:title"]',
-      'meta[name="twitter:title"]',
-      'meta[name="title"]',
-    ],
-    companyName: [
-      'meta[property="og:site_name"]',
-      'meta[name="author"]',
-    ],
+    position: ['meta[property="og:title"]', 'meta[name="twitter:title"]', 'meta[name="title"]'],
+    companyName: ['meta[property="og:site_name"]', 'meta[name="author"]'],
     jobDescription: [
       'meta[property="og:description"]',
       'meta[name="description"]',
@@ -350,7 +378,7 @@ function extractFromMetaTags(html: string): Partial<ExtractedJobData> {
   for (const [field, selectors] of Object.entries(metaSelectors)) {
     for (const selector of selectors) {
       const meta = doc.querySelector(selector);
-      const content = meta?.getAttribute('content')?.trim();
+      const content = meta?.getAttribute("content")?.trim();
       if (content) {
         (data as Record<string, unknown>)[field] = content;
         break;
@@ -361,7 +389,7 @@ function extractFromMetaTags(html: string): Partial<ExtractedJobData> {
   // Split combined position/company patterns like "Job Title | Company Name" or "Job Title at Company"
   if (data.position && !data.companyName) {
     const combinedPatterns = [
-      /^(.+?)\s*\|\s*(.+?)$/,  // "Job Title | Company"
+      /^(.+?)\s*\|\s*(.+?)$/, // "Job Title | Company"
       /^(.+?)\s+at\s+(.+?)$/i, // "Job Title at Company"
       /^(.+?)\s*[-–—]\s*(.+?)$/, // "Job Title - Company"
     ];
@@ -390,8 +418,18 @@ function extractFromMetaTags(html: string): Partial<ExtractedJobData> {
     if (locationInTitle) {
       const [, cleanTitle, locationPart] = locationInTitle;
       // Check if location part looks like a country/state, not part of the job title
-      const locationIndicators = ['united states', 'usa', 'uk', 'canada', 'remote', 'california', 'new york', 'texas', 'florida'];
-      if (locationIndicators.some(loc => locationPart.toLowerCase().includes(loc))) {
+      const locationIndicators = [
+        "united states",
+        "usa",
+        "uk",
+        "canada",
+        "remote",
+        "california",
+        "new york",
+        "texas",
+        "florida",
+      ];
+      if (locationIndicators.some((loc) => locationPart.toLowerCase().includes(loc))) {
         data.position = cleanTitle.trim();
         if (!data.location) {
           data.location = locationPart.trim();
@@ -404,10 +442,12 @@ function extractFromMetaTags(html: string): Partial<ExtractedJobData> {
   const jsonLdScripts = doc.querySelectorAll('script[type="application/ld+json"]');
   for (const script of jsonLdScripts) {
     try {
-      const jsonData = JSON.parse(script.textContent || '');
+      const jsonData = JSON.parse(script.textContent || "");
       const jobPosting = Array.isArray(jsonData)
-        ? jsonData.find(item => item['@type'] === 'JobPosting')
-        : jsonData['@type'] === 'JobPosting' ? jsonData : null;
+        ? jsonData.find((item) => item["@type"] === "JobPosting")
+        : jsonData["@type"] === "JobPosting"
+          ? jsonData
+          : null;
 
       if (jobPosting) {
         data.position = data.position || jobPosting.title;
@@ -419,7 +459,7 @@ function extractFromMetaTags(html: string): Partial<ExtractedJobData> {
           const salary = jobPosting.baseSalary;
           data.salaryCurrency = salary.currency;
           if (salary.value) {
-            if (typeof salary.value === 'object') {
+            if (typeof salary.value === "object") {
               data.salaryMin = salary.value.minValue;
               data.salaryMax = salary.value.maxValue;
             } else {
@@ -436,8 +476,8 @@ function extractFromMetaTags(html: string): Partial<ExtractedJobData> {
           data.employmentType = detectEmploymentType(empType);
         }
 
-        if (jobPosting.jobLocationType === 'TELECOMMUTE') {
-          data.workType = 'remote';
+        if (jobPosting.jobLocationType === "TELECOMMUTE") {
+          data.workType = "remote";
         }
       }
     } catch {
@@ -447,7 +487,7 @@ function extractFromMetaTags(html: string): Partial<ExtractedJobData> {
 
   // Extract from page title as fallback
   if (!data.position) {
-    const title = doc.querySelector('title')?.textContent?.trim();
+    const title = doc.querySelector("title")?.textContent?.trim();
     if (title) {
       // Common patterns: "Job Title at Company" or "Job Title - Company"
       const match = title.match(/^(.+?)\s*(?:at|@|-|–|—|\|)\s*(.+?)(?:\s*[-|]|$)/);
@@ -471,7 +511,7 @@ function extractFromMetaTags(html: string): Partial<ExtractedJobData> {
 function findJobBoardPattern(url: string): JobBoardPattern | undefined {
   try {
     const hostname = new URL(url).hostname.toLowerCase();
-    return JOB_BOARD_PATTERNS.find(pattern => hostname.includes(pattern.domain));
+    return JOB_BOARD_PATTERNS.find((pattern) => hostname.includes(pattern.domain));
   } catch {
     return undefined;
   }
@@ -483,29 +523,27 @@ function findJobBoardPattern(url: string): JobBoardPattern | undefined {
 export function getSourceFromUrl(url: string): string {
   try {
     const hostname = new URL(url).hostname.toLowerCase();
-    const pattern = JOB_BOARD_PATTERNS.find(p => hostname.includes(p.domain));
+    const pattern = JOB_BOARD_PATTERNS.find((p) => hostname.includes(p.domain));
     if (pattern) return pattern.name;
 
     // Extract domain name
-    const parts = hostname.replace('www.', '').split('.');
+    const parts = hostname.replace("www.", "").split(".");
     return parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
   } catch {
-    return 'Web';
+    return "Web";
   }
 }
 
-// TODO: move fetch logic to a server-side /api/fetch-url route to eliminate
-// reliance on third-party CORS proxies (allorigins.win, corsproxy.io).
 /**
  * Fetch and parse job posting from URL
- * Uses a CORS proxy for cross-origin requests
+ * Uses the fetch-job-url Supabase edge function to retrieve HTML server-side
  */
 export async function fetchJobFromUrl(url: string): Promise<ExtractedJobData> {
   // Validate URL
   try {
     new URL(url);
   } catch {
-    throw new Error('Invalid URL format');
+    throw new Error("Invalid URL format");
   }
 
   const result: ExtractedJobData = {
@@ -514,53 +552,22 @@ export async function fetchJobFromUrl(url: string): Promise<ExtractedJobData> {
   };
 
   try {
-    // Try fetching directly first (works for same-origin or CORS-enabled sites)
-    let html: string;
-
-    try {
-      // Try direct fetch first
-      const response = await fetch(url, {
-        headers: {
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      html = await response.text();
-    } catch {
-      // Try using a public CORS proxy
-      const proxyUrls = [
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-        `https://corsproxy.io/?${encodeURIComponent(url)}`,
-      ];
-
-      let lastError: Error | null = null;
-
-      for (const proxyUrl of proxyUrls) {
-        try {
-          const response = await fetch(proxyUrl);
-          if (response.ok) {
-            html = await response.text();
-            break;
-          }
-        } catch (e) {
-          lastError = e as Error;
-        }
-      }
-
-      if (!html!) {
-        throw lastError || new Error('Failed to fetch URL');
-      }
+    const supabase = createClient();
+    const { data, error: fnError } = await supabase.functions.invoke("fetch-job-url", {
+      body: { url },
+    });
+    if (fnError || !data?.html) {
+      throw fnError ?? new Error("fetch-job-url returned no HTML");
     }
+    const html: string = data.html;
 
     // Find matching job board pattern
     const pattern = findJobBoardPattern(url);
+    console.log("found pattern %O", pattern);
 
     // Extract from meta tags and JSON-LD first (most reliable)
     const metaData = extractFromMetaTags(html);
+    console.log("found jsonLd and opoengraph data %O", metaData);
     Object.assign(result, metaData);
 
     // If we have a pattern, try to extract more specific data
@@ -587,16 +594,23 @@ export async function fetchJobFromUrl(url: string): Promise<ExtractedJobData> {
         result.jobDescription = extractText(html, pattern.selectors.description);
       }
     }
+    console.log("result after trying to extract from pattern %O", result);
 
     // Try generic selectors if we're still missing data
-    const genericSelectors: Record<keyof Pick<ExtractedJobData, 'position' | 'companyName' | 'location' | 'jobDescription'>, string[]> = {
-      position: ['h1', '.job-title', '[class*="job-title"]', '[class*="position"]'],
-      companyName: ['.company-name', '[class*="company"]', '[class*="employer"]'],
-      location: ['.location', '[class*="location"]', '[class*="address"]'],
-      jobDescription: ['.job-description', '[class*="description"]', '.content', 'article'],
+    const genericSelectors: Record<
+      keyof Pick<ExtractedJobData, "position" | "companyName" | "location" | "jobDescription">,
+      string[]
+    > = {
+      position: ["h1", ".job-title", '[class*="job-title"]', '[class*="position"]'],
+      companyName: [".company-name", '[class*="company"]', '[class*="employer"]'],
+      location: [".location", '[class*="location"]', '[class*="address"]'],
+      jobDescription: [".job-description", '[class*="description"]', ".content", "article"],
     };
 
-    for (const [field, selectors] of Object.entries(genericSelectors) as [keyof typeof genericSelectors, string[]][]) {
+    for (const [field, selectors] of Object.entries(genericSelectors) as [
+      keyof typeof genericSelectors,
+      string[],
+    ][]) {
       if (!result[field]) {
         const value = extractText(html, selectors);
         if (value) {
@@ -604,11 +618,12 @@ export async function fetchJobFromUrl(url: string): Promise<ExtractedJobData> {
         }
       }
     }
+    console.log("result after trying to extract using generic selectors %O", result);
 
     // Detect work type and employment type from all available text
     const fullText = [result.position, result.location, result.jobDescription, html]
       .filter(Boolean)
-      .join(' ');
+      .join(" ");
 
     if (!result.workType) {
       result.workType = detectWorkType(fullText);
@@ -634,15 +649,16 @@ export async function fetchJobFromUrl(url: string): Promise<ExtractedJobData> {
           if (salary.min && salary.max) {
             result.salaryMin = salary.min;
             result.salaryMax = salary.max;
-            result.salaryCurrency = salary.currency || 'USD';
+            result.salaryCurrency = salary.currency || "USD";
             break;
           }
         }
       }
     }
+    console.log("result after trying to detect specific fields from fulltext %O", result);
 
     // Try to extract location from common patterns if still UNAVAILABLE or missing
-    if (!result.location || result.location.toUpperCase() === 'UNAVAILABLE') {
+    if (!result.location || result.location.toUpperCase() === "UNAVAILABLE") {
       // Look for explicit location patterns in structured data
       const locationPatterns = [
         /Locations?:([\w\s,]+?)(?:Category|Job Type|Remote|Employment|$)/i,
@@ -653,11 +669,18 @@ export async function fetchJobFromUrl(url: string): Promise<ExtractedJobData> {
 
       for (const pattern of locationPatterns) {
         const match = pattern.exec(html);
-        if (match && match[1]) {
+        if (match?.[1]) {
           let location = match[1].trim();
           // Clean up common suffixes
-          location = location.replace(/\s*(Category|Job Type|Remote|Employment Type).*$/i, '').trim();
-          if (location && location.length > 2 && location.length < 100 && !/^(Category|Job|Remote|Employment)$/i.test(location)) {
+          location = location
+            .replace(/\s*(Category|Job Type|Remote|Employment Type).*$/i, "")
+            .trim();
+          if (
+            location &&
+            location.length > 2 &&
+            location.length < 100 &&
+            !/^(Category|Job|Remote|Employment)$/i.test(location)
+          ) {
             result.location = location;
             break;
           }
@@ -674,7 +697,7 @@ export async function fetchJobFromUrl(url: string): Promise<ExtractedJobData> {
 
       // Split combined patterns like "Software Engineer in United States | GitHub, Inc."
       const combinedPatterns = [
-        /^(.+?)\s*\|\s*(.+?)$/,  // "Job Title | Company"
+        /^(.+?)\s*\|\s*(.+?)$/, // "Job Title | Company"
         /^(.+?)\s+at\s+(.+?)$/i, // "Job Title at Company"
       ];
 
@@ -699,10 +722,23 @@ export async function fetchJobFromUrl(url: string): Promise<ExtractedJobData> {
       const locationInTitle = result.position.match(/^(.+?)\s+in\s+([\w\s]+)$/i);
       if (locationInTitle) {
         const [, cleanTitle, locationPart] = locationInTitle;
-        const locationIndicators = ['united states', 'usa', 'uk', 'canada', 'remote', 'california', 'new york', 'texas', 'florida', 'germany', 'india', 'australia'];
-        if (locationIndicators.some(loc => locationPart.toLowerCase().includes(loc))) {
+        const locationIndicators = [
+          "united states",
+          "usa",
+          "uk",
+          "canada",
+          "remote",
+          "california",
+          "new york",
+          "texas",
+          "florida",
+          "germany",
+          "india",
+          "australia",
+        ];
+        if (locationIndicators.some((loc) => locationPart.toLowerCase().includes(loc))) {
           result.position = cleanTitle.trim();
-          if (!result.location || result.location.toUpperCase() === 'UNAVAILABLE') {
+          if (!result.location || result.location.toUpperCase() === "UNAVAILABLE") {
             result.location = locationPart.trim();
           }
         }
@@ -711,15 +747,13 @@ export async function fetchJobFromUrl(url: string): Promise<ExtractedJobData> {
 
     // Clean up job description (remove excessive whitespace, limit length)
     if (result.jobDescription) {
-      result.jobDescription = result.jobDescription
-        .replace(/\s+/g, ' ')
-        .trim()
-        .slice(0, 5000); // Limit to 5000 chars
+      result.jobDescription = result.jobDescription.trim();
     }
+    console.log("final result after postprocessing %O", result);
 
     return result;
   } catch (error) {
-    console.error('Failed to fetch job from URL:', error);
+    console.error("Failed to fetch job from URL:", error);
     // Return basic data with just the URL
     return result;
   }
@@ -735,7 +769,7 @@ export function isLikelyJobUrl(url: string): boolean {
     const hostname = urlObj.hostname.toLowerCase();
 
     // Check if it's a known job board
-    if (JOB_BOARD_PATTERNS.some(p => hostname.includes(p.domain))) {
+    if (JOB_BOARD_PATTERNS.some((p) => hostname.includes(p.domain))) {
       return true;
     }
 
@@ -750,9 +784,10 @@ export function isLikelyJobUrl(url: string): boolean {
       /\/apply/,
       /\/vacancy/,
       /\/recruitment/,
+      /\/gh_jid/,
     ];
 
-    return jobPatterns.some(pattern => pattern.test(pathname));
+    return jobPatterns.some((pattern) => pattern.test(pathname));
   } catch {
     return false;
   }
