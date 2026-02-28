@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import type { SortingState } from "@tanstack/react-table";
-import { ChevronLeftIcon, ChevronRightIcon, PencilIcon, PlusIcon, ZapIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, LinkIcon, PencilIcon, PlusIcon, ZapIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { z } from "zod";
 import { ApplicationDetail } from "@/components/applications/application-detail";
@@ -13,6 +13,7 @@ import { ApplicationStats } from "@/components/applications/application-stats";
 import { ArchiveDialog } from "@/components/applications/archive-dialog";
 import { EasyAddForm } from "@/components/applications/easy-add-form";
 import { FullApplicationForm } from "@/components/applications/full-application-form";
+import { UrlImportDialog } from "@/components/applications/url-import-dialog";
 import { PageLayout } from "@/components/shared/page-layout";
 import { UniversalTable } from "@/components/shared/universal-table";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import type { ApplicationListItem, ApplicationWithCompany } from "@/lib/queries/applications";
 import { useApplication, useApplications } from "@/lib/queries/applications";
+import type { ExtractedJobData } from "@/lib/url-import";
 import type { TableSchema } from "@/schemas/table-schema";
 import { applicationTableSchema } from "@/schemas/table-schemas";
 
@@ -111,6 +113,8 @@ function ApplicationsPage() {
 
   const [formOpen, setFormOpen] = useState(false);
   const [easyAddOpen, setEasyAddOpen] = useState(false);
+  const [urlImportOpen, setUrlImportOpen] = useState(false);
+  const [importData, setImportData] = useState<ExtractedJobData | undefined>(undefined);
   const [editingApp, setEditingApp] = useState<ApplicationListItem | null>(null);
   const [editingSelectedApp, setEditingSelectedApp] = useState<ApplicationWithCompany | null>(null);
 
@@ -201,6 +205,11 @@ function ApplicationsPage() {
     [updateSearch],
   );
 
+  const handleImport = useCallback((data: ExtractedJobData) => {
+    setImportData(data);
+    setFormOpen(true);
+  }, []);
+
   return (
     <PageLayout
       detailPanel={selectedApp ? <ApplicationDetail application={selectedApp} /> : null}
@@ -238,7 +247,11 @@ function ApplicationsPage() {
               <ZapIcon className="size-4" />
               Easy Add
             </Button>
-            <Button onClick={() => setFormOpen(true)}>
+            <Button variant="outline" onClick={() => setUrlImportOpen(true)}>
+              <LinkIcon className="size-4" />
+              Import URL
+            </Button>
+            <Button onClick={() => { setImportData(undefined); setFormOpen(true); }}>
               <PlusIcon className="size-4" />
               New Application
             </Button>
@@ -320,8 +333,20 @@ function ApplicationsPage() {
         )}
 
         {/* Dialogs */}
-        <FullApplicationForm open={formOpen} onOpenChange={setFormOpen} />
+        <FullApplicationForm
+          open={formOpen}
+          onOpenChange={(open) => {
+            setFormOpen(open);
+            if (!open) setImportData(undefined);
+          }}
+          importData={importData}
+        />
         <EasyAddForm open={easyAddOpen} onOpenChange={setEasyAddOpen} />
+        <UrlImportDialog
+          open={urlImportOpen}
+          onOpenChange={setUrlImportOpen}
+          onImport={handleImport}
+        />
         <ApplicationForm
           open={!!editingApp}
           onOpenChange={(open) => {
