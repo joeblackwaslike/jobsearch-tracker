@@ -211,6 +211,7 @@ export function FullApplicationForm({
   }, [open, reset, prefill, importData, defaultStatus]);
 
   // Auto-create company when form opens with importData.companyName
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally omit createCompany/setValue — stable refs, re-running on every render would cause infinite loops
   useEffect(() => {
     if (!open || !importData?.companyName) return;
 
@@ -218,7 +219,7 @@ export function FullApplicationForm({
 
     async function autoCreate() {
       try {
-        const result = await createCompany.mutateAsync({ name: importData!.companyName! });
+        const result = await createCompany.mutateAsync({ name: importData?.companyName ?? "" });
         if (!cancelled) {
           setValue("company_id", result.id, { shouldValidate: true });
           setValue("company_name", result.name);
@@ -232,7 +233,6 @@ export function FullApplicationForm({
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, importData?.companyName]);
 
   const selectedCompany = watch("company_id")

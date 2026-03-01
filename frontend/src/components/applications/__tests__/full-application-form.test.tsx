@@ -3,7 +3,9 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor } from "@/test/test-utils";
 import { FullApplicationForm } from "../full-application-form";
 
-const mockCreateCompanyMutateAsync = vi.fn().mockResolvedValue({ id: "company-1", name: "Acme Corp" });
+const mockCreateCompanyMutateAsync = vi
+  .fn()
+  .mockResolvedValue({ id: "company-1", name: "Acme Corp" });
 
 vi.mock("@/lib/queries/applications", () => ({
   useCreateApplication: () => ({

@@ -74,11 +74,7 @@ export function CityMultiCombobox({ value, onChange }: CityMultiComboboxProps) {
         </PopoverTrigger>
         <PopoverContent className="w-full p-0" align="start">
           <Command shouldFilter={false}>
-            <CommandInput
-              placeholder="Search city..."
-              value={search}
-              onValueChange={setSearch}
-            />
+            <CommandInput placeholder="Search city..." value={search} onValueChange={setSearch} />
             <CommandList className="max-h-[300px] overflow-y-auto">
               <CommandEmpty>
                 {search ? (
@@ -97,11 +93,7 @@ export function CityMultiCombobox({ value, onChange }: CityMultiComboboxProps) {
               </CommandEmpty>
               <CommandGroup>
                 {filtered.map((city) => (
-                  <CommandItem
-                    key={city}
-                    value={city}
-                    onSelect={() => handleSelect(city)}
-                  >
+                  <CommandItem key={city} value={city} onSelect={() => handleSelect(city)}>
                     <CheckIcon
                       className={cn(
                         "mr-2 size-4",
