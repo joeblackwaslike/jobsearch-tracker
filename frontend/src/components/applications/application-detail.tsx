@@ -167,12 +167,18 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
                   <dd>{capitalize(application.employment_type)}</dd>
                 </div>
               )}
-              {(application.locations as string[] | null)?.length && (
+              {(application.locations as string[] | null)?.length ? (
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Location</dt>
-                  <dd>{(application.locations as string[]).join(", ")}</dd>
+                  <dd className="flex flex-wrap gap-1">
+                    {(application.locations as string[]).map((loc) => (
+                      <Badge key={loc} variant="outline" className="text-xs font-normal">
+                        {loc}
+                      </Badge>
+                    ))}
+                  </dd>
                 </div>
-              )}
+              ) : null}
               {salary && (
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Salary</dt>
