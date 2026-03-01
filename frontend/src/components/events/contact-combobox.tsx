@@ -70,7 +70,6 @@ export function ContactCombobox({
     return () => clearTimeout(timer);
   }, [searchText]);
 
-
   useEffect(() => {
     if (creating) {
       const timer = setTimeout(() => newContactNameRef.current?.focus(), 0);

@@ -24,7 +24,14 @@ interface DetailLayoutProps {
   defaultTab: string;
 }
 
-export function DetailLayout({ icon, name, meta = [], badges, tabs, defaultTab }: DetailLayoutProps) {
+export function DetailLayout({
+  icon,
+  name,
+  meta = [],
+  badges,
+  tabs,
+  defaultTab,
+}: DetailLayoutProps) {
   return (
     <div className="space-y-4">
       {/* Header */}

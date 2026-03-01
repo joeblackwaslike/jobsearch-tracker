@@ -6,7 +6,6 @@ import { z } from "zod";
 import { ContactCombobox } from "@/components/events/contact-combobox";
 import { DurationCombobox } from "@/components/events/duration-combobox";
 import { Button } from "@/components/ui/button";
-import { DatePickerField } from "@/components/ui/date-picker-field";
 import {
   Command,
   CommandEmpty,
@@ -15,6 +14,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { DatePickerField } from "@/components/ui/date-picker-field";
 import {
   Dialog,
   DialogContent,
@@ -26,6 +26,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -33,7 +34,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { UrlInput } from "@/components/ui/url-input";
 import { type ApplicationListItem, useApplications } from "@/lib/queries/applications";
 import type { Contact } from "@/lib/queries/contacts";
@@ -234,196 +234,196 @@ export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialog
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <ScrollArea className="max-h-[calc(85vh-10rem)] pr-3">
-          <div className="space-y-4 py-4">
-            {/* Application selector */}
-            <div className="space-y-2">
-              <Label>Application *</Label>
-              <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={comboboxOpen}
-                    className="w-full justify-between font-normal"
-                  >
-                    {selectedApp
-                      ? `${selectedApp.company?.name} - ${selectedApp.position}`
-                      : "Select application..."}
-                    <ChevronsUpDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                  <Command shouldFilter={false}>
-                    <CommandInput
-                      placeholder="Search by position or company..."
-                      value={appSearch}
-                      onValueChange={setAppSearch}
+            <div className="space-y-4 py-4">
+              {/* Application selector */}
+              <div className="space-y-2">
+                <Label>Application *</Label>
+                <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={comboboxOpen}
+                      className="w-full justify-between font-normal"
+                    >
+                      {selectedApp
+                        ? `${selectedApp.company?.name} - ${selectedApp.position}`
+                        : "Select application..."}
+                      <ChevronsUpDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                    <Command shouldFilter={false}>
+                      <CommandInput
+                        placeholder="Search by position or company..."
+                        value={appSearch}
+                        onValueChange={setAppSearch}
+                      />
+                      <CommandList>
+                        <CommandEmpty>No applications found.</CommandEmpty>
+                        <CommandGroup>
+                          {applications.map((app: ApplicationListItem) => (
+                            <CommandItem
+                              key={app.id}
+                              value={app.id}
+                              onSelect={(val) => {
+                                setValue("application_id", val, {
+                                  shouldValidate: true,
+                                });
+                                setComboboxOpen(false);
+                              }}
+                            >
+                              <CheckIcon
+                                className={cn(
+                                  "mr-2 size-4",
+                                  selectedAppId === app.id ? "opacity-100" : "opacity-0",
+                                )}
+                              />
+                              <span className="truncate">
+                                {app.company?.name} - {app.position}
+                              </span>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+                {errors.application_id && (
+                  <p className="text-sm text-destructive">{errors.application_id.message}</p>
+                )}
+              </div>
+
+              {/* Type */}
+              <div className="space-y-2">
+                <Label>Type *</Label>
+                <Select
+                  value={watch("type") ?? "screening-interview"}
+                  onValueChange={(v) => setValue("type", v, { shouldValidate: true })}
+                >
+                  <SelectTrigger className="w-full" aria-label="Type">
+                    <SelectValue placeholder="Select event type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {EVENT_TYPE_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.type && <p className="text-sm text-destructive">{errors.type.message}</p>}
+              </div>
+
+              {/* Status */}
+              <div className="space-y-2">
+                <Label>Status</Label>
+                <Select
+                  value={watch("status") ?? "availability-requested"}
+                  onValueChange={(v) => setValue("status", v)}
+                >
+                  <SelectTrigger className="w-full" aria-label="Status">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {EVENT_STATUS_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Date & Time */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Date</Label>
+                  <DatePickerField
+                    value={watch("date") ?? ""}
+                    onChange={(v) => setValue("date", v, { shouldValidate: true })}
+                    placeholder="Pick a date"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="schedule-time">Time</Label>
+                  <Input
+                    id="schedule-time"
+                    type="time"
+                    className="[&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-datetime-edit-fields-wrapper]:p-0"
+                    {...register("time")}
+                  />
+                </div>
+              </div>
+
+              {/* Duration */}
+              <div className="space-y-2">
+                <Label>Duration</Label>
+                <DurationCombobox
+                  value={watch("duration_minutes")}
+                  onChange={(v) => setValue("duration_minutes", v)}
+                />
+              </div>
+
+              {/* URL */}
+              <div className="space-y-2">
+                <Label>Meeting URL</Label>
+                <Controller
+                  name="url"
+                  control={control}
+                  render={({ field }) => (
+                    <UrlInput
+                      id="schedule-url"
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="https://..."
                     />
-                    <CommandList>
-                      <CommandEmpty>No applications found.</CommandEmpty>
-                      <CommandGroup>
-                        {applications.map((app: ApplicationListItem) => (
-                          <CommandItem
-                            key={app.id}
-                            value={app.id}
-                            onSelect={(val) => {
-                              setValue("application_id", val, {
-                                shouldValidate: true,
-                              });
-                              setComboboxOpen(false);
-                            }}
-                          >
-                            <CheckIcon
-                              className={cn(
-                                "mr-2 size-4",
-                                selectedAppId === app.id ? "opacity-100" : "opacity-0",
-                              )}
-                            />
-                            <span className="truncate">
-                              {app.company?.name} - {app.position}
-                            </span>
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              {errors.application_id && (
-                <p className="text-sm text-destructive">{errors.application_id.message}</p>
+                  )}
+                />
+              </div>
+
+              {/* Title */}
+              <div className="space-y-2">
+                <Label htmlFor="schedule-title">Title</Label>
+                <Input id="schedule-title" placeholder={titlePlaceholder} {...register("title")} />
+              </div>
+
+              {/* Description */}
+              <div className="space-y-2">
+                <Label htmlFor="schedule-description">Description</Label>
+                <Input
+                  id="schedule-description"
+                  placeholder="Description of event"
+                  {...register("description")}
+                />
+              </div>
+
+              {/* Notes */}
+              <div className="space-y-2">
+                <Label htmlFor="schedule-notes">Notes</Label>
+                <textarea
+                  id="schedule-notes"
+                  className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  placeholder="Notes about this event..."
+                  {...register("notes")}
+                />
+              </div>
+
+              {/* Contacts */}
+              {companyId && (
+                <div className="space-y-2">
+                  <Label>Contacts</Label>
+                  <ContactCombobox
+                    companyId={companyId}
+                    selectedContactIds={selectedContacts.map((c) => c.id)}
+                    selectedContacts={selectedContacts}
+                    onAdd={handleAddContact}
+                    onRemove={handleRemoveContact}
+                  />
+                </div>
               )}
             </div>
-
-            {/* Type */}
-            <div className="space-y-2">
-              <Label>Type *</Label>
-              <Select
-                value={watch("type") ?? "screening-interview"}
-                onValueChange={(v) => setValue("type", v, { shouldValidate: true })}
-              >
-                <SelectTrigger className="w-full" aria-label="Type">
-                  <SelectValue placeholder="Select event type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {EVENT_TYPE_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.type && <p className="text-sm text-destructive">{errors.type.message}</p>}
-            </div>
-
-            {/* Status */}
-            <div className="space-y-2">
-              <Label>Status</Label>
-              <Select
-                value={watch("status") ?? "availability-requested"}
-                onValueChange={(v) => setValue("status", v)}
-              >
-                <SelectTrigger className="w-full" aria-label="Status">
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  {EVENT_STATUS_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Date & Time */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Date</Label>
-                <DatePickerField
-                  value={watch("date") ?? ""}
-                  onChange={(v) => setValue("date", v, { shouldValidate: true })}
-                  placeholder="Pick a date"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="schedule-time">Time</Label>
-                <Input
-                  id="schedule-time"
-                  type="time"
-                  className="[&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-datetime-edit-fields-wrapper]:p-0"
-                  {...register("time")}
-                />
-              </div>
-            </div>
-
-            {/* Duration */}
-            <div className="space-y-2">
-              <Label>Duration</Label>
-              <DurationCombobox
-                value={watch("duration_minutes")}
-                onChange={(v) => setValue("duration_minutes", v)}
-              />
-            </div>
-
-            {/* URL */}
-            <div className="space-y-2">
-              <Label>Meeting URL</Label>
-              <Controller
-                name="url"
-                control={control}
-                render={({ field }) => (
-                  <UrlInput
-                    id="schedule-url"
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder="https://..."
-                  />
-                )}
-              />
-            </div>
-
-            {/* Title */}
-            <div className="space-y-2">
-              <Label htmlFor="schedule-title">Title</Label>
-              <Input id="schedule-title" placeholder={titlePlaceholder} {...register("title")} />
-            </div>
-
-            {/* Description */}
-            <div className="space-y-2">
-              <Label htmlFor="schedule-description">Description</Label>
-              <Input
-                id="schedule-description"
-                placeholder="Description of event"
-                {...register("description")}
-              />
-            </div>
-
-            {/* Notes */}
-            <div className="space-y-2">
-              <Label htmlFor="schedule-notes">Notes</Label>
-              <textarea
-                id="schedule-notes"
-                className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                placeholder="Notes about this event..."
-                {...register("notes")}
-              />
-            </div>
-
-            {/* Contacts */}
-            {companyId && (
-              <div className="space-y-2">
-                <Label>Contacts</Label>
-                <ContactCombobox
-                  companyId={companyId}
-                  selectedContactIds={selectedContacts.map((c) => c.id)}
-                  selectedContacts={selectedContacts}
-                  onAdd={handleAddContact}
-                  onRemove={handleRemoveContact}
-                />
-              </div>
-            )}
-          </div>
           </ScrollArea>
 
           <DialogFooter>

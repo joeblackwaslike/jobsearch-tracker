@@ -2,6 +2,7 @@ docs/source
 docs/backlog.md
 docs/next-iteration.md
 .worktrees/
+node_modules/
 # From https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore
 
 # Byte-compiled / optimized / DLL files

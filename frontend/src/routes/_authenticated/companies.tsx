@@ -39,9 +39,9 @@ const PAGE_SIZE = 20;
 // ---------------------------------------------------------------------------
 
 export const Route = createFileRoute("/_authenticated/companies")({
-validateSearch: (search: Record<string, unknown>): CompaniesSearch => ({
-  search: (search.search as string) || undefined,
-  detail: (search.detail as string) || undefined,
+  validateSearch: (search: Record<string, unknown>): CompaniesSearch => ({
+    search: (search.search as string) || undefined,
+    detail: (search.detail as string) || undefined,
   }),
   component: CompaniesPage,
 });
@@ -123,7 +123,10 @@ function CompaniesPage() {
     <PageLayout
       detailPanel={selectedCompany ? <CompanyDetail company={selectedCompany} /> : null}
       onDetailClose={() =>
-        navigate({ to: "/companies", search: (prev: CompaniesSearch) => ({ ...prev, detail: undefined }) })
+        navigate({
+          to: "/companies",
+          search: (prev: CompaniesSearch) => ({ ...prev, detail: undefined }),
+        })
       }
       detailHeaderActions={
         selectedCompany ? (
@@ -231,32 +234,35 @@ function CompaniesPage() {
           data={companies}
           schema={companyTableSchema as unknown as TableSchema<Company>}
           onRowClick={(company) =>
-            navigate({ to: "/companies", search: (prev: CompaniesSearch) => ({ ...prev, detail: (company as Company).id }) })
+            navigate({
+              to: "/companies",
+              search: (prev: CompaniesSearch) => ({ ...prev, detail: (company as Company).id }),
+            })
           }
           selectedId={searchParams.detail ?? null}
           rowActions={(company) => (
             <>
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              aria-label="Edit company"
-              onClick={(e) => {
-                e.stopPropagation();
-                setFormMode("edit");
-                setEditingCompany(company as Company);
-                setFormOpen(true);
-              }}
-            >
-              <PencilIcon className="size-3.5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              aria-label="Archive company"
-              onClick={() => archiveCompany.mutate((company as Company).id)}
-            >
-              <ArchiveIcon className="size-3.5" />
-            </Button>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                aria-label="Edit company"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFormMode("edit");
+                  setEditingCompany(company as Company);
+                  setFormOpen(true);
+                }}
+              >
+                <PencilIcon className="size-3.5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                aria-label="Archive company"
+                onClick={() => archiveCompany.mutate((company as Company).id)}
+              >
+                <ArchiveIcon className="size-3.5" />
+              </Button>
             </>
           )}
         />

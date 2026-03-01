@@ -90,7 +90,10 @@ describe("CompanyDetail", () => {
       <CompanyDetail
         company={{
           ...mockCompany,
-          links: { website: "https://example.com", careers: "https://example.com/jobs" } as unknown as null,
+          links: {
+            website: "https://example.com",
+            careers: "https://example.com/jobs",
+          } as unknown as null,
         }}
       />,
     );

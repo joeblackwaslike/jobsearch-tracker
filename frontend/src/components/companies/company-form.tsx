@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { CityCombobox } from "@/components/applications/city-combobox";
-import { IndustryCombobox } from "./industry-combobox";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -29,6 +28,7 @@ import { TagInput } from "@/components/ui/tag-input";
 import { UrlInput } from "@/components/ui/url-input";
 import { type Company, useCreateCompany, useUpdateCompany } from "@/lib/queries/companies";
 import { CompanyContacts } from "./company-contacts";
+import { IndustryCombobox } from "./industry-combobox";
 
 // ---------------------------------------------------------------------------
 // Schema

@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import {
   Briefcase,
   Building2,
@@ -10,14 +11,13 @@ import {
   TrendingUp,
 } from "lucide-react";
 import type React from "react";
-import { useNavigate } from "@tanstack/react-router";
-import { useApplicationsByCompany } from "@/lib/queries/applications";
-import { Badge } from "@/components/ui/badge";
 import { DetailLayout } from "@/components/shared/detail-layout";
-import { formatDate } from "@/lib/formatters";
-import { cn } from "@/lib/utils";
-import type { Company } from "@/lib/queries/companies";
+import { Badge } from "@/components/ui/badge";
 import { MarkdownContent } from "@/components/ui/markdown-content";
+import { formatDate } from "@/lib/formatters";
+import { useApplicationsByCompany } from "@/lib/queries/applications";
+import type { Company } from "@/lib/queries/companies";
+import { cn } from "@/lib/utils";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -95,9 +95,10 @@ function OverviewTab({ company }: { company: Company }) {
   const quality = qualityLabel(pct);
   const ratingsRaw = company.ratings as Record<string, unknown> | null;
   const ratings = ratingsRaw
-    ? (Object.fromEntries(
-        Object.entries(ratingsRaw).map(([k, v]) => [k, Number(v)]),
-      ) as Record<string, number>)
+    ? (Object.fromEntries(Object.entries(ratingsRaw).map(([k, v]) => [k, Number(v)])) as Record<
+        string,
+        number
+      >)
     : null;
 
   return (
@@ -394,7 +395,6 @@ export function CompanyDetail({ company }: CompanyDetailProps) {
     <Badge className="bg-foreground text-background text-xs">Researched</Badge>
   ) : null;
 
-
   const tabs = [
     {
       id: "overview",
@@ -412,9 +412,7 @@ export function CompanyDetail({ company }: CompanyDetailProps) {
       content: (
         <AppsTab
           apps={apps}
-          onAppClick={(appId) =>
-            navigate({ to: "/applications", search: { detail: appId } })
-          }
+          onAppClick={(appId) => navigate({ to: "/applications", search: { detail: appId } })}
         />
       ),
     },

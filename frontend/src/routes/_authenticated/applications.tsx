@@ -1,6 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import type { SortingState } from "@tanstack/react-table";
-import { ChevronLeftIcon, ChevronRightIcon, LinkIcon, PencilIcon, PlusIcon, ZapIcon } from "lucide-react";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  LinkIcon,
+  PencilIcon,
+  PlusIcon,
+  ZapIcon,
+} from "lucide-react";
 import { useCallback, useState } from "react";
 import { z } from "zod";
 import { ApplicationDetail } from "@/components/applications/application-detail";
@@ -214,7 +221,11 @@ function ApplicationsPage() {
     <PageLayout
       detailPanel={selectedApp ? <ApplicationDetail application={selectedApp} /> : null}
       onDetailClose={() =>
-        navigate({ to: "/applications", search: (prev: ApplicationsSearch) => ({ ...prev, detail: undefined }), replace: true })
+        navigate({
+          to: "/applications",
+          search: (prev: ApplicationsSearch) => ({ ...prev, detail: undefined }),
+          replace: true,
+        })
       }
       detailWidth="lg"
       detailHeaderActions={
@@ -251,7 +262,12 @@ function ApplicationsPage() {
               <LinkIcon className="size-4" />
               Import URL
             </Button>
-            <Button onClick={() => { setImportData(undefined); setFormOpen(true); }}>
+            <Button
+              onClick={() => {
+                setImportData(undefined);
+                setFormOpen(true);
+              }}
+            >
               <PlusIcon className="size-4" />
               New Application
             </Button>
@@ -276,14 +292,24 @@ function ApplicationsPage() {
           sorting={sorting}
           onSortingChange={handleSortingChange}
           onRowClick={(app) =>
-            navigate({ to: "/applications", search: (prev: ApplicationsSearch) => ({ ...prev, detail: (app as ApplicationListItem).id }) })
+            navigate({
+              to: "/applications",
+              search: (prev: ApplicationsSearch) => ({
+                ...prev,
+                detail: (app as ApplicationListItem).id,
+              }),
+            })
           }
           selectedId={searchParams.detail ?? null}
           rowActions={(app) => (
             <ArchiveDialog
               applicationId={(app as ApplicationListItem).id}
               onArchived={() =>
-                navigate({ to: "/applications", search: (prev: ApplicationsSearch) => ({ ...prev, detail: undefined }), replace: true })
+                navigate({
+                  to: "/applications",
+                  search: (prev: ApplicationsSearch) => ({ ...prev, detail: undefined }),
+                  replace: true,
+                })
               }
             />
           )}

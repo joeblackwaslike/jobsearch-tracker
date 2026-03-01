@@ -204,7 +204,7 @@ export const companyTableSchema = {
           {data.researched ? "Yes" : "No"}
         </Badge>
       ),
-    }
+    },
   ],
 } as const;
 
