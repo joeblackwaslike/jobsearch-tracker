@@ -30,6 +30,11 @@ vi.mock("@/lib/queries/documents", () => ({
     queryFn: vi.fn(() => []),
   })),
 }));
+vi.mock("@/components/documents/document-type-picker", () => ({
+  DocumentTypePicker: ({ value }: { value: string | null }) => (
+    <div data-testid="document-type-picker" data-value={value ?? "__none__"} />
+  ),
+}));
 
 describe("FullApplicationForm", () => {
   it("renders with title New Application", () => {
@@ -47,13 +52,12 @@ describe("FullApplicationForm", () => {
 });
 
 describe("resume auto-fill and label", () => {
-  it("does NOT pre-populate resume from localStorage on open", () => {
+  it("DOES pre-populate resume from localStorage on open", () => {
     localStorage.setItem("tracker:default_resume_id", "some-doc-id");
     render(<FullApplicationForm open={true} onOpenChange={vi.fn()} />);
-    // DocumentTypePicker value should be null (showing "None"), not the stored ID
-    const _picker = document.querySelector("select, [role='combobox']");
-    // The resume picker should not show a pre-selected document
-    expect(screen.queryByText("some-doc-id")).not.toBeInTheDocument();
+    // DocumentTypePicker should receive the stored id as its value prop.
+    const picker = screen.getByTestId("document-type-picker");
+    expect(picker).toHaveAttribute("data-value", "some-doc-id");
   });
 
   it("does not render a 'Resume' label in the Documents section", () => {
