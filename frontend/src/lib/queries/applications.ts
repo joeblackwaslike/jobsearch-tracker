@@ -61,7 +61,18 @@ export function applicationsQueryOptions(filters: ApplicationsFilters = {}) {
   return queryOptions({
     queryKey: [
       "applications",
-      { search, status, interest, workType, employmentType, companyId, includeArchived, page, pageSize, sort },
+      {
+        search,
+        status,
+        interest,
+        workType,
+        employmentType,
+        companyId,
+        includeArchived,
+        page,
+        pageSize,
+        sort,
+      },
     ],
     queryFn: async () => {
       let query = supabase
@@ -74,7 +85,7 @@ export function applicationsQueryOptions(filters: ApplicationsFilters = {}) {
       }
 
       if (search) {
-        query = query.or(`position.ilike.%${search}%,location.ilike.%${search}%`);
+        query = query.ilike("position", `%${search}%`);
       }
 
       if (status) {

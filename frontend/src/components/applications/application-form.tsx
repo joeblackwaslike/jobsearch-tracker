@@ -114,7 +114,7 @@ function applicationToFormValues(app: ApplicationWithCompany): ApplicationFormVa
     status: app.status,
     work_type: app.work_type ?? "",
     employment_type: app.employment_type ?? "full-time",
-    location: app.location ?? "",
+    location: (app.locations as string[] | null)?.[0] ?? "",
     salary: {
       min: salary.min ? Number(salary.min) : undefined,
       max: salary.max ? Number(salary.max) : undefined,
@@ -142,7 +142,7 @@ function formValuesToPayload(values: ApplicationFormValues) {
     status: values.status,
     work_type: values.work_type || null,
     employment_type: values.employment_type || null,
-    location: values.location || null,
+    locations: values.location ? [values.location] : undefined,
     salary: Object.keys(salary).length > 0 ? (salary as Record<string, string | number>) : null,
     job_description: values.job_description || null,
     interest: values.interest || null,

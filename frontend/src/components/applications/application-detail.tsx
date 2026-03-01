@@ -11,8 +11,8 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { MarkdownContent } from "@/components/ui/markdown-content";
+import { Separator } from "@/components/ui/separator";
 import type { ApplicationWithCompany } from "@/lib/queries/applications";
 import { useEvents } from "@/lib/queries/events";
 import { AddEventDialog } from "./add-event-dialog";
@@ -137,10 +137,7 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
         {/* Action buttons */}
         <div className="flex items-center gap-2 flex-wrap">
           <Button variant="outline" size="sm" asChild>
-            <Link
-              to="/companies"
-              search={{ detail: application.company_id }}
-            >
+            <Link to="/companies" search={{ detail: application.company_id }}>
               <BuildingIcon className="size-4" />
               View Company
             </Link>
@@ -170,10 +167,10 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
                   <dd>{capitalize(application.employment_type)}</dd>
                 </div>
               )}
-              {application.location && (
+              {(application.locations as string[] | null)?.length && (
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Location</dt>
-                  <dd>{application.location}</dd>
+                  <dd>{(application.locations as string[]).join(", ")}</dd>
                 </div>
               )}
               {salary && (
@@ -266,7 +263,9 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
               </div>
               <div className="flex-1 pb-6">
                 <p className="text-sm font-medium">Bookmarked</p>
-                <p className="text-xs text-muted-foreground">{formatDate(application.created_at)}</p>
+                <p className="text-xs text-muted-foreground">
+                  {formatDate(application.created_at)}
+                </p>
               </div>
             </div>
           )}
@@ -279,7 +278,9 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
               </div>
               <div className="flex-1 pb-6">
                 <p className="text-sm font-medium">Applied</p>
-                <p className="text-xs text-muted-foreground">{formatDate(application.applied_at)}</p>
+                <p className="text-xs text-muted-foreground">
+                  {formatDate(application.applied_at)}
+                </p>
               </div>
             </div>
           )}
@@ -288,7 +289,11 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
         {eventsLoading ? (
           <p className="text-sm text-muted-foreground">Loading events...</p>
         ) : (
-          <EventTimeline events={events} applicationId={application.id} companyId={application.company_id} />
+          <EventTimeline
+            events={events}
+            applicationId={application.id}
+            companyId={application.company_id}
+          />
         )}
       </div>
 

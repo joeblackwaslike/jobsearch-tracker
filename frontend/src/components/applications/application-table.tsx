@@ -165,11 +165,13 @@ function createColumns(
       },
     },
     {
-      accessorKey: "location",
+      accessorKey: "locations",
       header: "Location",
       enableSorting: false,
       cell: ({ row }) => (
-        <span className="text-muted-foreground">{row.original.location || "-"}</span>
+        <span className="text-muted-foreground">
+          {(row.original.locations as string[] | null)?.join(", ") || "-"}
+        </span>
       ),
     },
     {

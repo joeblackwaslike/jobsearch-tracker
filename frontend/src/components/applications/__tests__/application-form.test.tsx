@@ -73,7 +73,7 @@ const mockApplication = {
   status: "applied",
   work_type: "remote",
   employment_type: "full-time",
-  location: "San Francisco, CA",
+  locations: ["San Francisco, CA"],
   salary: { min: 100000, max: 150000, currency: "USD", period: "yearly" },
   job_description: "Great job",
   interest: "high",

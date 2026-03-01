@@ -71,7 +71,7 @@ const mockApplication = {
   status: "applied",
   work_type: "remote",
   employment_type: "full-time",
-  location: "San Francisco, CA",
+  locations: ["San Francisco, CA"],
   salary: {
     min: 120000,
     max: 180000,
@@ -208,9 +208,7 @@ describe("ApplicationDetail", () => {
   it("does not render 'Applied' milestone when applied_at is null", () => {
     render(<ApplicationDetail application={mockApplication} />);
     // mockApplication.applied_at is null — no Applied milestone paragraph (badge text is separate)
-    const appliedMilestones = screen
-      .queryAllByText("Applied")
-      .filter((el) => el.tagName === "P");
+    const appliedMilestones = screen.queryAllByText("Applied").filter((el) => el.tagName === "P");
     expect(appliedMilestones).toHaveLength(0);
   });
 
@@ -221,9 +219,7 @@ describe("ApplicationDetail", () => {
     };
     render(<ApplicationDetail application={appliedApp} />);
     // Find the timeline milestone paragraph (distinct from the status badge)
-    const appliedMilestones = screen
-      .getAllByText("Applied")
-      .filter((el) => el.tagName === "P");
+    const appliedMilestones = screen.getAllByText("Applied").filter((el) => el.tagName === "P");
     expect(appliedMilestones).toHaveLength(1);
     expect(appliedMilestones[0]).toBeVisible();
     // Date appears in both Details card and milestone; check at least one is visible

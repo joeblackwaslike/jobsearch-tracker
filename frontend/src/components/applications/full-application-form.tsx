@@ -125,7 +125,7 @@ function formValuesToPayload(values: FullApplicationValues) {
     status: values.status,
     work_type: values.work_type || null,
     employment_type: values.employment_type || null,
-    location: values.location || null,
+    locations: values.location ? [values.location] : undefined,
     salary: Object.keys(salary).length > 0 ? (salary as Record<string, string | number>) : null,
     job_description: values.job_description || null,
     interest: values.interest || null,
