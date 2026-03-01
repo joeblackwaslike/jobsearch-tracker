@@ -32,7 +32,7 @@ import type { Company } from "@/lib/queries/companies";
 import { useCreateCompany } from "@/lib/queries/companies";
 import { useSnapshotDocument } from "@/lib/queries/documents";
 import { type ExtractedJobData, getSourceFromUrl } from "@/lib/url-import";
-import { CityCombobox } from "./city-combobox";
+import { CityMultiCombobox } from "./city-multi-combobox";
 import { CompanyCombobox } from "./company-combobox";
 import { SourceCombobox } from "./source-combobox";
 
@@ -82,7 +82,7 @@ const fullApplicationSchema = z.object({
   status: z.string().default("applied"),
   work_type: z.string().default(""),
   employment_type: z.string().default("full-time"),
-  location: z.string().default(""),
+  locations: z.array(z.string()).default([]),
   salary: salarySchema.default({ currency: "USD", period: "yearly" }),
   job_description: z.string().default(""),
   interest: z.string().default("medium"),
@@ -125,7 +125,7 @@ function formValuesToPayload(values: FullApplicationValues) {
     status: values.status,
     work_type: values.work_type || null,
     employment_type: values.employment_type || null,
-    locations: values.location ? [values.location] : undefined,
+    locations: values.locations ?? [],
     salary: Object.keys(salary).length > 0 ? (salary as Record<string, string | number>) : null,
     job_description: values.job_description || null,
     interest: values.interest || null,
@@ -173,7 +173,7 @@ export function FullApplicationForm({
       status: defaultStatus ?? "applied",
       work_type: "",
       employment_type: "full-time",
-      location: "",
+      locations: importData?.locations ?? [],
       salary: { currency: "USD", period: "yearly" },
       job_description: "",
       interest: "medium",
@@ -193,7 +193,7 @@ export function FullApplicationForm({
         status: defaultStatus ?? "applied",
         work_type: importData?.workType ?? "",
         employment_type: importData?.employmentType ?? "full-time",
-        location: importData?.locations?.[0] ?? "",
+        locations: importData?.locations ?? [],
         salary: {
           min: importData?.salaryMin,
           max: importData?.salaryMax,
@@ -417,9 +417,9 @@ export function FullApplicationForm({
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Location</Label>
-                    <CityCombobox
-                      value={watch("location") ?? ""}
-                      onChange={(v) => setValue("location", v)}
+                    <CityMultiCombobox
+                      value={watch("locations") ?? []}
+                      onChange={(v) => setValue("locations", v)}
                     />
                   </div>
                   <div className="space-y-2">
