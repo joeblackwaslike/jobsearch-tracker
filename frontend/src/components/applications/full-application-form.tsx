@@ -206,7 +206,7 @@ export function FullApplicationForm({
         tags: [],
         notes: "",
       });
-      setSelectedResumeId(null);
+      setSelectedResumeId(localStorage.getItem("tracker:default_resume_id"));
     }
   }, [open, reset, prefill, importData, defaultStatus]);
 
