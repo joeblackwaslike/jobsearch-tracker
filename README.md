@@ -1,4 +1,4 @@
-# THRIVE — Job Search Tracker
+# `jobsearch-tracker`
 
 A full-featured job search tracking application to manage applications, companies, interviews, documents, and contacts from a single dashboard.
 
@@ -38,23 +38,17 @@ A full-featured job search tracking application to manage applications, companie
 ```bash
 git clone https://github.com/joeblackwaslike/jobsearch-tracker.git
 cd jobsearch-tracker
-make install
+pnpm install
 ```
 
-### 2. Start Supabase
-
-```bash
-make db-start
-```
-
-This starts local Postgres, Auth, Storage, and Studio services via Docker. On first run, it automatically applies all migrations.
-
-### 3. Set up environment
+### 2. Set up environment
 
 ```bash
 cp frontend/.env.example frontend/.env.local
+cp supabase/.env.example supabase/.env.local
 ```
 
+Edit `frontend/.env.local` and `supabase/.env.local` with your api keys, etc.
 For local development, use the keys output by `supabase start`:
 
 ```env
@@ -62,37 +56,64 @@ VITE_SUPABASE_URL=http://127.0.0.1:54321
 VITE_SUPABASE_ANON_KEY=<your-local-anon-key>
 ```
 
-### 4. Seed the database (optional)
+### 3. Start Supabase
 
 ```bash
-make db-seed
+pnpm db:start
 ```
 
-Populates the database with sample companies, applications, interviews, documents, and contacts.
+This starts local Postgres, Auth, Storage, and Studio services via Docker. On first run, it automatically applies all migrations.
+
+### 4. Seed the database (optional)
+
+**Option A — quick start** (auto-creates a dev account):
+
+```bash
+pnpm db:seed
+```
+
+Resets the database and populates it with sample data. Then log in at [http://localhost:3000](http://localhost:3000) with:
+
+```
+Email:    dev@example.com
+Password: devpassword123
+```
+
+**Option B — seed under your own account**:
+
+```bash
+pnpm db:reset        # fresh database, no seed data
+```
+
+Sign up at [http://localhost:3000](http://localhost:3000) with your own email, then:
+
+```bash
+pnpm db:reseed       # seeds sample data under your account
+```
 
 ### 5. Start the dev server
 
 ```bash
-make dev
+pnpm dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) and create an account to get started.
 
 ## Available Commands
 
 | Command | Description |
 |---------|-------------|
-| `make dev` | Start Supabase + dev server |
-| `make test` | Run tests |
-| `make test-watch` | Run tests in watch mode |
-| `make lint` | Check linting (read-only, no auto-fix) |
-| `make type` | TypeScript type check |
-| `make build` | Production build |
-| `make db-start` | Start Supabase services |
-| `make db-stop` | Stop Supabase services |
-| `make db-reset` | Reset database and apply migrations |
-| `make db-seed` | Reset + seed with sample data |
-| `make db-types` | Regenerate TypeScript types from schema |
+| `pnpm dev` | Start Supabase + dev server |
+| `pnpm test` | Run tests |
+| `pnpm test:watch` | Run tests in watch mode |
+| `pnpm lint:check` | Check linting (read-only) |
+| `pnpm lint` | Lint + auto-fix |
+| `pnpm type` | TypeScript type check |
+| `pnpm build` | Production build |
+| `pnpm db:start` | Start Supabase services |
+| `pnpm db:stop` | Stop Supabase services |
+| `pnpm db:reset` | Reset database (migrations only, no seed data) |
+| `pnpm db:seed` | Reset + seed under auto-created `dev@example.com` |
+| `pnpm db:reseed` | Seed sample data under the first existing user |
+| `pnpm db:types` | Regenerate TypeScript types from schema |
 
 ## Database Schema
 

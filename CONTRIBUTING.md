@@ -1,126 +1,89 @@
 # Contributing to `jobsearch-tracker`
 
-Contributions are welcome, and they are greatly appreciated!
-Every little bit helps, and credit will always be given.
+Contributions are welcome and appreciated! Every bit helps.
 
-You can contribute in many ways:
+## Ways to Contribute
 
-# Types of Contributions
+- **Report bugs** — open an issue at https://github.com/joeblackwaslike/jobsearch-tracker/issues
+- **Fix bugs** — look for issues tagged `bug` + `help wanted`
+- **Implement features** — look for issues tagged `enhancement` + `help wanted`
+- **Improve documentation** — typos, clarity, missing steps
 
-## Report Bugs
+## Getting Started
 
-Report bugs at https://github.com/joeblackwaslike/jobsearch-tracker/issues
+### Prerequisites
 
-If you are reporting a bug, please include:
+- [Node.js](https://nodejs.org/) 20+
+- [pnpm](https://pnpm.io/) 9+
+- [Supabase CLI](https://supabase.com/docs/guides/cli) v2+
+- [Docker](https://www.docker.com/) (for local Supabase)
 
-- Your operating system name and version.
-- Any details about your local setup that might be helpful in troubleshooting.
-- Detailed steps to reproduce the bug.
+### Setup
 
-## Fix Bugs
-
-Look through the GitHub issues for bugs.
-Anything tagged with "bug" and "help wanted" is open to whoever wants to implement a fix for it.
-
-## Implement Features
-
-Look through the GitHub issues for features.
-Anything tagged with "enhancement" and "help wanted" is open to whoever wants to implement it.
-
-## Write Documentation
-
-jobsearch-tracker could always use more documentation, whether as part of the official docs, in docstrings, or even on the web in blog posts, articles, and such.
-
-## Submit Feedback
-
-The best way to send feedback is to file an issue at https://github.com/joeblackwaslike/jobsearch-tracker/issues.
-
-If you are proposing a new feature:
-
-- Explain in detail how it would work.
-- Keep the scope as narrow as possible, to make it easier to implement.
-- Remember that this is a volunteer-driven project, and that contributions
-  are welcome :)
-
-# Get Started!
-
-Ready to contribute? Here's how to set up `jobsearch-tracker` for local development.
-Please note this documentation assumes you already have `uv` and `Git` installed and ready to go.
-
-1. Fork the `jobsearch-tracker` repo on GitHub.
-
-2. Clone your fork locally:
+1. Fork the repo and clone your fork:
 
 ```bash
-cd <directory_in_which_repo_should_be_created>
 git clone git@github.com:YOUR_NAME/jobsearch-tracker.git
-```
-
-3. Now we need to install the environment. Navigate into the directory
-
-```bash
 cd jobsearch-tracker
 ```
 
-Then, install and activate the environment with:
+2. Install dependencies:
 
 ```bash
-uv sync
+pnpm install
 ```
 
-4. Install pre-commit to run linters/formatters at commit time:
+3. Set up environment files:
 
 ```bash
-uv run pre-commit install
+cp frontend/.env.example frontend/.env.local
+cp supabase/.env.example supabase/.env
 ```
 
-5. Create a branch for local development:
+4. Start the dev environment (starts Supabase, then the dev server):
 
 ```bash
-git checkout -b name-of-your-bugfix-or-feature
+pnpm dev
 ```
 
-Now you can make your changes locally.
-
-6. Don't forget to add test cases for your added functionality to the `tests` directory.
-
-7. When you're done making changes, check that your changes pass the formatting tests.
+### Running Tests
 
 ```bash
-make check
+pnpm test          # run tests once
+pnpm test:watch    # run tests in watch mode
+pnpm type          # TypeScript type check
+pnpm lint:check    # lint check (read-only)
+pnpm lint          # lint + auto-fix
 ```
 
-Now, validate that all unit tests are passing:
+## Development Workflow
 
-```bash
-make test
+This project follows **Test-Driven Development**:
+
+1. Write a failing test that describes the desired behavior
+2. Write the minimum code to make it pass
+3. Refactor while keeping tests green
+4. Commit (one commit per red-green-refactor cycle)
+
+Never write feature code without a failing test first.
+
+## Submitting a Pull Request
+
+1. Create a branch: `git checkout -b fix/my-bug` or `feat/my-feature`
+2. Make your changes following the TDD cycle above
+3. Ensure all tests pass: `pnpm test`
+4. Ensure no lint errors: `pnpm lint:check`
+5. Push and open a pull request against `main`
+
+PRs should include tests for any new functionality. Keep the scope narrow — one concern per PR.
+
+## Commit Style
+
+```
+feat: add archive button to application table
+fix: prevent double-submit on application form
+test: add tests for archive dialog
+docs: update getting started instructions
 ```
 
-9. Before raising a pull request you should also run tox.
-   This will run the tests across different versions of Python:
-
-```bash
-tox
-```
-
-This requires you to have multiple versions of python installed.
-This step is also triggered in the CI/CD pipeline, so you could also choose to skip this step locally.
-
-10. Commit your changes and push your branch to GitHub:
-
-```bash
-git add .
-git commit -m "Your detailed description of your changes."
-git push origin name-of-your-bugfix-or-feature
-```
-
-11. Submit a pull request through the GitHub website.
-
-# Pull Request Guidelines
-
-Before you submit a pull request, check that it meets these guidelines:
-
-1. The pull request should include tests.
-
-2. If the pull request adds functionality, the docs should be updated.
-   Put your new functionality into a function with a docstring, and add the feature to the list in `README.md`.
+Prefixes: `feat`, `fix`, `test`, `refactor`, `docs`, `chore`

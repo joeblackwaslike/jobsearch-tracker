@@ -3,6 +3,19 @@ docs/backlog.md
 docs/next-iteration.md
 .worktrees/
 node_modules/
+
+.claude/
+
+# macOS
+.DS_Store
+
+# Snaplet (auto-generated)
+.snaplet/
+
+# Root-level seed boilerplate
+seed.ts
+seed.config.ts
+
 # From https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore
 
 # Byte-compiled / optimized / DLL files

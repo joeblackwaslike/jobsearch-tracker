@@ -48,7 +48,7 @@ interface JobBoardPattern {
 const JOB_BOARD_PATTERNS: JobBoardPattern[] = [
   {
     domain: "github.careers",
-    name: "GitHub",
+    name: "github",
     selectors: {
       title: ["h1", ".job-title", '[class*="title"]'],
       company: [".company-name"],
@@ -59,7 +59,7 @@ const JOB_BOARD_PATTERNS: JobBoardPattern[] = [
   },
   {
     domain: "icims.com",
-    name: "iCIMS",
+    name: "icims",
     selectors: {
       title: ["h1", ".iCIMS_Header", ".job-title"],
       company: [".iCIMS_CompanyName", ".company-name"],
@@ -69,7 +69,7 @@ const JOB_BOARD_PATTERNS: JobBoardPattern[] = [
   },
   {
     domain: "linkedin.com",
-    name: "LinkedIn",
+    name: "linkedin",
     selectors: {
       title: [".top-card-layout__title", ".job-details-jobs-unified-top-card__job-title", "h1"],
       company: [
@@ -83,7 +83,7 @@ const JOB_BOARD_PATTERNS: JobBoardPattern[] = [
   },
   {
     domain: "indeed.com",
-    name: "Indeed",
+    name: "indeed",
     selectors: {
       title: [
         ".jobsearch-JobInfoHeader-title",
@@ -106,7 +106,7 @@ const JOB_BOARD_PATTERNS: JobBoardPattern[] = [
   },
   {
     domain: "glassdoor.com",
-    name: "Glassdoor",
+    name: "glassdoor",
     selectors: {
       title: [".job-title", '[data-test="job-title"]', "h1"],
       company: [".employer-name", '[data-test="employer-name"]'],
@@ -117,12 +117,12 @@ const JOB_BOARD_PATTERNS: JobBoardPattern[] = [
   },
   {
     domain: "greenhouse.io", // in-url: gh_jid
-    name: "Greenhouse",
+    name: "greenhouse",
     selectors: {
       title: [".app-title", ".job-title", "h1"],
-      company: [".company-name", ".heading"],
+      company: [".company-name"],
       location: [".location", ".job-location"],
-      description: ["#content", ".job-description", "#job_description"],
+      description: ["#content", ".job-description", "#job_description", ".job__description"],
       salary: [".content-pay-transparency .pay-range"],
       employmentType: [".job-component-list-employment_type span"],
       workType: [".job-component-workplace-type span"],
@@ -130,7 +130,7 @@ const JOB_BOARD_PATTERNS: JobBoardPattern[] = [
   },
   {
     domain: "lever.co",
-    name: "Lever",
+    name: "lever",
     selectors: {
       title: [".posting-headline h2", ".posting-title"],
       company: [".main-header-logo img[alt]", ".company-name"],
@@ -140,7 +140,7 @@ const JOB_BOARD_PATTERNS: JobBoardPattern[] = [
   },
   {
     domain: "workday.com",
-    name: "Workday",
+    name: "workday",
     selectors: {
       title: ['[data-automation-id="jobPostingHeader"]', ".job-title", "h1"],
       company: [".css-1h9qwzj", ".company-name"],
@@ -150,7 +150,7 @@ const JOB_BOARD_PATTERNS: JobBoardPattern[] = [
   },
   {
     domain: "monster.com",
-    name: "Monster",
+    name: "monster",
     selectors: {
       title: [".job-title", "h1"],
       company: [".company-name", ".company"],
@@ -160,7 +160,7 @@ const JOB_BOARD_PATTERNS: JobBoardPattern[] = [
   },
   {
     domain: "ziprecruiter.com",
-    name: "ZipRecruiter",
+    name: "ziprecruiter",
     selectors: {
       title: [".job_title", "h1"],
       company: [".hiring_company", ".company_name"],
@@ -522,6 +522,339 @@ function extractFromMetaTags(html: string): Partial<ExtractedJobData> {
   return data;
 }
 
+// ─── Greenhouse.io parser ─────────────────────────────────────────────────────
+
+/** US state full name → 2-letter abbreviation */
+const US_STATE_ABBREVS: Record<string, string> = {
+  ALABAMA: "AL", ALASKA: "AK", ARIZONA: "AZ", ARKANSAS: "AR",
+  CALIFORNIA: "CA", COLORADO: "CO", CONNECTICUT: "CT", DELAWARE: "DE",
+  FLORIDA: "FL", GEORGIA: "GA", HAWAII: "HI", IDAHO: "ID",
+  ILLINOIS: "IL", INDIANA: "IN", IOWA: "IA", KANSAS: "KS",
+  KENTUCKY: "KY", LOUISIANA: "LA", MAINE: "ME", MARYLAND: "MD",
+  MASSACHUSETTS: "MA", MICHIGAN: "MI", MINNESOTA: "MN", MISSISSIPPI: "MS",
+  MISSOURI: "MO", MONTANA: "MT", NEBRASKA: "NE", NEVADA: "NV",
+  "NEW HAMPSHIRE": "NH", "NEW JERSEY": "NJ", "NEW MEXICO": "NM", "NEW YORK": "NY",
+  "NORTH CAROLINA": "NC", "NORTH DAKOTA": "ND", OHIO: "OH", OKLAHOMA: "OK",
+  OREGON: "OR", PENNSYLVANIA: "PA", "RHODE ISLAND": "RI", "SOUTH CAROLINA": "SC",
+  "SOUTH DAKOTA": "SD", TENNESSEE: "TN", TEXAS: "TX", UTAH: "UT",
+  VERMONT: "VT", VIRGINIA: "VA", WASHINGTON: "WA", "WEST VIRGINIA": "WV",
+  WISCONSIN: "WI", WYOMING: "WY", "DISTRICT OF COLUMBIA": "DC",
+};
+
+/** Country-only strings that carry no useful city/state information */
+const GREENHOUSE_COUNTRY_ONLY_RE =
+  /^(united states(?: of america)?|usa?|united kingdom|uk|canada|australia|germany|france|india|brazil|mexico|argentina|worldwide|global|international|remote)$/i;
+
+/**
+ * Normalise a raw Greenhouse location token to "City, ST" format.
+ * Returns undefined when the token contains no useful city/state data.
+ *
+ * Handles:
+ *   "New York, NY"                         → "New York, NY"
+ *   "Arlington, Virginia, USA"             → "Arlington, VA"
+ *   "New York City, New York, USA"         → "New York City, NY"
+ *   "Canada" / "Worldwide"                 → undefined
+ */
+function normalizeGreenhouseLocation(raw: string): string | undefined {
+  const loc = raw.trim();
+  if (!loc || loc.length < 2) return undefined;
+  if (GREENHOUSE_COUNTRY_ONLY_RE.test(loc)) return undefined;
+  if (/^home\s+based$/i.test(loc)) return undefined;
+
+  // Already "City, ST" (2-letter state code)
+  if (/^[\w\s.''-]+,\s*[A-Z]{2}$/.test(loc)) return loc;
+
+  // "City, Full State, Country" → "City, ST"
+  const threePartMatch = loc.match(
+    /^(.+?),\s*(.+?),\s*(?:USA?|United States(?:\s+of\s+America)?|Canada|Australia|UK|United Kingdom)$/i,
+  );
+  if (threePartMatch) {
+    const city = threePartMatch[1].trim();
+    const stateRaw = threePartMatch[2].trim();
+    if (/^[A-Z]{2}$/.test(stateRaw)) return `${city}, ${stateRaw}`;
+    const abbrev = US_STATE_ABBREVS[stateRaw.toUpperCase()];
+    return abbrev ? `${city}, ${abbrev}` : `${city}, ${stateRaw}`;
+  }
+
+  // "City, Full State" where state is recognisable → "City, ST"
+  const twoPartMatch = loc.match(/^(.+?),\s*(.+)$/);
+  if (twoPartMatch) {
+    const city = twoPartMatch[1].trim();
+    const stateRaw = twoPartMatch[2].trim();
+    if (/^[A-Z]{2}$/.test(stateRaw)) return `${city}, ${stateRaw}`;
+    const abbrev = US_STATE_ABBREVS[stateRaw.toUpperCase()];
+    if (abbrev) return `${city}, ${abbrev}`;
+  }
+
+  return loc;
+}
+
+/**
+ * Extract salary from the structured Greenhouse <bdi>-tagged pay range block.
+ * That block looks like: <bdi>$320,000</bdi> - <bdi>$485,000</bdi> <bdi>USD</bdi>
+ */
+function extractGreenhouseBdiSalary(
+  payRangeEl: Element,
+): Pick<ExtractedJobData, "salaryMin" | "salaryMax" | "salaryCurrency"> {
+  const bdis = Array.from(payRangeEl.querySelectorAll("bdi")).map(
+    (b) => b.textContent?.trim() ?? "",
+  );
+  // A <bdi> that is exactly 3 uppercase letters is the currency code
+  const currencyBdi = bdis.find((t) => /^[A-Z]{3}$/.test(t));
+  // Numeric <bdi> tags hold the amounts (may include a leading $)
+  const numericBdis = bdis.filter((t) => /[\d,]/.test(t));
+  const parse = (s: string) => parseFloat(s.replace(/[^0-9.]/g, ""));
+
+  const out: Pick<ExtractedJobData, "salaryMin" | "salaryMax" | "salaryCurrency"> = {};
+  if (currencyBdi) out.salaryCurrency = currencyBdi;
+  if (numericBdis.length >= 2) {
+    out.salaryMin = parse(numericBdis[0]);
+    out.salaryMax = parse(numericBdis[1]);
+  } else if (numericBdis.length === 1) {
+    out.salaryMin = out.salaryMax = parse(numericBdis[0]);
+  }
+
+  // Infer currency from surrounding text when no explicit currency <bdi> exists
+  if (!out.salaryCurrency) {
+    const text = payRangeEl.textContent ?? "";
+    if (/USD/i.test(text) || /\$/.test(text)) out.salaryCurrency = "USD";
+    else if (/GBP|£/.test(text)) out.salaryCurrency = "GBP";
+    else if (/EUR|€/.test(text)) out.salaryCurrency = "EUR";
+    else if (/CAD/.test(text)) out.salaryCurrency = "CAD";
+  }
+
+  return out;
+}
+
+/**
+ * Extract salary from inline description body text (fallback for jobs that
+ * embed the range in prose rather than the structured pay-ranges block).
+ *
+ * Conservative: returns undefined when salary data looks like a
+ * per-country/market list (e.g. "Canada: $xxx / Mexico: $xxx") to avoid
+ * picking up an incorrect currency or market-specific figure.
+ */
+function extractGreenhouseDescriptionSalary(
+  descEl: Element,
+): Pick<ExtractedJobData, "salaryMin" | "salaryMax" | "salaryCurrency"> | undefined {
+  const text = descEl.textContent ?? "";
+
+  // Abort if there are country-prefixed salary lines like "Canada: $xxx"
+  if (/(?:Canada|Mexico|Brazil|Argentina|India|Germany|France|Australia|UK|United Kingdom)\s*:/i.test(text)) {
+    return undefined;
+  }
+
+  // Match patterns like:
+  //   "$205,000 - $235,000"   "$85,000–$200,000 USD"
+  const rangeMatch = text.match(
+    /\$\s*([\d,]+(?:\.\d{2})?)\s*[-\u2013\u2014]\s*\$?\s*([\d,]+(?:\.\d{2})?)\s*(?:(USD|CAD|GBP|EUR))?/,
+  );
+  if (!rangeMatch) return undefined;
+
+  const parse = (s: string) => parseFloat(s.replace(/,/g, ""));
+  const min = parse(rangeMatch[1]);
+  const max = parse(rangeMatch[2]);
+
+  // Sanity check: both values must be plausible salary figures
+  if (min < 1000 || max < min) return undefined;
+
+  // Resolve currency from the capture or surrounding context
+  let currency = rangeMatch[3] ?? "";
+  if (!currency) {
+    const start = text.indexOf(rangeMatch[0]);
+    const window = text.slice(Math.max(0, start - 30), start + rangeMatch[0].length + 60);
+    if (/\$/.test(window)) currency = "USD";
+  }
+
+  return { salaryMin: min, salaryMax: max, salaryCurrency: currency || "USD" };
+}
+
+/**
+ * Parse a Greenhouse.io job posting HTML page into structured job data.
+ *
+ * Greenhouse pages do not include JSON-LD and often misuse or omit meta tags,
+ * so this parser targets the stable Greenhouse DOM structure and supplements
+ * CSS-selector extraction with regex / string manipulation for fields that
+ * aren't cleanly isolated in a single element (work type, employment type,
+ * salary embedded in description prose).
+ *
+ * @param html - Raw HTML string of the Greenhouse job posting page.
+ * @returns Partial<ExtractedJobData> – only fields that could be confidently
+ *          extracted are populated; uncertain fields are left undefined.
+ */
+export function parseGreenhouseHtml(html: string): Partial<ExtractedJobData> {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, "text/html");
+  const result: Partial<ExtractedJobData> = {};
+
+  // ── 1. Company Name ───────────────────────────────────────────────────────
+  // Greenhouse renders the company logo as <img alt="[Company] Logo"> inside
+  // <a class="logo">. Strip the " Logo" suffix to get the company name.
+  const logoImg = doc.querySelector("a.logo img, .logo img");
+  const altText = logoImg?.getAttribute("alt") ?? "";
+  if (altText && /logo/i.test(altText)) {
+    const name = altText.replace(/\s*logo\s*/gi, "").trim();
+    if (name.length > 0) result.companyName = name;
+  }
+
+  // Fallback: <title> is always "Job Application for [Title] at [Company]"
+  if (!result.companyName) {
+    const titleText = doc.querySelector("title")?.textContent?.trim() ?? "";
+    const atMatch = titleText.match(/\bat\s+(.+?)(?:\s*[-|–—].*)?$/i);
+    if (atMatch?.[1]?.trim()) result.companyName = atMatch[1].trim();
+  }
+
+  // ── 2. Position ───────────────────────────────────────────────────────────
+  // Greenhouse always places the job title in an <h1> inside .job__title.
+  const h1 = doc.querySelector(".job__title h1, .job-post h1, main h1");
+  const h1Text = h1?.textContent?.trim();
+  if (h1Text) result.position = h1Text;
+
+  // Fallback: og:title contains just the raw job title on Greenhouse
+  if (!result.position) {
+    const ogTitle = doc
+      .querySelector('meta[property="og:title"]')
+      ?.getAttribute("content")
+      ?.trim();
+    if (ogTitle) result.position = ogTitle;
+  }
+
+  // Fallback: parse <title>
+  if (!result.position) {
+    const titleText = doc.querySelector("title")?.textContent?.trim() ?? "";
+    const forMatch = titleText.match(/Job Application for (.+?) at /i);
+    if (forMatch?.[1]) result.position = forMatch[1].trim();
+  }
+
+  // ── 3. Location + Work Type ───────────────────────────────────────────────
+  // .job__location contains an SVG icon followed by a plain-text div with the
+  // location string. Work type is often encoded as a prefix:
+  //   "Hybrid - Dallas, TX"  /  "Remote or Hybrid - New York City, NY, USA"
+  //   "Home based - Worldwide"
+  const locationDiv = doc.querySelector(".job__location");
+  let rawLocation = "";
+  if (locationDiv) {
+    const clone = locationDiv.cloneNode(true) as Element;
+    clone.querySelector("svg")?.remove();
+    rawLocation = clone.textContent?.trim() ?? "";
+  }
+
+  // og:description sometimes holds the location string on Greenhouse pages
+  // (it looks like "San Francisco, CA | New York City, NY", not a sentence)
+  if (!rawLocation) {
+    const ogDesc = doc
+      .querySelector('meta[property="og:description"]')
+      ?.getAttribute("content")
+      ?.trim();
+    if (ogDesc && !/[.!?]/.test(ogDesc) && ogDesc.length < 200) rawLocation = ogDesc;
+  }
+
+  if (rawLocation) {
+    // Detect and strip work-type prefix
+    const workTypePrefixRe =
+      /^(remote\s+or\s+hybrid|hybrid|remote|onsite|on-?site|home\s+based)\s*[-\u2013\u2014]\s*/i;
+    const prefixMatch = rawLocation.match(workTypePrefixRe);
+    if (prefixMatch) {
+      const prefix = prefixMatch[1].toLowerCase();
+      if (prefix.includes("hybrid")) {
+        result.workType = "hybrid"; // "remote or hybrid" → hybrid (has office component)
+      } else if (prefix === "remote" || prefix === "home based") {
+        result.workType = "remote";
+      } else if (prefix.startsWith("on")) {
+        result.workType = "onsite";
+      }
+    } else if (/^home\s+based\b/i.test(rawLocation)) {
+      result.workType = "remote";
+    }
+
+    const locationBody = rawLocation.replace(workTypePrefixRe, "").trim();
+
+    if (/^(worldwide|global)$/i.test(locationBody)) {
+      if (!result.workType) result.workType = "remote";
+    } else {
+      // Multiple locations separated by " | " or ";" or "; "
+      const parts = locationBody
+        .split(/\s*[|;]\s*/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const normalized = parts
+        .map(normalizeGreenhouseLocation)
+        .filter((s): s is string => s !== undefined);
+      if (normalized.length > 0) result.locations = normalized;
+    }
+  }
+
+  // ── 4. Salary ─────────────────────────────────────────────────────────────
+  // Primary: structured .job__pay-ranges block with <bdi>-tagged figures
+  const payRangeEl = doc.querySelector(".job__pay-ranges .pay-range");
+  if (payRangeEl) {
+    const bdiSalary = extractGreenhouseBdiSalary(payRangeEl);
+    if (bdiSalary.salaryMin) Object.assign(result, bdiSalary);
+  }
+
+  // Fallback: salary range embedded in description prose
+  if (!result.salaryMin) {
+    const descEl = doc.querySelector(".job__description");
+    if (descEl) {
+      const descSalary = extractGreenhouseDescriptionSalary(descEl);
+      if (descSalary) Object.assign(result, descSalary);
+    }
+  }
+
+  // ── 5. Work Type (supplementary signals) ─────────────────────────────────
+  // If not already resolved from the location prefix, check other reliable
+  // Greenhouse signals before falling back to free-text heuristics.
+  if (!result.workType) {
+    const bodyText = doc.body?.textContent ?? "";
+    // #LI-Remote is a LinkedIn-convention hashtag that Greenhouse companies
+    // embed in the description to signal a remote role – very reliable.
+    if (/#LI-Remote\b/i.test(bodyText)) result.workType = "remote";
+  }
+
+  if (!result.workType) {
+    // Scan only the job description div (avoid false matches in EEO boilerplate)
+    const descText =
+      doc.querySelector(".job__description")?.textContent?.slice(0, 6000) ?? "";
+    if (/fully\s+remote|100%\s+remote|remote.first|work\s+from\s+anywhere/i.test(descText)) {
+      result.workType = "remote";
+    } else if (
+      /location.based\s+hybrid|hybrid\s+(?:role|schedule|work|model|position)|\d\+?\s+days?\s*[/\s]week\s+in(?:\s+(?:the\s+)?office)?/i.test(
+        descText,
+      )
+    ) {
+      result.workType = "hybrid";
+    } else if (/in.office\s+(?:role|work)|on.?site\s+(?:role|requirement|work)/i.test(descText)) {
+      result.workType = "onsite";
+    }
+  }
+
+  // ── 6. Employment Type ────────────────────────────────────────────────────
+  // Only use explicit structured labels to avoid false positives from prose.
+  // Pattern: "Employment Type: Full-Time"  /  "Job Type: Contract"
+  const descEl = doc.querySelector(".job__description");
+  if (descEl) {
+    const descText = descEl.textContent ?? "";
+    const empMatch = descText.match(
+      /(?:employment\s+type|job\s+type)\s*[:\s]+\s*(full[\s-]?time|part[\s-]?time|contract(?:or)?|internship|freelance)/i,
+    );
+    if (empMatch) {
+      const raw = empMatch[1].toLowerCase();
+      if (raw.startsWith("full")) result.employmentType = "full-time";
+      else if (raw.startsWith("part")) result.employmentType = "part-time";
+      else if (raw.startsWith("contract") || raw === "freelance") result.employmentType = "contract";
+      else if (raw.startsWith("intern")) result.employmentType = "internship";
+    }
+  }
+
+  // ── 7. Job Description HTML ───────────────────────────────────────────────
+  const descHtmlEl = doc.querySelector(".job__description.body, .job__description");
+  if (descHtmlEl) result.jobDescription = descHtmlEl.innerHTML.trim();
+
+  return result;
+}
+
+// ─── End Greenhouse parser ────────────────────────────────────────────────────
+
 /**
  * Find job board pattern for URL
  */
@@ -541,13 +874,14 @@ export function getSourceFromUrl(url: string): string {
   try {
     const hostname = new URL(url).hostname.toLowerCase();
     const pattern = JOB_BOARD_PATTERNS.find((p) => hostname.includes(p.domain));
-    if (pattern) return pattern.name;
-
-    // Extract domain name
-    const parts = hostname.replace("www.", "").split(".");
-    return parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+    if (pattern) {
+      if (!["workday", "lever", "greenhouse", "icims"].includes(pattern.name)) {
+        return pattern.name;
+      }
+    }
+    return "other";
   } catch {
-    return "Web";
+    return "other";
   }
 }
 
@@ -577,10 +911,14 @@ export async function fetchJobFromUrl(url: string): Promise<ExtractedJobData> {
       throw fnError ?? new Error("fetch-job-url returned no HTML");
     }
     const html: string = data.html;
-
+    console.log(html);
     // Find matching job board pattern
     const pattern = findJobBoardPattern(url);
     console.log("found pattern %O", pattern);
+
+    if (pattern?.name === "greenhouse") {
+      return parseGreenhouseHtml(html)
+    }
 
     // Extract from meta tags and JSON-LD first (most reliable)
     const metaData = extractFromMetaTags(html);
@@ -613,6 +951,7 @@ export async function fetchJobFromUrl(url: string): Promise<ExtractedJobData> {
       if (pattern.selectors.description && !result.jobDescription) {
         result.jobDescription = extractText(html, pattern.selectors.description);
       }
+
     }
     console.log("result after trying to extract from pattern %O", result);
 

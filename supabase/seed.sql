@@ -1,31 +1,44 @@
 -- ===========================================================
 -- Seed data for local development
 -- ===========================================================
--- Prerequisites:
---   1. Run `supabase start`
---   2. Sign up at least one user via the app (http://localhost:3000)
---   3. Run `supabase db reset` (this file runs automatically)
+-- Two workflows:
+--
+-- Quick start (auto-creates a dev account):
+--   pnpm db:seed          — resets DB, then runs this file
+--   Log in as: dev@example.com / devpassword123
+--
+-- Seed under your own account:
+--   pnpm db:reset         — resets DB (no seed data)
+--   Sign up at http://localhost:3000
+--   pnpm db:reseed        — runs this file against your account
 -- ===========================================================
 
 DO $$
 DECLARE
-  v_user_id UUID := '00000000-0000-0000-0000-000000000001';
+  v_user_id UUID;
 BEGIN
-  -- Ensure a seed user exists in auth.users
-  INSERT INTO auth.users (
-    id, instance_id, aud, role, email, encrypted_password,
-    email_confirmed_at, created_at, updated_at,
-    raw_app_meta_data, raw_user_meta_data,
-    is_super_admin, is_sso_user, is_anonymous
-  ) VALUES (
-    v_user_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
-    'seed@example.com', crypt('testing', gen_salt('bf')),
-    NOW(), NOW(), NOW(),
-    '{"provider":"email","providers":["email"]}',
-    '{}',
-    false, false, false
-  ) ON CONFLICT (id) DO NOTHING;
-  RAISE NOTICE 'Seeding data for user %', v_user_id;
+  -- Use the first existing user so seed data appears under your account.
+  -- If no user exists (fresh db:reset), creates a local dev account instead.
+  SELECT id INTO v_user_id FROM auth.users ORDER BY created_at LIMIT 1;
+
+  IF v_user_id IS NULL THEN
+    v_user_id := gen_random_uuid();
+    INSERT INTO auth.users (
+      id, instance_id, aud, role, email, encrypted_password,
+      email_confirmed_at, created_at, updated_at,
+      raw_app_meta_data, raw_user_meta_data,
+      is_super_admin, is_sso_user, is_anonymous
+    ) VALUES (
+      v_user_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
+      'dev@example.com', crypt('devpassword123', gen_salt('bf')),
+      NOW(), NOW(), NOW(),
+      '{"provider":"email","providers":["email"]}', '{}',
+      false, false, false
+    );
+    RAISE NOTICE 'No user found — created dev account: dev@example.com / devpassword123';
+  ELSE
+    RAISE NOTICE 'Seeding data for existing user: %', v_user_id;
+  END IF;
 
   INSERT INTO companies (id, user_id, name, description, links, industry, size, location, founded, culture, benefits, pros, cons, tech_stack, ratings, tags, researched)
   VALUES

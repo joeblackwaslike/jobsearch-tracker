@@ -54,7 +54,7 @@ THRIVE is a job search tracking application built with TanStack Start, Supabase,
 
 ## Development Commands
 
-NOTE: You need to `cd frontend` before running these if not already in frontend
+Run from the repo root (pnpm workspace delegates to the `frontend` package):
 
 ```bash
 pnpm dev          # Start Supabase + frontend dev server (port 3000)
