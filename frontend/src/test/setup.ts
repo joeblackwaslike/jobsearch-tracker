@@ -1,5 +1,8 @@
 import "@testing-library/jest-dom/vitest";
 
+// Pin timezone to UTC so formatter tests are deterministic across environments
+process.env.TZ = "UTC";
+
 // Stub localStorage for jsdom (getItem/setItem/removeItem may not be available)
 if (
   typeof globalThis.localStorage === "undefined" ||

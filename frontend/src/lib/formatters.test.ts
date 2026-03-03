@@ -26,12 +26,12 @@ describe("formatDate", () => {
 describe("formatDateTime", () => {
   it("should format a valid ISO datetime string with AM/PM", () => {
     const result = formatDateTime("2024-02-23T10:30:00.000Z");
-    expect(result).toBe("Feb 23, 2024 5:30 AM");
+    expect(result).toBe("Feb 23, 2024 10:30 AM");
   });
 
   it("should handle PM time correctly", () => {
     const result = formatDateTime("2024-02-23T18:45:00.000Z");
-    expect(result).toBe("Feb 23, 2024 1:45 PM");
+    expect(result).toBe("Feb 23, 2024 6:45 PM");
   });
 
   it('should return "TBD" for null input', () => {
