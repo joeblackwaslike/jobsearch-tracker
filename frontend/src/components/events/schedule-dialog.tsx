@@ -1,0 +1,441 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
+import { ContactCombobox } from "@/components/events/contact-combobox";
+import { DurationCombobox } from "@/components/events/duration-combobox";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { DatePickerField } from "@/components/ui/date-picker-field";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { UrlInput } from "@/components/ui/url-input";
+import { type ApplicationListItem, useApplications } from "@/lib/queries/applications";
+import type { Contact } from "@/lib/queries/contacts";
+import { useAddEventContact } from "@/lib/queries/event-contacts";
+import { useCreateEvent } from "@/lib/queries/events";
+import { cn } from "@/lib/utils";
+
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
+const EVENT_TYPE_OPTIONS = [
+  { value: "screening-interview", label: "Screening Interview" },
+  { value: "technical-interview", label: "Technical Interview" },
+  { value: "behavioral-interview", label: "Behavioral Interview" },
+  { value: "online-test", label: "Online Test" },
+  { value: "take-home", label: "Take Home" },
+  { value: "onsite", label: "Onsite" },
+  { value: "received-offer", label: "Received Offer" },
+  { value: "accepted-offer", label: "Accepted Offer" },
+  { value: "rejected-offer", label: "Rejected Offer" },
+  { value: "offer-withdrawn", label: "Offer Withdrawn" },
+  { value: "follow-up", label: "Follow Up" },
+  { value: "hiring-manager", label: "Hiring Manager" },
+  { value: "peer-interview", label: "Peer Interview" },
+] as const;
+
+const EVENT_STATUS_OPTIONS = [
+  { value: "availability-requested", label: "Availability Requested" },
+  { value: "availability-submitted", label: "Availability Submitted" },
+  { value: "scheduled", label: "Scheduled" },
+  { value: "completed", label: "Completed" },
+  { value: "cancelled", label: "Cancelled" },
+  { value: "rescheduled", label: "Rescheduled" },
+  { value: "no-show", label: "No Show" },
+] as const;
+
+// ---------------------------------------------------------------------------
+// Schema
+// ---------------------------------------------------------------------------
+
+const scheduleFormSchema = z.object({
+  application_id: z.string().min(1, "Application is required"),
+  type: z.string().min(1, "Type is required"),
+  status: z.string().default("availability-requested"),
+  title: z.string().default(""),
+  date: z.string().default(""),
+  time: z.string().default(""),
+  duration_minutes: z.coerce.number().optional(),
+  url: z.string().default(""),
+  description: z.string().default(""),
+  notes: z.string().default(""),
+});
+
+type ScheduleFormValues = z.infer<typeof scheduleFormSchema>;
+
+// ---------------------------------------------------------------------------
+// Props
+// ---------------------------------------------------------------------------
+
+interface ScheduleDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
+}
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
+export function ScheduleDialog({ open, onOpenChange, onSuccess }: ScheduleDialogProps) {
+  const createEvent = useCreateEvent();
+  const addContact = useAddEventContact();
+  const [appSearch, setAppSearch] = useState("");
+  const [comboboxOpen, setComboboxOpen] = useState(false);
+  const [selectedContacts, setSelectedContacts] = useState<Pick<Contact, "id" | "name">[]>([]);
+
+  const { data: applicationsData } = useApplications({
+    search: appSearch || undefined,
+    pageSize: 50,
+  });
+  const applications = applicationsData?.data ?? [];
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    control,
+    formState: { errors, isSubmitting },
+  } = useForm<ScheduleFormValues>({
+    // biome-ignore lint/suspicious/noExplicitAny: type mismatch between zod versions
+    resolver: zodResolver(scheduleFormSchema as any),
+    defaultValues: {
+      application_id: "",
+      type: "screening-interview",
+      status: "availability-requested",
+      title: "",
+      date: "",
+      time: "",
+      duration_minutes: undefined,
+      url: "",
+      description: "",
+      notes: "",
+    },
+  });
+
+  const selectedAppId = watch("application_id");
+  const selectedApp = applications.find((a: ApplicationListItem) => a.id === selectedAppId);
+  const companyId = selectedApp?.company_id ?? "";
+
+  const selectedType = watch("type");
+  const titlePlaceholder =
+    EVENT_TYPE_OPTIONS.find((o) => o.value === selectedType)?.label ?? "Event";
+
+  const watchedDate = watch("date");
+  const watchedTime = watch("time");
+
+  useEffect(() => {
+    const currentStatus = watch("status");
+    if (watchedDate && watchedTime) {
+      if (currentStatus === "availability-requested") {
+        setValue("status", "scheduled");
+      }
+    } else {
+      if (currentStatus === "scheduled") {
+        setValue("status", "availability-requested");
+      }
+    }
+  }, [watchedDate, watchedTime, setValue, watch]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleAddContact = (contact: Pick<Contact, "id" | "name">) => {
+    setSelectedContacts((prev) => [...prev, contact]);
+  };
+
+  const handleRemoveContact = (contactId: string) => {
+    setSelectedContacts((prev) => prev.filter((c) => c.id !== contactId));
+  };
+
+  const onSubmit = async (values: ScheduleFormValues) => {
+    let scheduled_at: string | null = null;
+    if (values.date) {
+      if (values.time) {
+        scheduled_at = new Date(`${values.date}T${values.time}`).toISOString();
+      } else {
+        scheduled_at = new Date(`${values.date}T00:00:00`).toISOString();
+      }
+    }
+
+    const effectiveTitle = values.title.trim() || titlePlaceholder;
+
+    const newEvent = await createEvent.mutateAsync({
+      application_id: values.application_id,
+      type: values.type,
+      status: values.status,
+      title: effectiveTitle,
+      description: values.description || null,
+      url: values.url || null,
+      scheduled_at,
+      duration_minutes: values.duration_minutes || null,
+      notes: values.notes || "",
+    });
+
+    // Link selected contacts to the newly created event
+    if (selectedContacts.length > 0 && newEvent?.id) {
+      await Promise.all(
+        selectedContacts.map((c) =>
+          addContact.mutateAsync({
+            eventId: newEvent.id,
+            contactId: c.id,
+          }),
+        ),
+      );
+    }
+
+    reset();
+    setSelectedContacts([]);
+    onSuccess?.();
+    onOpenChange(false);
+  };
+
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen) {
+      reset();
+      setSelectedContacts([]);
+    }
+    onOpenChange(newOpen);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Add Event</DialogTitle>
+          <DialogDescription>Schedule a new event for an existing application.</DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <ScrollArea className="max-h-[calc(85vh-10rem)] pr-3">
+            <div className="space-y-4 py-4">
+              {/* Application selector */}
+              <div className="space-y-2">
+                <Label>Application *</Label>
+                <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={comboboxOpen}
+                      className="w-full justify-between font-normal"
+                    >
+                      {selectedApp
+                        ? `${selectedApp.company?.name} - ${selectedApp.position}`
+                        : "Select application..."}
+                      <ChevronsUpDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                    <Command shouldFilter={false}>
+                      <CommandInput
+                        placeholder="Search by position or company..."
+                        value={appSearch}
+                        onValueChange={setAppSearch}
+                      />
+                      <CommandList>
+                        <CommandEmpty>No applications found.</CommandEmpty>
+                        <CommandGroup>
+                          {applications.map((app: ApplicationListItem) => (
+                            <CommandItem
+                              key={app.id}
+                              value={app.id}
+                              onSelect={(val) => {
+                                setValue("application_id", val, {
+                                  shouldValidate: true,
+                                });
+                                setComboboxOpen(false);
+                              }}
+                            >
+                              <CheckIcon
+                                className={cn(
+                                  "mr-2 size-4",
+                                  selectedAppId === app.id ? "opacity-100" : "opacity-0",
+                                )}
+                              />
+                              <span className="truncate">
+                                {app.company?.name} - {app.position}
+                              </span>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+                {errors.application_id && (
+                  <p className="text-sm text-destructive">{errors.application_id.message}</p>
+                )}
+              </div>
+
+              {/* Type */}
+              <div className="space-y-2">
+                <Label>Type *</Label>
+                <Select
+                  value={watch("type") ?? "screening-interview"}
+                  onValueChange={(v) => setValue("type", v, { shouldValidate: true })}
+                >
+                  <SelectTrigger className="w-full" aria-label="Type">
+                    <SelectValue placeholder="Select event type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {EVENT_TYPE_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.type && <p className="text-sm text-destructive">{errors.type.message}</p>}
+              </div>
+
+              {/* Status */}
+              <div className="space-y-2">
+                <Label>Status</Label>
+                <Select
+                  value={watch("status") ?? "availability-requested"}
+                  onValueChange={(v) => setValue("status", v)}
+                >
+                  <SelectTrigger className="w-full" aria-label="Status">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {EVENT_STATUS_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Date & Time */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Date</Label>
+                  <DatePickerField
+                    value={watch("date") ?? ""}
+                    onChange={(v) => setValue("date", v, { shouldValidate: true })}
+                    placeholder="Pick a date"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="schedule-time">Time</Label>
+                  <Input
+                    id="schedule-time"
+                    type="time"
+                    className="[&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-datetime-edit-fields-wrapper]:p-0"
+                    {...register("time")}
+                  />
+                </div>
+              </div>
+
+              {/* Duration */}
+              <div className="space-y-2">
+                <Label>Duration</Label>
+                <DurationCombobox
+                  value={watch("duration_minutes")}
+                  onChange={(v) => setValue("duration_minutes", v)}
+                />
+              </div>
+
+              {/* URL */}
+              <div className="space-y-2">
+                <Label>Meeting URL</Label>
+                <Controller
+                  name="url"
+                  control={control}
+                  render={({ field }) => (
+                    <UrlInput
+                      id="schedule-url"
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="https://..."
+                    />
+                  )}
+                />
+              </div>
+
+              {/* Title */}
+              <div className="space-y-2">
+                <Label htmlFor="schedule-title">Title</Label>
+                <Input id="schedule-title" placeholder={titlePlaceholder} {...register("title")} />
+              </div>
+
+              {/* Description */}
+              <div className="space-y-2">
+                <Label htmlFor="schedule-description">Description</Label>
+                <Input
+                  id="schedule-description"
+                  placeholder="Description of event"
+                  {...register("description")}
+                />
+              </div>
+
+              {/* Notes */}
+              <div className="space-y-2">
+                <Label htmlFor="schedule-notes">Notes</Label>
+                <textarea
+                  id="schedule-notes"
+                  className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  placeholder="Notes about this event..."
+                  {...register("notes")}
+                />
+              </div>
+
+              {/* Contacts */}
+              {companyId && (
+                <div className="space-y-2">
+                  <Label>Contacts</Label>
+                  <ContactCombobox
+                    companyId={companyId}
+                    selectedContactIds={selectedContacts.map((c) => c.id)}
+                    selectedContacts={selectedContacts}
+                    onAdd={handleAddContact}
+                    onRemove={handleRemoveContact}
+                  />
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Scheduling..." : "Add Event"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}

@@ -1,0 +1,70 @@
+{
+  "name": "dev-claude",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+	    "enableNonRootDocker": "true",
+	    "moby": true
+    },
+    "ghcr.io/devcontainers-extra/features/curl-apt-get:1":{},
+    "ghcr.io/devcontainers-extra/features/wget-apt-get:1": {},
+    "ghcr.io/devcontainers-extra/features/tmux-apt-get:1": {},
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/devcontainers-extra/features/deno:1": {},
+    "ghcr.io/devcontainers-extra/features/supabase-cli": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/eitsupi/devcontainer-features/jq-likes:2": {},
+    "ghcr.io/devcontainers-extra/features/claude-code:1": {},
+    "ghcr.io/devcontainers-extra/features/opencode:1": {},
+    "ghcr.io/devcontainers-extra/features/bun:1": {},
+    "ghcr.io/devcontainers-extra/features/ripgrep:1": {},
+    "ghcr.io/devcontainers-community/npm-features/typescript:1": {},
+    "ghcr.io/iambipinpaul/devcontainer-features/oh-my-posh:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "alefragnani.Bookmarks",
+        "antfu.browse-lite",
+        "ms-vscode-remote.remote-containers",
+        "remcohaszing.schemastore",
+        "Anthropic.claude-code",
+        "wilsonsio.color-vision",
+        "EditorConfig.EditorConfig",
+        "tamasfe.even-better-toml",
+        "mhutchie.git-graph",
+        "donjayamanne.githistory",
+        "reduckted.vscode-gitweblinks",
+        "github.vscode-github-actions",
+        "GitHub.vscode-pull-request-github",
+        "ms-vscode.vscode-typescript-next",
+        "ms-vscode.makefile-tools",
+        "bierner.markdown-checkbox",
+        "bierner.markdown-emoji",
+        "bierner.markdown-preview-github-styles",
+        "DavidAnson.vscode-markdownlint",
+        "christian-kohler.npm-intellisense",
+        "sst-dev.opencode",
+        "Jacano.vscode-pnpm",
+        "Supabase.vscode-supabase-extension",
+        "bradlc.vscode-tailwindcss",
+        "antfu.vite",
+        "denoland.vscode-deno",
+        "ms-azuretools.vscode-containers",
+        "biomejs.biome",
+        "FedaykinDev.openchamber"
+      ]
+    }
+  },
+  "mounts": [
+    "source=${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.claude.json,target=/home/vscode/.claude.json,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.config/opencode,target=/home/vscode/.config/opencode,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.local/share/opencode,target=/home/vscode/.local/share/opencode,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/Library/Containers/com.docker.docker/Data/docker-cli.sock,target=/var/run/docker.sock,type=bind,consistency=cached"
+  ]
+}

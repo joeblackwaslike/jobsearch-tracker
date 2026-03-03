@@ -195,8 +195,8 @@ All tables include `user_id UUID REFERENCES auth.users(id) NOT NULL` and have RL
 | id | UUID | PK |
 | user_id | UUID | FK -> auth.users, RLS |
 | application_id | UUID | FK -> applications.id |
-| type | TEXT | screening_interview, technical_interview, behavioral_interview, online_test, take_home, onsite, offer, rejection, bookmarked, applied |
-| status | TEXT | availability_requested, availability_submitted, scheduled, completed, cancelled, rescheduled, no_show |
+| type | TEXT | screening-interview, technical-interview, behavioral-interview, online-test, take-home, onsite, offer, rejection, bookmarked, applied |
+| status | TEXT | availability-requested, availability-submitted, scheduled, completed, cancelled, rescheduled, no-show |
 | title | VARCHAR(255) | |
 | description | TEXT | |
 | url | TEXT | Meeting link |
@@ -385,8 +385,8 @@ frontend/app/lib/queries/
    - **Edit Company** — modal to fill in remaining company fields (industry, size, culture, benefits, tech_stack, ratings, links) during research/prep
    - **Add Event** — create new timeline event
 5. User clicks "Add Event":
-   - Type: `screening_interview`
-   - Status: `availability_requested`, `availability_submitted`, or `scheduled`
+   - Type: `screening-interview`
+   - Status: `availability-requested`, `availability-submitted`, or `scheduled`
    - Date: TBD (null) or specific date/time
 6. **Auto-transition**: Creating an interview-type event on an application with `status: applied` automatically updates `status` to `interviewing` (server-side logic in the create-event action).
 

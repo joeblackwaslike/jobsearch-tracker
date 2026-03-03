@@ -1,0 +1,36 @@
+{
+  "name": "jobsearch-tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "pnpm --filter frontend build",
+    "dev": "supabase start; pnpm --filter frontend dev",
+    "test": "pnpm --filter frontend test",
+    "test:watch": "pnpm --filter frontend test:watch",
+    "test:e2e": "pnpm --filter frontend test:e2e",
+    "lint": "pnpm --filter frontend lint",
+    "lint:check": "pnpm --filter frontend lint:check",
+    "type": "pnpm --filter frontend type",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:seed": "supabase db reset && psql $(supabase status -o json | jq -r .DB_URL) -f supabase/seed.sql",
+    "db:reseed": "psql $(supabase status -o json | jq -r .DB_URL) -f supabase/seed.sql",
+    "db:types": "supabase gen types typescript --local > frontend/src/lib/supabase/types.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "packageManager": "pnpm@10.20.0",
+  "devDependencies": {
+    "@snaplet/copycat": "^6.0.0",
+    "@snaplet/seed": "0.98.0",
+    "postgres": "^3.4.8"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@biomejs/biome"
+    ]
+  }
+}
