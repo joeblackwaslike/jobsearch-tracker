@@ -11,8 +11,12 @@ export function createAnonApiClient() {
 }
 
 export function createServiceApiClient() {
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!serviceRoleKey) {
+    throw new Error("SUPABASE_SERVICE_ROLE_KEY is not set")
+  }
   return createClient<Database>(
     import.meta.env.VITE_SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    serviceRoleKey,
   )
 }
