@@ -71,17 +71,21 @@ describe("detectEmploymentType", () => {
 });
 
 describe("getSourceFromUrl", () => {
-  it("returns known job board name", () => {
-    expect(getSourceFromUrl("https://www.linkedin.com/jobs/view/123")).toBe("LinkedIn");
-    expect(getSourceFromUrl("https://greenhouse.io/jobs/abc")).toBe("Greenhouse");
+  it("returns lowercase job board name for known aggregators", () => {
+    expect(getSourceFromUrl("https://www.linkedin.com/jobs/view/123")).toBe("linkedin");
+    expect(getSourceFromUrl("https://www.glassdoor.com/jobs/abc")).toBe("glassdoor");
   });
 
-  it("extracts domain name for unknown sites", () => {
-    expect(getSourceFromUrl("https://careers.somecompany.com/job/456")).toBe("Careers");
+  it("returns 'other' for ATS platforms (greenhouse, lever, workday, icims)", () => {
+    expect(getSourceFromUrl("https://greenhouse.io/jobs/abc")).toBe("other");
   });
 
-  it("returns Web for invalid url", () => {
-    expect(getSourceFromUrl("not-a-url")).toBe("Web");
+  it("returns 'other' for unknown sites", () => {
+    expect(getSourceFromUrl("https://careers.somecompany.com/job/456")).toBe("other");
+  });
+
+  it("returns 'other' for invalid url", () => {
+    expect(getSourceFromUrl("not-a-url")).toBe("other");
   });
 });
 

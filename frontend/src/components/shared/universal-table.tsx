@@ -63,7 +63,13 @@ export function UniversalTable<T extends object>({
         enableSorting: false,
         size: 72,
         cell: ({ row }) => (
-          <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+          // biome-ignore lint/a11y/noStaticElementInteractions: div stops row-click propagation, not itself interactive
+          <div
+            role="presentation"
+            className="flex items-center justify-end gap-1"
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+          >
             {rowActions(row.original as T)}
           </div>
         ),

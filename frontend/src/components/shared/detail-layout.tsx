@@ -43,8 +43,11 @@ export function DetailLayout({
 
         {meta.length > 0 && (
           <div className="space-y-1">
-            {meta.map((item, i) => (
-              <div key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+            {meta.map((item) => (
+              <div
+                key={item.text}
+                className="flex items-center gap-2 text-sm text-muted-foreground"
+              >
                 <span className="shrink-0">{item.icon}</span>
                 {item.href ? (
                   <a

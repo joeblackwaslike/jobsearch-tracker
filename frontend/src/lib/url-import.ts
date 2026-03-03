@@ -526,19 +526,57 @@ function extractFromMetaTags(html: string): Partial<ExtractedJobData> {
 
 /** US state full name → 2-letter abbreviation */
 const US_STATE_ABBREVS: Record<string, string> = {
-  ALABAMA: "AL", ALASKA: "AK", ARIZONA: "AZ", ARKANSAS: "AR",
-  CALIFORNIA: "CA", COLORADO: "CO", CONNECTICUT: "CT", DELAWARE: "DE",
-  FLORIDA: "FL", GEORGIA: "GA", HAWAII: "HI", IDAHO: "ID",
-  ILLINOIS: "IL", INDIANA: "IN", IOWA: "IA", KANSAS: "KS",
-  KENTUCKY: "KY", LOUISIANA: "LA", MAINE: "ME", MARYLAND: "MD",
-  MASSACHUSETTS: "MA", MICHIGAN: "MI", MINNESOTA: "MN", MISSISSIPPI: "MS",
-  MISSOURI: "MO", MONTANA: "MT", NEBRASKA: "NE", NEVADA: "NV",
-  "NEW HAMPSHIRE": "NH", "NEW JERSEY": "NJ", "NEW MEXICO": "NM", "NEW YORK": "NY",
-  "NORTH CAROLINA": "NC", "NORTH DAKOTA": "ND", OHIO: "OH", OKLAHOMA: "OK",
-  OREGON: "OR", PENNSYLVANIA: "PA", "RHODE ISLAND": "RI", "SOUTH CAROLINA": "SC",
-  "SOUTH DAKOTA": "SD", TENNESSEE: "TN", TEXAS: "TX", UTAH: "UT",
-  VERMONT: "VT", VIRGINIA: "VA", WASHINGTON: "WA", "WEST VIRGINIA": "WV",
-  WISCONSIN: "WI", WYOMING: "WY", "DISTRICT OF COLUMBIA": "DC",
+  ALABAMA: "AL",
+  ALASKA: "AK",
+  ARIZONA: "AZ",
+  ARKANSAS: "AR",
+  CALIFORNIA: "CA",
+  COLORADO: "CO",
+  CONNECTICUT: "CT",
+  DELAWARE: "DE",
+  FLORIDA: "FL",
+  GEORGIA: "GA",
+  HAWAII: "HI",
+  IDAHO: "ID",
+  ILLINOIS: "IL",
+  INDIANA: "IN",
+  IOWA: "IA",
+  KANSAS: "KS",
+  KENTUCKY: "KY",
+  LOUISIANA: "LA",
+  MAINE: "ME",
+  MARYLAND: "MD",
+  MASSACHUSETTS: "MA",
+  MICHIGAN: "MI",
+  MINNESOTA: "MN",
+  MISSISSIPPI: "MS",
+  MISSOURI: "MO",
+  MONTANA: "MT",
+  NEBRASKA: "NE",
+  NEVADA: "NV",
+  "NEW HAMPSHIRE": "NH",
+  "NEW JERSEY": "NJ",
+  "NEW MEXICO": "NM",
+  "NEW YORK": "NY",
+  "NORTH CAROLINA": "NC",
+  "NORTH DAKOTA": "ND",
+  OHIO: "OH",
+  OKLAHOMA: "OK",
+  OREGON: "OR",
+  PENNSYLVANIA: "PA",
+  "RHODE ISLAND": "RI",
+  "SOUTH CAROLINA": "SC",
+  "SOUTH DAKOTA": "SD",
+  TENNESSEE: "TN",
+  TEXAS: "TX",
+  UTAH: "UT",
+  VERMONT: "VT",
+  VIRGINIA: "VA",
+  WASHINGTON: "WA",
+  "WEST VIRGINIA": "WV",
+  WISCONSIN: "WI",
+  WYOMING: "WY",
+  "DISTRICT OF COLUMBIA": "DC",
 };
 
 /** Country-only strings that carry no useful city/state information */
@@ -640,7 +678,11 @@ function extractGreenhouseDescriptionSalary(
   const text = descEl.textContent ?? "";
 
   // Abort if there are country-prefixed salary lines like "Canada: $xxx"
-  if (/(?:Canada|Mexico|Brazil|Argentina|India|Germany|France|Australia|UK|United Kingdom)\s*:/i.test(text)) {
+  if (
+    /(?:Canada|Mexico|Brazil|Argentina|India|Germany|France|Australia|UK|United Kingdom)\s*:/i.test(
+      text,
+    )
+  ) {
     return undefined;
   }
 
@@ -712,10 +754,7 @@ export function parseGreenhouseHtml(html: string): Partial<ExtractedJobData> {
 
   // Fallback: og:title contains just the raw job title on Greenhouse
   if (!result.position) {
-    const ogTitle = doc
-      .querySelector('meta[property="og:title"]')
-      ?.getAttribute("content")
-      ?.trim();
+    const ogTitle = doc.querySelector('meta[property="og:title"]')?.getAttribute("content")?.trim();
     if (ogTitle) result.position = ogTitle;
   }
 
@@ -813,8 +852,7 @@ export function parseGreenhouseHtml(html: string): Partial<ExtractedJobData> {
 
   if (!result.workType) {
     // Scan only the job description div (avoid false matches in EEO boilerplate)
-    const descText =
-      doc.querySelector(".job__description")?.textContent?.slice(0, 6000) ?? "";
+    const descText = doc.querySelector(".job__description")?.textContent?.slice(0, 6000) ?? "";
     if (/fully\s+remote|100%\s+remote|remote.first|work\s+from\s+anywhere/i.test(descText)) {
       result.workType = "remote";
     } else if (
@@ -841,7 +879,8 @@ export function parseGreenhouseHtml(html: string): Partial<ExtractedJobData> {
       const raw = empMatch[1].toLowerCase();
       if (raw.startsWith("full")) result.employmentType = "full-time";
       else if (raw.startsWith("part")) result.employmentType = "part-time";
-      else if (raw.startsWith("contract") || raw === "freelance") result.employmentType = "contract";
+      else if (raw.startsWith("contract") || raw === "freelance")
+        result.employmentType = "contract";
       else if (raw.startsWith("intern")) result.employmentType = "internship";
     }
   }
@@ -917,7 +956,7 @@ export async function fetchJobFromUrl(url: string): Promise<ExtractedJobData> {
     console.log("found pattern %O", pattern);
 
     if (pattern?.name === "greenhouse") {
-      return parseGreenhouseHtml(html)
+      return { ...result, ...parseGreenhouseHtml(html) };
     }
 
     // Extract from meta tags and JSON-LD first (most reliable)
@@ -951,7 +990,6 @@ export async function fetchJobFromUrl(url: string): Promise<ExtractedJobData> {
       if (pattern.selectors.description && !result.jobDescription) {
         result.jobDescription = extractText(html, pattern.selectors.description);
       }
-
     }
     console.log("result after trying to extract from pattern %O", result);
 

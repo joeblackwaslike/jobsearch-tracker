@@ -338,11 +338,11 @@ function LinksTab({ links }: { links: CompanyLink[] }) {
 
   return (
     <div className="space-y-2">
-      {sorted.map((link, i) => {
+      {sorted.map((link) => {
         const Icon = LINK_TYPE_ICONS[link.type] ?? Globe;
         return (
           <a
-            key={i}
+            key={link.url}
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"
