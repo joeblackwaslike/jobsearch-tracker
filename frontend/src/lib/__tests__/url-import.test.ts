@@ -24,6 +24,22 @@ describe("parseSalary", () => {
     });
   });
 
+  it("parses equal k-notation values correctly", () => {
+    expect(parseSalary("$100k - $100k")).toEqual({
+      min: 100000,
+      max: 100000,
+      currency: "USD",
+    });
+  });
+
+  it("parses k-notation range when min digits are a prefix of max digits", () => {
+    expect(parseSalary("$1000k - $100k")).toEqual({
+      min: 1000000,
+      max: 100000,
+      currency: "USD",
+    });
+  });
+
   it("returns empty object for empty string", () => {
     expect(parseSalary("")).toEqual({});
   });

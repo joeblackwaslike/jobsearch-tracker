@@ -208,8 +208,9 @@ export function parseSalary(salaryText: string): {
       return num;
     };
 
-    const hasK1 = cleanText.slice(0, cleanText.indexOf(rangeMatch[2])).includes("k");
-    const hasK2 = cleanText.slice(cleanText.indexOf(rangeMatch[2])).includes("k");
+    const sepIdx = rangeMatch[0].search(/\s*(?:-|to|–|—)\s*/);
+    const hasK1 = rangeMatch[0].slice(0, sepIdx).includes("k");
+    const hasK2 = rangeMatch[0].slice(sepIdx).includes("k");
 
     const min = parseNumber(rangeMatch[1], hasK1);
     const max = parseNumber(rangeMatch[2], hasK2);
