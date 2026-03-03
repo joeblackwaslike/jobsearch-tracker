@@ -45,7 +45,7 @@ pnpm install
 
 ```bash
 cp frontend/.env.example frontend/.env.local
-cp supabase/.env.example supabase/.env.local
+cp supabase/.env.example supabase/.env
 ```
 
 Edit `frontend/.env.local` and `supabase/.env.local` with your api keys, etc.
