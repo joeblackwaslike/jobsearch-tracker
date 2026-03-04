@@ -6,17 +6,7 @@ settings:
 
 importers:
 
-  .:
-    devDependencies:
-      '@snaplet/copycat':
-        specifier: ^6.0.0
-        version: 6.0.0
-      '@snaplet/seed':
-        specifier: 0.98.0
-        version: 0.98.0(@snaplet/copycat@6.0.0)(openai@4.104.0(ws@8.19.0)(zod@3.25.76))(postgres@3.4.8)(ws@8.19.0)
-      postgres:
-        specifier: ^3.4.8
-        version: 3.4.8
+  .: {}
 
   frontend:
     dependencies:
@@ -1050,7 +1040,7 @@ packages:
     peerDependencies:
       '@types/react': '*'
       '@types/react-dom': '*'
-      react: 19.2.0
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
       react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
     peerDependenciesMeta:
       '@types/react':
@@ -5219,22 +5209,6 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@langchain/core@0.2.36(openai@4.104.0(ws@8.19.0)(zod@3.25.76))':
-    dependencies:
-      ansi-styles: 5.2.0
-      camelcase: 6.3.0
-      decamelize: 1.2.0
-      js-tiktoken: 1.0.21
-      langsmith: 0.1.68(openai@4.104.0(ws@8.19.0)(zod@3.25.76))
-      mustache: 4.2.0
-      p-queue: 6.6.2
-      p-retry: 4.6.2
-      uuid: 10.0.0
-      zod: 3.25.76
-      zod-to-json-schema: 3.25.1(zod@3.25.76)
-    transitivePeerDependencies:
-      - openai
-
   '@langchain/core@0.2.36(openai@4.104.0(ws@8.19.0)(zod@4.3.6))':
     dependencies:
       ansi-styles: 5.2.0
@@ -5251,18 +5225,6 @@ snapshots:
     transitivePeerDependencies:
       - openai
 
-  '@langchain/groq@0.0.15(openai@4.104.0(ws@8.19.0)(zod@3.25.76))(ws@8.19.0)':
-    dependencies:
-      '@langchain/core': 0.2.36(openai@4.104.0(ws@8.19.0)(zod@3.25.76))
-      '@langchain/openai': 0.2.11(ws@8.19.0)
-      groq-sdk: 0.3.3
-      zod: 3.25.76
-      zod-to-json-schema: 3.25.1(zod@3.25.76)
-    transitivePeerDependencies:
-      - encoding
-      - openai
-      - ws
-
   '@langchain/groq@0.0.15(openai@4.104.0(ws@8.19.0)(zod@4.3.6))(ws@8.19.0)':
     dependencies:
       '@langchain/core': 0.2.36(openai@4.104.0(ws@8.19.0)(zod@4.3.6))
@@ -5277,7 +5239,7 @@ snapshots:
 
   '@langchain/openai@0.2.11(ws@8.19.0)':
     dependencies:
-      '@langchain/core': 0.2.36(openai@4.104.0(ws@8.19.0)(zod@3.25.76))
+      '@langchain/core': 0.2.36(openai@4.104.0(ws@8.19.0)(zod@4.3.6))
       js-tiktoken: 1.0.21
       openai: 4.104.0(ws@8.19.0)(zod@3.25.76)
       zod: 3.25.76
@@ -6338,49 +6300,6 @@ snapshots:
       fictional: 3.0.1
       string-argv: 0.3.2
       uuid: 9.0.1
-
-  '@snaplet/seed@0.98.0(@snaplet/copycat@6.0.0)(openai@4.104.0(ws@8.19.0)(zod@3.25.76))(postgres@3.4.8)(ws@8.19.0)':
-    dependencies:
-      '@inquirer/prompts': 5.5.0
-      '@langchain/core': 0.2.36(openai@4.104.0(ws@8.19.0)(zod@3.25.76))
-      '@langchain/groq': 0.0.15(openai@4.104.0(ws@8.19.0)(zod@3.25.76))(ws@8.19.0)
-      '@langchain/openai': 0.2.11(ws@8.19.0)
-      '@prisma/generator-helper': 5.14.0-dev.34
-      '@prisma/internals': 5.14.0-dev.34
-      '@scaleleap/pg-format': 1.0.0
-      '@snaplet/copycat': 6.0.0
-      '@total-typescript/ts-reset': 0.5.1
-      ansi-escapes: 6.2.1
-      c12: 1.11.2
-      change-case: 5.4.4
-      debug: 4.4.3
-      dedent: 1.7.2
-      execa: 8.0.1
-      exit-hook: 4.0.0
-      find-up: 7.0.0
-      fs-extra: 11.3.3
-      inflection: 3.0.2
-      javascript-stringify: 2.1.0
-      json-schema-library: 9.3.5
-      kleur: 4.1.5
-      multimatch: 7.0.0
-      ora: 8.2.0
-      quicktype-core: 23.0.149
-      remeda: 1.61.0
-      sqlstring: 2.3.3
-      terminal-link: 3.0.0
-      uuid: 9.0.1
-      yargs: 17.7.2
-      zod: 3.25.76
-    optionalDependencies:
-      postgres: 3.4.8
-    transitivePeerDependencies:
-      - babel-plugin-macros
-      - encoding
-      - magicast
-      - openai
-      - supports-color
-      - ws
 
   '@snaplet/seed@0.98.0(@snaplet/copycat@6.0.0)(openai@4.104.0(ws@8.19.0)(zod@4.3.6))(postgres@3.4.8)(ws@8.19.0)':
     dependencies:
@@ -7935,17 +7854,6 @@ snapshots:
   kleur@3.0.3: {}
 
   kleur@4.1.5: {}
-
-  langsmith@0.1.68(openai@4.104.0(ws@8.19.0)(zod@3.25.76)):
-    dependencies:
-      '@types/uuid': 10.0.0
-      commander: 10.0.1
-      p-queue: 6.6.2
-      p-retry: 4.6.2
-      semver: 7.7.4
-      uuid: 10.0.0
-    optionalDependencies:
-      openai: 4.104.0(ws@8.19.0)(zod@3.25.76)
 
   langsmith@0.1.68(openai@4.104.0(ws@8.19.0)(zod@4.3.6)):
     dependencies:
