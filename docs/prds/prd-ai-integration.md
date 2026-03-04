@@ -211,10 +211,10 @@ The existing `mime_type` field is the authoritative content-type contract — ne
 
 ### 1. `contact_research`
 
-**Trigger:** `applied` event
-**Purpose:** Find a relevant hiring contact at the company to cold-email
-**Input:** Company name, job description, company size/stage
-**Output stored in `payload`:** Array of contact candidates
+- **Trigger:** `applied` event
+- **Purpose:** Find a relevant hiring contact at the company to cold-email
+- **Input:** Company name, job description, company size/stage
+- **Output stored in `payload`:** Array of contact candidates
 
 ```json
 {
@@ -234,9 +234,9 @@ The existing `mime_type` field is the authoritative content-type contract — ne
 }
 ```
 
-**Approval action:** Selected candidates become `contacts` records; linked to the `applied` event via `event_contacts`
-**Termination:** Record why (e.g., "no relevant contacts found", "company too large to target directly")
-**Downstream:** Triggers `email_draft` task upon approval (if user wants to proceed)
+- **Approval action:** Selected candidates become `contacts` records; linked to the `applied` event via `event_contacts`
+- **Termination:** Record why (e.g., "no relevant contacts found", "company too large to target directly")
+- **Downstream:** Triggers `email_draft` task upon approval (if user wants to proceed)
 
 **Targeting logic by company stage:**
 
@@ -252,13 +252,14 @@ The existing `mime_type` field is the authoritative content-type contract — ne
 
 ### 2. `email_draft`
 
-**Trigger:** `contact_research` task approved (or manually triggered)
-**Purpose:** Draft a personalized cold outreach email to approved contacts
-**Input:** Job description, resume (from `applied` event documents), approved contact(s), company info
-**Output:** Creates a `documents` row with `type='email'`, `source='ai_generated'`, `status='draft'`
-**Refinement:** User submits feedback → new document created with `parent_id` pointing to previous draft; `iteration` counter increments
-**Approval action:** Email sent via Gmail API; document status set to `'sent'`; sent email stored
-**Termination:** Record reason; document archived
+- **Trigger:** `contact_research` task approved (or manually triggered)
+- **Purpose:** Draft a personalized cold outreach email to approved contacts
+- **Input:** Job description, resume (from `applied` event documents), one approved contact, company info
+- **Fan-out:** If multiple contacts are approved from `contact_research`, one `email_draft` task is created per contact — one task per document, always.
+- **Output:** Creates a `documents` row with `type='email'`, `source='ai_generated'`, `status='draft'`
+- **Refinement:** User submits feedback → new document created with `parent_id` pointing to previous draft; `iteration` counter increments
+- **Approval action:** Email sent via Gmail API; document status set to `'sent'`; sent email stored
+- **Termination:** Record reason; document archived
 
 **Missing resume handling:**
 
@@ -287,16 +288,26 @@ This pattern — task exists, progress visible, one action to unblock — applie
 
 ### 3. `company_research`
 
-**Trigger:** First `interview_scheduled` event for an application (screening or phone screen)
-**Purpose:** Prepare comprehensive company research to inform interview preparation
-**Input:** Company info, job description, user's resume, public sources (Glassdoor, news, blog, Crunchbase, tech stack signals)
-**Output:** Creates a `documents` row with `type='company_research'`, `source='ai_generated'`, `status='draft'`
-**Timing:** Should be ready at least 3 days before `scheduled_at`
-**Refinement:** Same iterative cycle as email_draft
-**Approval action:** Document status set to `'approved'`; no external action
-**Reuse:** For subsequent interview events on the same application, the same document can be updated (new revision) rather than regenerated from scratch
+- **Trigger:** First `interview_scheduled` event for an application (screening or phone screen)
+- **Purpose:** Prepare comprehensive company research to inform interview preparation
+- **Input:** Company info, job description, user's resume, public sources (Glassdoor, news, blog, Crunchbase, tech stack signals)
+- **Output:** Creates a `documents` row with `type='company_research'`, `source='ai_generated'`, `status='draft'`
+- **Timing:** Should be ready at least 3 days before `scheduled_at`
+- **Refinement:** Same iterative cycle as email_draft
+- **Approval action:** Document status set to `'approved'`; no external action
+
+**Layered revision model:**
+
+Company research uses a two-tier document structure built on `parent_id`:
+
+- **Root document (base research):** Created on the first `interview_scheduled` event. Contains only timeless company context — sections 1–6 below. No interview-round-specific content. `parent_id = null`.
+- **Round document (interview prep):** Created for each subsequent interview event (screening, onsite, final, etc.). `parent_id` points to the root base document — always the root, not the previous round. Inherits the base research and layers on round-specific context: stage-appropriate interview questions (section 7), relevant interviewer profiles, and any new company signals since the base was written.
+
+This keeps each round's prep document clean and self-contained. The AI reads the base document as shared context and adds only what is specific to that round. Approved base research is never duplicated — it is referenced.
 
 **Research sections:**
+
+Base document (root, generated once per application):
 
 1. Company overview: mission, values, culture, products, funding history, growth trajectory
 2. Recent signals: news, blog posts, initiatives, layoffs, leadership changes (last 6 months)
@@ -304,20 +315,25 @@ This pattern — task exists, progress visible, one action to unblock — applie
 4. Compensation: bands, benefits, equity structure (from Levels.fyi, Glassdoor, etc.)
 5. Reputation: Glassdoor reviews, what engineers say on social/blind, red flags
 6. Fit analysis: cross-reference with candidate's background; alignment, gaps, talking points
+
+Round document (generated per interview event, branches from root):
+
 7. Likely interview questions for this stage with suggested answer frameworks
    - Answers must sound human and show genuine curiosity
    - No pre-packaged "I'm passionate about…" openers
    - Templates are fine where authentic detail isn't available, clearly marked as such
+8. Interviewer profiles: LinkedIn summary, public writing, areas of likely focus (from `event_contacts`)
+9. Stage-specific signals: any new company news since base was written
 
 ### 4. `thank_you_draft`
 
-**Trigger:** Interview event status changes to `'completed'`
-**Purpose:** Draft personalized thank-you notes to each interviewer
-**Input:** Interview notes (from event `notes` field), interviewer contacts (from `event_contacts`), company research doc
-**Output:** One `documents` row per interviewer, `type='thank_you'`, `source='ai_generated'`, `status='draft'`
-**Timing:** Should surface in inbox same day as interview completion
-**Approval action:** Each note approved and sent individually via Gmail API
-**Priority:** Increases with interview round — onsite thank-yous are critical
+- **Trigger:** Interview event status changes to `'completed'`
+- **Purpose:** Draft personalized thank-you notes to each interviewer
+- **Input:** Interview notes (from event `notes` field), interviewer contacts (from `event_contacts`), company research doc
+- **Output:** One `documents` row per interviewer, `type='thank_you'`, `source='ai_generated'`, `status='draft'`
+- **Timing:** Should surface in inbox same day as interview completion
+- **Approval action:** Each note approved and sent individually via Gmail API
+- **Priority:** Increases with interview round — onsite thank-yous are critical
 
 Each note is approved individually — not as a batch. Each one is personalized to the specific interviewer, so the user should read and approve each before it goes out. This is still far less effort than writing them from scratch, which is the bar: even approving four separate notes after an onsite is easier than writing four from scratch when you're exhausted.
 
@@ -325,7 +341,9 @@ Each note is approved individually — not as a batch. Each one is personalized 
 
 ## Integration Health Model
 
-Every external service that requires a credential — whether an API key (Anthropic, Apollo) or OAuth (Google/Gmail) — is represented as a row in `user_integrations`. This table is the single source of truth for what's configured, what's working, and what's broken.
+Every external service that requires a credential — whether an API key (Anthropic, Apollo, Inngest) or OAuth (Google/Gmail) — is represented as a row in `user_integrations`. This table is the single source of truth for what's configured, what's working, and what's broken.
+
+**Inngest is a prerequisite integration.** It is the job queue that executes all AI tasks. If Inngest is not configured (`status != 'ok'`), no AI tasks will be dispatched regardless of other integrations. The Settings → Integrations UI should surface this clearly — Inngest is shown first, marked as "Required for AI features".
 
 ### Schema
 
@@ -334,7 +352,7 @@ CREATE TABLE user_integrations (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id         UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   provider        TEXT NOT NULL,
-  -- 'anthropic' | 'apollo' | 'google'
+  -- 'inngest' | 'anthropic' | 'apollo' | 'google'
   api_key         TEXT,
   -- for key-based providers; null for OAuth providers
   status          TEXT NOT NULL DEFAULT 'unconfigured',
@@ -367,6 +385,7 @@ For local development velocity, API keys can be set as environment variables. Wh
 
 | Provider  | Env var              |
 |-----------|----------------------|
+| Inngest   | `INNGEST_API_KEY`    |
 | Anthropic | `ANTHROPIC_API_KEY`  |
 | Apollo    | `APOLLO_API_KEY`     |
 
@@ -574,15 +593,17 @@ ALTER TABLE documents
 CREATE INDEX idx_documents_task_id ON documents(task_id);
 ```
 
-### Modify: `application_documents` table
+### Rename and modify: `application_documents` → `application_events_documents`
 
-Add optional event linkage so documents can be scoped to a specific event (e.g., resume → applied event):
+Renamed to reflect that documents can be scoped to both an application and an optional event. Event scoping is preferred where it applies (e.g., a resume linked to an `applied` event, a draft linked to the triggering event), but not required — the `event_id` is nullable for documents that belong to an application generally without belonging to a specific event.
 
 ```sql
-ALTER TABLE application_documents
+ALTER TABLE application_documents RENAME TO application_events_documents;
+
+ALTER TABLE application_events_documents
   ADD COLUMN event_id UUID REFERENCES events(id) ON DELETE SET NULL;
 
-CREATE INDEX idx_application_documents_event ON application_documents(event_id);
+CREATE INDEX idx_application_events_documents_event ON application_events_documents(event_id);
 ```
 
 ### New: Explicit initial events via trigger
@@ -708,6 +729,17 @@ For reviewing and refining AI-generated documents.
 
 Add **"Inbox"** to the main sidebar nav with a badge count for pending approvals. Badge should be prominent — this is the primary driver for return visits during an active job search.
 
+### AI features discovery banner
+
+New users see a persistent banner on the dashboard prompting them to set up AI features. The banner is shown on every visit until the user either:
+
+- Completes the CTA (navigates to Settings → Integrations and saves at least one integration), or
+- Explicitly dismisses it via an "×" or "Dismiss" action
+
+Dismissed state is stored in `user_settings` (e.g., `ai_setup_banner_dismissed BOOLEAN DEFAULT false`). The banner is not a modal and does not block navigation. It should feel like an invitation, not a nag.
+
+A full onboarding flow (guided walkthrough of integration setup) is a post-launch fast follow, not in scope for this iteration.
+
 ### Pending task digest email
 
 Notification fatigue is a real risk. A job search is already stressful — spamming the user with an email per task would quickly teach them to ignore all emails from the system, including important ones like auth failures.
@@ -744,9 +776,13 @@ Defaults to `true` since users who've opted into AI features will want to know w
 
 ### Sign-in strategy
 
-Google OAuth/OIDC is the preferred sign-in method. It reduces friction (no password to set) and positions us to request Gmail permissions incrementally once the user is established.
+Both email/password and Google OAuth are supported as sign-in methods. Either can be used at signup.
 
-Sign-in scopes at signup: `openid email profile` only. No Gmail scopes at signup — most users will not consent to email send permissions before they trust the application, and asking upfront will hurt conversion and trust. Google also reviews apps that request broad scopes aggressively.
+Sign-in scopes at signup (Google path): `openid email profile` only. No Gmail scopes at signup — most users will not consent to email send permissions before they trust the application, and asking upfront will hurt conversion and trust. Google also reviews apps that request broad scopes aggressively.
+
+### Identity linking
+
+Users who signed up with email/password can connect a Google account later via **Settings → Integrations** using Supabase's `linkIdentity()` API. This adds Google as an additional sign-in option — they can then sign in with either email or Google. It does not force a change and does not replace their existing login method. The linked identity also provides the OAuth token needed for Gmail send via incremental consent.
 
 ### Incremental consent for Gmail send
 
@@ -799,7 +835,7 @@ CREATE POLICY "delete_own" ON user_oauth_tokens FOR DELETE USING (user_id = auth
 
 `granted_scopes` is the source of truth for what a user has authorized. Before any Gmail send, check `'gmail.send' = ANY(granted_scopes)`. When a new scope is granted via incremental consent, append it to this array and refresh the access token.
 
-Security note: for production, access tokens should be encrypted at rest (Supabase Vault). For MVP, RLS isolation is acceptable; note this for the production hardening phase.
+**Security — pre-release gate:** Access tokens are stored plain text with RLS during development. Encryption at rest via Supabase Vault is required before this feature ships to any real user. This is not optional and not deferred beyond release.
 
 Integration health for Google (connected account, gmail.send scope status) is surfaced through the `user_integrations` table — see "Integration Health Model" section below.
 
@@ -837,11 +873,12 @@ New columns on `user_settings`:
 
 ```sql
 ALTER TABLE user_settings
-  ADD COLUMN ai_features_enabled    BOOLEAN NOT NULL DEFAULT false,
-  ADD COLUMN ai_contact_research    BOOLEAN NOT NULL DEFAULT false,
-  ADD COLUMN ai_email_drafts        BOOLEAN NOT NULL DEFAULT false,
-  ADD COLUMN ai_company_research    BOOLEAN NOT NULL DEFAULT false,
-  ADD COLUMN ai_thank_you_notes     BOOLEAN NOT NULL DEFAULT false;
+  ADD COLUMN ai_features_enabled        BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN ai_contact_research        BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN ai_email_drafts            BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN ai_company_research        BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN ai_thank_you_notes         BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN ai_setup_banner_dismissed  BOOLEAN NOT NULL DEFAULT false;
 ```
 
 ### Anthropic API Key
@@ -892,6 +929,15 @@ Manual triggers (user clicks "Find Contacts" on application detail) bypass the a
 ---
 
 ## Integration Points
+
+### All phases: Inngest (task queue)
+
+- Durable step-function execution for all AI tasks
+- User supplies key via `user_integrations` (provider `'inngest'`); `INNGEST_API_KEY` env var as fallback for operator-managed deployments
+- Each task type maps to an Inngest function with steps matching the task lifecycle (fetch context → call API → store result → notify)
+- Built-in exponential backoff handles transient errors; `sleep()` until `retry_after` handles rate limits; auth failures halt via Inngest's cancellation API
+- Free tier: 50k executions/month, 5 concurrent steps — sufficient for personal/small-group use
+- Self-hosters configure their own Inngest account key in Settings → Integrations
 
 ### Phase 2: Apollo.io (contact research)
 
@@ -987,22 +1033,22 @@ Deliverables:
 
 ## Open Questions
 
-1. **Background job infrastructure:** Supabase Edge Functions + pg_cron is already in use for reminders. Extend that pattern, or introduce a proper queue (e.g., pg_boss, Inngest)? Recommendation: start with Edge Functions + cron polling `tasks WHERE status = 'pending'`, migrate to a queue if throughput requires it.
+1. ~~**Background job infrastructure**~~ — **Resolved:** Use Inngest. Each AI task type maps to a durable Inngest step function. User supplies their own Inngest API key via `user_integrations` (provider `'inngest'`); `INNGEST_API_KEY` env var as operator fallback. Self-hosters configure their own Inngest account. Free tier (50k executions/month, 5 concurrent steps) is sufficient for personal use. Inngest is a prerequisite — no AI tasks dispatch unless Inngest integration status is `ok`.
 
 2. ~~**Apollo API access**~~ — **Resolved:** user-supplied key via `user_integrations`, no operator key. Feature is gated on `status = 'ok'` for the Apollo integration.
 
-3. **Task fan-out for thank-you notes:** One `thank_you_draft` task per interviewer, or one task that produces multiple documents? Recommendation: one task per contact — cleaner state machine, easier to approve/terminate individually.
+3. ~~**Task fan-out for thank-you notes**~~ — **Resolved:** One task per document, always. After an interview with N contacts, N separate `thank_you_draft` tasks are created, each producing one document and one inbox item. This is the universal rule — no task ever produces more than one document.
 
-4. **What happens to `application_documents` long-term?** It's now the general-purpose link for docs not tied to a specific event. Keep it, but rename it or add a comment clarifying its role vs. the new event-scoped pattern.
+4. ~~**`application_documents` long-term**~~ — **Resolved:** Renamed to `application_events_documents`. Event scoping via `event_id` is preferred wherever a document belongs to a specific event, but `event_id` is nullable — documents without a natural event scope (e.g., a generic resume attachment) remain application-scoped only.
 
-5. **Company research reuse across interviews:** The document revision system (`parent_id`) handles this well — each interview prep is a new revision of the same research doc. Confirm this UX makes sense when designing the document editor.
+5. ~~**Company research reuse across interviews**~~ — **Resolved:** Two-tier layered model. Root document holds base company research (sections 1–6, timeless, generated once). Each interview round gets its own document with `parent_id` pointing to the root — not the previous round — layering on stage-specific prep (questions, interviewer profiles, fresh signals). Context stays clean per round; base research is never duplicated.
 
-6. **Google sign-in vs. email sign-in coexistence:** Users who signed up via email should be able to connect a Google account later (for Gmail send) without creating a duplicate auth identity. Supabase supports linking identities — confirm this flow works before wiring up the OAuth integration.
+6. ~~**Google sign-in vs. email sign-in coexistence**~~ — **Resolved:** Both email/password and Google OAuth are supported at signup. Email users can connect Google later via `linkIdentity()` in Settings → Integrations — adds Google as an additional login option without replacing their existing method. Linked identity also provides the OAuth token for Gmail send.
 
-7. **Token security:** For MVP, OAuth tokens are stored in plain text in `user_oauth_tokens` with RLS. For production, encrypt at rest using Supabase Vault or a KMS. Decision: accept MVP risk with a note, encrypt before any real user data is stored.
+7. ~~**Token security**~~ — **Resolved:** OAuth tokens stored plain text with RLS during development. Encrypting at rest via Supabase Vault is a **hard pre-release gate** — must be completed before the AI features ship to any real user. Not deferred indefinitely; deferred only until release.
 
-8. **Feature flag defaults:** Should new users see a "set up AI features" prompt on first login, or discover it only through Settings? Recommendation: a non-intrusive one-time banner on the dashboard ("AI features are available — set up in Settings") rather than a forced modal.
+8. ~~**Feature flag defaults**~~ — **Resolved:** Persistent dashboard banner shown until user completes the CTA (saves at least one integration) or explicitly dismisses it. Dismissed state stored in `user_settings.ai_setup_banner_dismissed`. A full onboarding flow is a post-launch fast follow, not in scope for this iteration.
 
 9. ~~**Operator Anthropic key**~~ — **Resolved:** no operator key. All API keys are user-supplied via `user_integrations`. Tasks fail gracefully with a Settings pointer when integration status is not `ok`.
 
-10. **Untitled UI React PRO:** Some of the most relevant components (full settings page layouts, complex dashboard examples) are in the paid PRO tier. Worth evaluating if the free tier gaps require custom builds or a PRO license. Decision can be deferred until Phase 1 build reveals what's actually needed.
+10. ~~**Untitled UI React PRO**~~ — **Resolved:** Use free tier only. Build custom where free components fall short. Revisit PRO only if genuinely blocked during implementation.
