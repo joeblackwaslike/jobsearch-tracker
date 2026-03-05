@@ -5,7 +5,7 @@
 --
 -- Quick start (auto-creates a dev account):
 --   pnpm db:seed          — resets DB, then runs this file
---   Log in as: joeblackwaslike@me.com / toor
+--   Log in as: joeblackwaslike@me.com / testing
 --
 -- Seed under your own account:
 --   pnpm db:reset         — resets DB (no seed data)
@@ -27,15 +27,17 @@ BEGIN
       id, instance_id, aud, role, email, encrypted_password,
       email_confirmed_at, created_at, updated_at,
       raw_app_meta_data, raw_user_meta_data,
-      is_super_admin, is_sso_user, is_anonymous
+      is_super_admin, is_sso_user, is_anonymous,
+      confirmation_token, recovery_token, email_change_token_new, email_change
     ) VALUES (
       v_user_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
-      'joeblackwaslike@me.com', crypt('toor', gen_salt('bf')),
+      'joeblackwaslike@me.com', crypt('testing', gen_salt('bf')),
       NOW(), NOW(), NOW(),
       '{"provider":"email","providers":["email"]}', '{}',
-      false, false, false
+      false, false, false,
+      '', '', '', ''
     );
-    RAISE NOTICE 'No user found — created dev account: joeblackwaslike@me.com / toor';
+    RAISE NOTICE 'No user found — created dev account: joeblackwaslike@me.com / testing';
   ELSE
     RAISE NOTICE 'Seeding data for existing user: %', v_user_id;
   END IF;
@@ -43,14 +45,14 @@ BEGIN
   -- =========================================================
   -- COMPANIES (15)
   -- =========================================================
-  INSERT INTO companies (id, user_id, name, description, links, industry, size, location, founded, culture, benefits, pros, cons, tech_stack, ratings, tags, researched)
+  INSERT INTO companies (id, user_id, name, description, links, industry, size, locations, founded, culture, benefits, pros, cons, tech_stack, ratings, tags, researched)
   VALUES
     (
       'ca7dd4f3-6f7d-4f46-8328-d8bf663448b5', v_user_id,
       'TechCorp Inc',
       'Leading cloud infrastructure provider specializing in scalable web applications and developer tooling. Powers 40% of Fortune 500 developer workflows.',
       '{"website":"https://www.techcorp.io","careers":"https://www.techcorp.io/careers","news":"https://www.techcorp.io/blog","linkedin":"https://www.linkedin.com/company/techcorp-inc","glassdoor":"https://www.glassdoor.com/Overview/Working-at-TechCorp.htm","crunchbase":"https://www.crunchbase.com/organization/techcorp-inc"}',
-      'Cloud Infrastructure', '1000-5000', 'San Francisco, CA', '2010-01-01',
+      'Cloud Infrastructure', '1000-5000', ARRAY['San Francisco, CA'], '2010-01-01',
       'Fast-paced and collaborative engineering culture with strong emphasis on ownership and autonomy. Engineers are full owners of their features from design to production. Regular tech talks, quarterly hackathons, and open-source contributions are actively encouraged. Remote-first with optional hub offices.',
       'Competitive salary with equity refresh grants. Comprehensive health/dental/vision with 100% premium coverage. $3,000/year learning budget. Unlimited PTO with encouraged minimums. Home office stipend $1,200 one-time plus $100/month. 401k with 4% match. 16-week parental leave.',
       'Top-tier engineering team, strong mentorship culture, excellent internal mobility, modern tech stack, remote-first, competitive comp package',
@@ -65,7 +67,7 @@ BEGIN
       'StartupXYZ',
       'Innovative fintech startup disrupting B2B payments with real-time settlement infrastructure. Series B, growing 3x YoY.',
       '{"website":"https://www.startupxyz.com","careers":"https://www.startupxyz.com/careers","news":"https://www.startupxyz.com/press","linkedin":"https://www.linkedin.com/company/startupxyz","glassdoor":"https://www.glassdoor.com/Overview/Working-at-StartupXYZ.htm","crunchbase":"https://www.crunchbase.com/organization/startupxyz"}',
-      'Fintech', '50-200', 'New York, NY', '2020-01-01',
+      'Fintech', '50-200', ARRAY['New York, NY'], '2020-01-01',
       'High-energy startup culture where everyone ships and everyone matters. Flat hierarchy with direct access to founders. Weekly all-hands, transparent roadmap, and a strong bias toward action over process. Equity is a real part of the conversation.',
       'Competitive salary + meaningful early-stage equity. Full health/dental/vision. $2,000/year learning stipend. Unlimited PTO. Monthly team dinners. Home office setup budget $1,500. 12-week parental leave.',
       'Meaningful equity upside, direct impact on product, talented and driven team, fast shipping culture, founders are accessible and technical',
@@ -80,7 +82,7 @@ BEGIN
       'BigTech Solutions',
       'Global enterprise software leader with comprehensive cloud, AI, and productivity solutions. Trusted by 95% of Fortune 100 companies.',
       '{"website":"https://www.bigtechsolutions.com","careers":"https://www.bigtechsolutions.com/careers","news":"https://news.bigtechsolutions.com","linkedin":"https://www.linkedin.com/company/bigtech-solutions","glassdoor":"https://www.glassdoor.com/Overview/Working-at-BigTech-Solutions.htm","crunchbase":"https://www.crunchbase.com/organization/bigtech-solutions"}',
-      'Enterprise Software', '10000+', 'Seattle, WA', '1998-01-01',
+      'Enterprise Software', '10000+', ARRAY['Seattle, WA'], '1998-01-01',
       'Structured enterprise culture with strong process rigor and long-term thinking. Large collaborative teams, thriving internal open-source communities, and dedicated 15% innovation time. Clear career ladders with documented promotion criteria. D&I programs are well-funded and genuinely active.',
       'Industry-leading total comp with RSU grants. 100% healthcare premium coverage. $5,000/year education budget. 20 days PTO plus 12 holidays. 6-month parental leave for primary caregivers. ESPP at 15% discount. Extensive onsite amenities and wellness programs.',
       'Brand recognition opens doors, massive scope of impact, excellent benefits, strong job security, deep internal transfer opportunities across divisions',
@@ -95,7 +97,7 @@ BEGIN
       'CloudScale Systems',
       'Cloud-native platform for building, deploying, and observing microservices at scale. Used by 8,000+ engineering teams worldwide.',
       '{"website":"https://www.cloudscale.dev","careers":"https://www.cloudscale.dev/jobs","news":"https://www.cloudscale.dev/blog","linkedin":"https://www.linkedin.com/company/cloudscale-systems","glassdoor":"https://www.glassdoor.com/Overview/Working-at-CloudScale.htm","crunchbase":"https://www.crunchbase.com/organization/cloudscale-systems"}',
-      'DevOps / Platform Engineering', '500-1000', 'Austin, TX', '2015-01-01',
+      'DevOps / Platform Engineering', '500-1000', ARRAY['Austin, TX'], '2015-01-01',
       'Engineering-driven culture where the best idea wins regardless of title. Deep technical excellence is valued and rewarded. Distributed team across 12 time zones with async-first communication. Strong documentation culture and blameless post-mortems.',
       'Competitive base + equity. Medical/dental/vision fully covered. $2,500/year conference and learning budget. Flexible PTO. Annual team retreat. $800 home office stipend. 4% 401k match. 14-week parental leave.',
       'Truly remote-first culture, exceptional technical challenges, excellent work-life balance, smart colleagues, product is used by engineers so team understands the domain deeply',
@@ -110,7 +112,7 @@ BEGIN
       'InnovateLabs',
       'Design systems and component library company helping engineering teams build beautiful, accessible, and consistent UIs at scale.',
       '{"website":"https://www.innovatelabs.design","careers":"https://www.innovatelabs.design/careers","news":"https://www.innovatelabs.design/blog","linkedin":"https://www.linkedin.com/company/innovatelabs","glassdoor":"https://www.glassdoor.com/Overview/Working-at-InnovateLabs.htm","crunchbase":"https://www.crunchbase.com/organization/innovatelabs"}',
-      'Developer Tools / Design', '200-500', 'Remote', '2018-01-01',
+      'Developer Tools / Design', '200-500', ARRAY['Remote'], '2018-01-01',
       'Craft-obsessed culture where quality, accessibility, and developer experience are sacred. Small autonomous teams with genuine ownership. Design and engineering collaborate as equals. Open source is core to our identity — most of what we build ships publicly.',
       'Market-rate salary plus equity. Full benefits. $3,500/year learning and conference budget. Fully remote with annual company retreat. $1,500 home office setup. 16-week parental leave. Flexible working hours across time zones.',
       'World-class design and frontend culture, fully remote, open-source credibility, genuine craft focus, strong brand in the frontend community',
@@ -125,7 +127,7 @@ BEGIN
       'GreenTech Solutions',
       'Building technology solutions for environmental sustainability — carbon tracking, ESG reporting, and climate action tooling for enterprises.',
       '{"website":"https://www.greentech.solutions","careers":"https://www.greentech.solutions/jobs","news":"https://www.greentech.solutions/news","linkedin":"https://www.linkedin.com/company/greentech-solutions","glassdoor":"https://www.glassdoor.com/Overview/Working-at-GreenTech-Solutions.htm","crunchbase":"https://www.crunchbase.com/organization/greentech-solutions"}',
-      'Climate Tech / SaaS', '200-500', 'Portland, OR', '2019-01-01',
+      'Climate Tech / SaaS', '200-500', ARRAY['Portland, OR'], '2019-01-01',
       'Mission-driven culture where the work feels meaningful. Collaborative and inclusive team with a genuine commitment to sustainability in operations too. Flexible work arrangements, low hierarchy, and high trust. Team retreats happen in low-carbon-footprint locations.',
       'Competitive salary with equity. Full benefits package. $2,000/year learning stipend. Flexible and remote-friendly. Carbon offset for all business travel. 14-week parental leave. Volunteer days 3x/year.',
       'Meaningful mission, great work-life balance, flexible remote work, inclusive culture, growing market with regulatory tailwinds',
@@ -140,7 +142,7 @@ BEGIN
       'MediaStream Co',
       'Leading video streaming infrastructure platform delivering live and on-demand content to 200M+ concurrent viewers globally.',
       '{"website":"https://www.mediastream.co","careers":"https://www.mediastream.co/careers","news":"https://www.mediastream.co/press","linkedin":"https://www.linkedin.com/company/mediastream-co","glassdoor":"https://www.glassdoor.com/Overview/Working-at-MediaStream.htm","crunchbase":"https://www.crunchbase.com/organization/mediastream-co"}',
-      'Media Technology', '1000-5000', 'Los Angeles, CA', '2012-01-01',
+      'Media Technology', '1000-5000', ARRAY['Los Angeles, CA'], '2012-01-01',
       'High-performance engineering culture with a strong focus on reliability and scale. The team takes pride in solving genuinely hard distributed systems problems. On-call culture is taken seriously but rotation is balanced. Internal hackathons produce features that ship.',
       'Above-market salary and equity. Full health coverage. $4,000/year education budget. Generous PTO. Premium home office allowance. 401k with match. 16-week parental leave. Free streaming subscriptions.',
       'Cutting-edge technical challenges, strong engineering brand, good compensation, great scale, smart colleagues across infra and product',
@@ -155,7 +157,7 @@ BEGIN
       'CyberSecure Systems',
       'Enterprise cybersecurity platform protecting Fortune 500 companies from modern threats with zero-trust architecture and AI-powered threat detection.',
       '{"website":"https://www.cybersecure.io","careers":"https://www.cybersecure.io/careers","news":"https://www.cybersecure.io/blog","linkedin":"https://www.linkedin.com/company/cybersecure-systems","glassdoor":"https://www.glassdoor.com/Overview/Working-at-CyberSecure.htm","crunchbase":"https://www.crunchbase.com/organization/cybersecure-systems"}',
-      'Cybersecurity', '500-1000', 'Austin, TX', '2016-01-01',
+      'Cybersecurity', '500-1000', ARRAY['Austin, TX'], '2016-01-01',
       'Security-first culture where paranoia is a virtue and everyone thinks like an attacker. Rigorous code review process, mandatory security training, and red team exercises. Competitive but collaborative — the enemy is outside, not inside.',
       'Top-of-market compensation including equity. Comprehensive benefits. $3,000/year security conference budget (DEF CON, Black Hat). Flexible work. 401k with 4% match. 14-week parental leave.',
       'Fascinating security challenges, strong technical culture, top-of-market comp, mission-critical work, excellent team caliber',
@@ -170,7 +172,7 @@ BEGIN
       'HealthTech Innovations',
       'Digital health platform improving patient outcomes through clinical decision support, remote monitoring, and EHR integrations.',
       '{"website":"https://www.healthtechinnovations.com","careers":"https://www.healthtechinnovations.com/careers","news":"https://www.healthtechinnovations.com/news","linkedin":"https://www.linkedin.com/company/healthtech-innovations","glassdoor":"https://www.glassdoor.com/Overview/Working-at-HealthTech-Innovations.htm","crunchbase":"https://www.crunchbase.com/organization/healthtech-innovations"}',
-      'Health Technology', '500-1000', 'Boston, MA', '2017-01-01',
+      'Health Technology', '500-1000', ARRAY['Boston, MA'], '2017-01-01',
       'Mission-driven culture with the weight of real patient impact behind every release. Rigorous compliance culture (HIPAA, SOC2) balanced with genuine care for team wellbeing. Multidisciplinary teams include clinicians, engineers, and product specialists.',
       'Competitive salary with equity. Full benefits plus HSA matching. $2,500/year learning budget. Flexible hours. 16-week parental leave. Mental health days and EAP coverage.',
       'Meaningful patient impact, interesting compliance challenges, strong mission alignment, good benefits, collaborative multidisciplinary teams',
@@ -185,7 +187,7 @@ BEGIN
       'AI Innovations',
       'Applied AI company building large-scale machine learning infrastructure and LLM-powered products for enterprise customers.',
       '{"website":"https://www.aiinnovations.ai","careers":"https://www.aiinnovations.ai/careers","news":"https://www.aiinnovations.ai/research","linkedin":"https://www.linkedin.com/company/ai-innovations","glassdoor":"https://www.glassdoor.com/Overview/Working-at-AI-Innovations.htm","crunchbase":"https://www.crunchbase.com/organization/ai-innovations"}',
-      'Artificial Intelligence', '200-500', 'San Francisco, CA', '2021-01-01',
+      'Artificial Intelligence', '200-500', ARRAY['San Francisco, CA'], '2021-01-01',
       'Research-adjacent culture where curiosity and rigor are equally valued. Engineers work alongside ML researchers on cutting-edge problems. Move fast but think deeply — shipping matters but so does doing it right. Strong publication and conference presence.',
       'Top-tier compensation including equity at pre-IPO valuation. Full benefits. $5,000/year learning and conference budget. Flexible remote work. GPU compute budget for personal projects. 16-week parental leave.',
       'Cutting-edge AI work, exceptional colleagues from top research labs, pre-IPO equity upside, strong publication culture, fascinating problems',
@@ -200,7 +202,7 @@ BEGIN
       'EduTech Platform',
       'Online learning platform making professional education accessible to 12M+ learners worldwide with AI-powered personalization.',
       '{"website":"https://www.edutechplatform.com","careers":"https://www.edutechplatform.com/careers","news":"https://www.edutechplatform.com/blog","linkedin":"https://www.linkedin.com/company/edutech-platform","glassdoor":"https://www.glassdoor.com/Overview/Working-at-EduTech-Platform.htm","crunchbase":"https://www.crunchbase.com/organization/edutech-platform"}',
-      'EdTech', '500-1000', 'Remote', '2018-01-01',
+      'EdTech', '500-1000', ARRAY['Remote'], '2018-01-01',
       'Learning-oriented culture that practices what it preaches. Psychological safety is high and mistakes are treated as opportunities. Monthly lunch-and-learns, cross-team knowledge sharing, and a strong culture of documentation.',
       'Competitive salary with equity. Full benefits. $2,500/year professional development. Fully remote with async-first culture. Annual team summit. 14-week parental leave. Free platform access for team and family.',
       'Great work-life balance, fully remote, meaningful mission, learning-first culture, solid benefits',
@@ -215,7 +217,7 @@ BEGIN
       'FinServ Tech',
       'Financial services technology powering modern banking — payment processing, lending, and treasury management for 300+ institutions.',
       '{"website":"https://www.finservtech.com","careers":"https://www.finservtech.com/careers","news":"https://www.finservtech.com/press","linkedin":"https://www.linkedin.com/company/finserv-tech","glassdoor":"https://www.glassdoor.com/Overview/Working-at-FinServ-Tech.htm","crunchbase":"https://www.crunchbase.com/organization/finserv-tech"}',
-      'Financial Technology', '1000-5000', 'New York, NY', '2005-01-01',
+      'Financial Technology', '1000-5000', ARRAY['New York, NY'], '2005-01-01',
       'Structured and process-driven culture reflecting the regulatory environment of financial services. Strong emphasis on reliability and correctness. Clear career progression. Formal mentorship programs and leadership development tracks.',
       'Above-market base salary. Comprehensive benefits including FSA and HRA. Annual performance bonus. $2,000/year education budget. 20 days PTO. 401k with 5% match. 12-week parental leave.',
       'Excellent compensation, stable and established company, interesting compliance challenges, strong career ladders, good benefits',
@@ -230,7 +232,7 @@ BEGIN
       'GameDev Studios',
       'Independent game development studio creating immersive browser-based and mobile gaming experiences. 4 titles in top-50 App Store charts.',
       '{"website":"https://www.gamedevstudios.io","careers":"https://www.gamedevstudios.io/jobs","news":"https://www.gamedevstudios.io/devlog","linkedin":"https://www.linkedin.com/company/gamedev-studios","glassdoor":"https://www.glassdoor.com/Overview/Working-at-GameDev-Studios.htm","crunchbase":"https://www.crunchbase.com/organization/gamedev-studios"}',
-      'Gaming', '200-500', 'Seattle, WA', '2014-01-01',
+      'Gaming', '200-500', ARRAY['Seattle, WA'], '2014-01-01',
       'Creative and passionate culture where everyone plays games and is motivated by player delight. Crunch culture has been explicitly addressed with a no-mandatory-crunch policy. Cross-disciplinary teams of artists, engineers, and designers work closely.',
       'Competitive base salary. Full benefits. $1,500/year learning budget. Flexible hours. Free games library and gaming hardware. 12-week parental leave. Annual game jam.',
       'Creative and fun work, passionate team, no mandatory crunch, strong cross-disciplinary collaboration, unique technical challenges in WebGL and performance',
@@ -245,7 +247,7 @@ BEGIN
       'Apex Analytics',
       'Real-time data analytics platform helping enterprises turn operational data into actionable insights. Processing 500B events per day.',
       '{"website":"https://www.apexanalytics.io","careers":"https://www.apexanalytics.io/careers","news":"https://www.apexanalytics.io/blog","linkedin":"https://www.linkedin.com/company/apex-analytics","glassdoor":"https://www.glassdoor.com/Overview/Working-at-Apex-Analytics.htm","crunchbase":"https://www.crunchbase.com/organization/apex-analytics"}',
-      'Data Analytics', '200-500', 'Chicago, IL', '2017-01-01',
+      'Data Analytics', '200-500', ARRAY['Chicago, IL'], '2017-01-01',
       'Data-obsessed culture that measures everything, including team health. Intellectually rigorous and collaborative. Engineers have strong product influence. Blameless post-mortems, thorough RFCs, and a culture of learning from failure.',
       'Competitive salary with meaningful Series C equity. Full benefits. $3,000/year learning budget. Remote-flexible. $1,000 home office stipend. 401k with 4% match. 14-week parental leave.',
       'Fascinating data problems at scale, strong engineering culture, meaningful equity at Series C, excellent team caliber, good compensation',
@@ -260,7 +262,7 @@ BEGIN
       'NovaMobile',
       'Mobile-first SaaS platform for field service management, enabling 50,000+ field technicians to work efficiently without connectivity.',
       '{"website":"https://www.novamobile.app","careers":"https://www.novamobile.app/careers","news":"https://www.novamobile.app/blog","linkedin":"https://www.linkedin.com/company/novamobile-app","glassdoor":"https://www.glassdoor.com/Overview/Working-at-NovaMobile.htm","crunchbase":"https://www.crunchbase.com/organization/novamobile"}',
-      'Mobile / Field Service', '50-200', 'Denver, CO', '2020-01-01',
+      'Mobile / Field Service', '50-200', ARRAY['Denver, CO'], '2020-01-01',
       'Scrappy and mission-driven startup culture with high ownership and direct impact. Everyone talks to customers. Technical decisions are made close to the engineers doing the work. Moving fast with intentionality.',
       'Competitive salary with early-stage equity. Full benefits. $1,500/year learning stipend. Remote-first. 12-week parental leave. Flexible PTO.',
       'Meaningful equity at early stage, high ownership, direct customer impact, interesting offline-first technical challenges, close-knit team',
