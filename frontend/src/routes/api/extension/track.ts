@@ -1,63 +1,66 @@
-import { createAPIFileRoute } from "@tanstack/react-start/api"
-import { corsJson, corsOptions } from "@/lib/extension/cors"
-import { createServiceApiClient } from "@/lib/supabase/api"
+import { createFileRoute } from "@tanstack/react-router";
+import { corsJson, corsOptions } from "@/lib/extension/cors";
 import {
-  findOrCreateCompany,
   checkRecentDuplicate,
   createApplication,
-} from "@/lib/extension/track-service"
+  findOrCreateCompany,
+} from "@/lib/extension/track-service";
+import { TrackRequest } from "@/lib/openapi/schemas";
+import { createServiceApiClient } from "@/lib/supabase/api";
 
-export const APIRoute = createAPIFileRoute("/api/extension/track")({
-  OPTIONS: async () => corsOptions(),
+export const Route = createFileRoute("/api/extension/track")({
+  server: {
+    handlers: {
+      OPTIONS: async () => corsOptions(),
 
-  POST: async ({ request }) => {
-    // Validate Authorization header
-    const authHeader = request.headers.get("Authorization")
-    const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null
-    if (!token) {
-      return corsJson({ error: "Unauthorized" }, 401)
-    }
+      POST: async ({ request }) => {
+        const authHeader = request.headers.get("Authorization");
+        const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
+        if (!token) {
+          return corsJson({ error: "Unauthorized" }, 401);
+        }
 
-    // Parse body
-    let body: { company_name?: string; position?: string; url?: string }
-    try {
-      body = await request.json()
-    } catch {
-      return corsJson({ error: "Invalid JSON" }, 400)
-    }
+        let body: unknown;
+        try {
+          body = await request.json();
+        } catch {
+          return corsJson({ error: "Invalid JSON" }, 400);
+        }
 
-    const { company_name, position, url } = body
-    if (!company_name || !position || !url) {
-      return corsJson({ error: "company_name, position, and url are required" }, 400)
-    }
+        const result = TrackRequest.safeParse(body);
+        if (!result.success) {
+          return corsJson({ error: result.error.issues[0]?.message ?? "Invalid request" }, 400);
+        }
+        const { company_name, position, url } = result.data;
 
-    // Validate JWT
-    const client = createServiceApiClient()
-    const {
-      data: { user },
-      error: authError,
-    } = await client.auth.getUser(token)
+        const client = createServiceApiClient();
+        const {
+          data: { user },
+          error: authError,
+        } = await client.auth.getUser(token);
 
-    if (authError || !user) {
-      return corsJson({ error: "Unauthorized" }, 401)
-    }
+        if (authError || !user) {
+          return corsJson({ error: "Unauthorized" }, 401);
+        }
 
-    try {
-      const companyId = await findOrCreateCompany(client, user.id, company_name)
+        try {
+          const companyId = await findOrCreateCompany(client, user.id, company_name);
 
-      const existingId = await checkRecentDuplicate(client, user.id, companyId, position)
-      if (existingId) {
-        return corsJson(
-          { error: "Application already tracked", application_id: existingId },
-          409,
-        )
-      }
+          const existingId = await checkRecentDuplicate(client, user.id, companyId, position);
+          if (existingId) {
+            return corsJson(
+              { error: "Application already tracked", application_id: existingId },
+              409,
+            );
+          }
 
-      const applicationId = await createApplication(client, user.id, companyId, position, url)
-      return corsJson({ application_id: applicationId, company_id: companyId })
-    } catch (err) {
-      console.error("Track error:", err)
-      return corsJson({ error: "Internal server error" }, 500)
-    }
+          const applicationId = await createApplication(client, user.id, companyId, position, url);
+          return corsJson({ application_id: applicationId, company_id: companyId });
+        } catch (err) {
+          console.error("Track error:", err);
+          return corsJson({ error: "Internal server error" }, 500);
+        }
+      },
+    },
   },
-})
+});
