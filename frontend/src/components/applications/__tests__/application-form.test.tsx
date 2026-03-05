@@ -151,6 +151,21 @@ describe("ApplicationForm", () => {
   });
 });
 
+describe("notes field", () => {
+  it("renders Notes textarea", () => {
+    render(
+      <ApplicationForm open={true} onOpenChange={vi.fn()} application={mockApplication} />,
+    );
+    expect(screen.getByLabelText(/notes/i)).toBeInTheDocument();
+  });
+
+  it("pre-fills notes when application has notes", () => {
+    const app = { ...mockApplication, notes: "My private notes" };
+    render(<ApplicationForm open={true} onOpenChange={vi.fn()} application={app as any} />);
+    expect(screen.getByLabelText(/notes/i)).toHaveValue("My private notes");
+  });
+});
+
 describe("source field placement", () => {
   it("renders Source inside the Job Details fieldset", () => {
     render(<ApplicationForm open={true} onOpenChange={vi.fn()} application={null} />);

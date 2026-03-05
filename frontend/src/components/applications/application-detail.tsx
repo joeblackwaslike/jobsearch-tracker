@@ -242,6 +242,18 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
             </CardContent>
           </Card>
         )}
+
+        {/* Notes */}
+        {application.notes && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Notes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <MarkdownContent content={application.notes} />
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Documents */}
