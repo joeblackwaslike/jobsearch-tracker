@@ -1,9 +1,12 @@
+import { indeedAdapter } from "./indeed";
+import { linkedInAdapter } from "./linkedin";
 import type { Adapter } from "./types";
 
 // Adapters are registered here as they are implemented.
-// Import each and add to the array.
 const adapters: Adapter[] = [
-  // adapters added in subsequent tasks
+  linkedInAdapter,
+  indeedAdapter,
+  // more adapters added in subsequent tasks
 ];
 
 /** Look up the adapter for the current hostname. Returns null if unsupported. */

@@ -6,7 +6,11 @@ describe("findAdapter", () => {
     expect(findAdapter("randomsite.com")).toBeNull();
   });
 
-  it.todo("finds the LinkedIn adapter by hostname");
+  it("finds the LinkedIn adapter by hostname", () => {
+    const adapter = findAdapter("www.linkedin.com");
+    expect(adapter).not.toBeNull();
+    expect(adapter!.hosts).toContain("www.linkedin.com");
+  });
   it.todo("finds Greenhouse adapter by boards.greenhouse.io");
 
   it("returns null for greenhouse.io root (not a job board page)", () => {
