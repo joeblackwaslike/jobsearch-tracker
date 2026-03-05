@@ -361,6 +361,13 @@ function LinksTab({ links }: { links: CompanyLink[] }) {
   );
 }
 
+function NotesTab({ company }: { company: Company }) {
+  if (!company.notes) {
+    return <p className="text-sm text-muted-foreground">No notes yet.</p>;
+  }
+  return <MarkdownContent content={company.notes} />;
+}
+
 // ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
@@ -405,6 +412,11 @@ export function CompanyDetail({ company }: CompanyDetailProps) {
       id: "research",
       label: "Research",
       content: <ResearchTab company={company} />,
+    },
+    {
+      id: "notes",
+      label: "Notes",
+      content: <NotesTab company={company} />,
     },
     {
       id: "apps",

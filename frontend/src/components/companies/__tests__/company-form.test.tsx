@@ -199,6 +199,21 @@ describe("modal overflow regression", () => {
   });
 });
 
+describe("notes field", () => {
+  it("renders Notes textarea in create mode", () => {
+    render(<CompanyForm open={true} onOpenChange={noop} mode="create" />);
+    expect(screen.getByLabelText("Notes")).toBeInTheDocument();
+  });
+
+  it("pre-fills notes in edit mode", () => {
+    const company = { ...mockCompany, notes: "Some important notes" };
+    render(
+      <CompanyForm open={true} onOpenChange={noop} mode="edit" company={company as never} />,
+    );
+    expect(screen.getByLabelText("Notes")).toHaveValue("Some important notes");
+  });
+});
+
 describe("founded year conversion", () => {
   it("displays only the year portion of the founded date in the input", () => {
     render(

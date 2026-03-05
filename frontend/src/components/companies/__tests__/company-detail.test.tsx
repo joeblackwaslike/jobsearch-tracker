@@ -114,6 +114,18 @@ describe("CompanyDetail", () => {
     expect(screen.getByText("TypeScript")).toBeInTheDocument();
     expect(screen.getByText("AWS")).toBeInTheDocument();
   });
+  it("shows Notes tab with content when company has notes", async () => {
+    const user = userEvent.setup();
+    render(
+      <CompanyDetail
+        company={{ ...mockCompany, notes: "Important company notes" } as unknown as Company}
+      />,
+    );
+    await user.click(screen.getByRole("tab", { name: "Notes" }));
+    expect(screen.getByRole("tab", { name: "Notes" })).toHaveAttribute("data-state", "active");
+    expect(screen.getByText("Important company notes")).toBeInTheDocument();
+  });
+
   it("renders work-life balance and career growth ratings from camelCase keys", () => {
     render(
       <CompanyDetail
