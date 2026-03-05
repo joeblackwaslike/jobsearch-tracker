@@ -1,4 +1,7 @@
+import { ashbyAdapter } from "./ashby";
+import { greenhouseAdapter } from "./greenhouse";
 import { indeedAdapter } from "./indeed";
+import { leverAdapter } from "./lever";
 import { linkedInAdapter } from "./linkedin";
 import type { Adapter } from "./types";
 
@@ -6,6 +9,9 @@ import type { Adapter } from "./types";
 const adapters: Adapter[] = [
   linkedInAdapter,
   indeedAdapter,
+  greenhouseAdapter,
+  leverAdapter,
+  ashbyAdapter,
   // more adapters added in subsequent tasks
 ];
 
