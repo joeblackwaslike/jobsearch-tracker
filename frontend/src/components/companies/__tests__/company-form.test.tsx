@@ -16,7 +16,7 @@ vi.mock("@/lib/queries/contacts", () => ({
   useSearchContacts: () => ({ data: [], isLoading: false }),
   useCreateContact: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useUpdateContact: () => ({ mutateAsync: vi.fn(), isPending: false }),
-  useDeleteContact: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useArchiveContact: () => ({ mutateAsync: vi.fn(), isPending: false }),
 }));
 
 const mockCompany = {
