@@ -46,5 +46,11 @@ export function findAdapter(hostname: string): Adapter | null {
   return null;
 }
 
+export function findAdapterByUrlParams(): Adapter | null {
+  if (new URLSearchParams(location.search).has("gh_jid")) return greenhouseAdapter;
+  if (new URLSearchParams(location.search).has("ashby_jid")) return ashbyAdapter;
+  return null;
+}
+
 export { adapters, workdayAdapter, greenhouseAdapter, ashbyAdapter };
 export type { Adapter };

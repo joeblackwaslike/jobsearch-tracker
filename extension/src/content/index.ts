@@ -1,4 +1,4 @@
-import { findAdapter } from "./adapters/index";
+import { findAdapter, findAdapterByUrlParams } from "./adapters/index";
 import { injectTrackButton, setButtonState } from "./inject";
 import type { JobData } from "./adapters/types";
 
@@ -6,7 +6,7 @@ const MAX_RETRIES = 20;
 const RETRY_INTERVAL_MS = 500;
 
 function tryInject(retries = 0): void {
-  const adapter = findAdapter(location.hostname);
+  const adapter = findAdapter(location.hostname) ?? findAdapterByUrlParams();
   if (!adapter) return;
 
   const jobData = adapter.extract();
@@ -67,7 +67,7 @@ observer.observe(document.body, { childList: true, subtree: true });
 // Also listen for GET_JOB_DATA requests from the popup
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type === "GET_JOB_DATA") {
-    const adapter = findAdapter(location.hostname);
+    const adapter = findAdapter(location.hostname) ?? findAdapterByUrlParams();
     const jobData = adapter?.extract() ?? null;
     sendResponse(jobData);
   }
