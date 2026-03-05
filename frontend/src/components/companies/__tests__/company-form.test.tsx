@@ -33,7 +33,7 @@ const mockCompany = {
   },
   industry: "Technology",
   size: "51-200",
-  location: "San Francisco",
+  locations: ["San Francisco"],
   founded: "2015-01-01",
   culture: "Fast-paced",
   benefits: "401k",
@@ -211,6 +211,25 @@ describe("notes field", () => {
       <CompanyForm open={true} onOpenChange={noop} mode="edit" company={company as never} />,
     );
     expect(screen.getByLabelText("Notes")).toHaveValue("Some important notes");
+  });
+});
+
+describe("locations multi-city field", () => {
+  it("renders Locations field in create mode", () => {
+    render(<CompanyForm open={true} onOpenChange={noop} mode="create" />);
+    expect(screen.getByText(/locations/i)).toBeInTheDocument();
+  });
+
+  it("pre-fills locations array in edit mode", () => {
+    const company = {
+      ...mockCompany,
+      locations: ["San Francisco, CA", "New York, NY"],
+    };
+    render(
+      <CompanyForm open={true} onOpenChange={noop} mode="edit" company={company as never} />,
+    );
+    expect(screen.getByText("San Francisco, CA")).toBeInTheDocument();
+    expect(screen.getByText("New York, NY")).toBeInTheDocument();
   });
 });
 

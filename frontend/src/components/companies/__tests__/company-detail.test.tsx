@@ -18,7 +18,7 @@ const mockCompany = {
   id: "1",
   name: "Test Company",
   industry: "Technology",
-  location: "San Francisco, CA",
+  locations: [],
   size: "100-500",
   researched: true,
   tags: ["startup", "remote"],
@@ -124,6 +124,15 @@ describe("CompanyDetail", () => {
     await user.click(screen.getByRole("tab", { name: "Notes" }));
     expect(screen.getByRole("tab", { name: "Notes" })).toHaveAttribute("data-state", "active");
     expect(screen.getByText("Important company notes")).toBeInTheDocument();
+  });
+
+  it("shows locations in meta when company has locations", () => {
+    render(
+      <CompanyDetail
+        company={{ ...mockCompany, locations: ["Austin, TX"] } as unknown as Company}
+      />,
+    );
+    expect(screen.getByText("Austin, TX")).toBeInTheDocument();
   });
 
   it("renders work-life balance and career growth ratings from camelCase keys", () => {

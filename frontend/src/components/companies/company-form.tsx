@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import { CityCombobox } from "@/components/applications/city-combobox";
+import { CityMultiCombobox } from "@/components/applications/city-multi-combobox";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -65,7 +65,7 @@ const companyFormSchema = z.object({
   }),
   industry: z.string().default(""),
   size: z.string().default(""),
-  location: z.string().default(""),
+  locations: z.array(z.string()).default([]),
   founded: z.string().default(""),
   culture: z.string().default(""),
   benefits: z.string().default(""),
@@ -134,7 +134,7 @@ function companyToFormValues(company: Company): CompanyFormValues {
     },
     industry: company.industry ?? "",
     size: company.size ?? "",
-    location: company.location ?? "",
+    locations: Array.isArray(company.locations) ? (company.locations as string[]) : [],
     founded: company.founded ? company.founded.slice(0, 4) : "",
     culture: company.culture ?? "",
     benefits: company.benefits ?? "",
@@ -178,7 +178,7 @@ function formValuesToPayload(values: CompanyFormValues) {
     links: Object.keys(links).length > 0 ? links : null,
     industry: values.industry || null,
     size: values.size || null,
-    location: values.location || null,
+    locations: values.locations.length > 0 ? values.locations : null,
     founded: values.founded ? `${values.founded}-01-01` : null,
     culture: values.culture || null,
     benefits: values.benefits || null,
@@ -306,10 +306,10 @@ export function CompanyForm({ open, onOpenChange, mode, company, onSuccess }: Co
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Location</Label>
-                    <CityCombobox
-                      value={watch("location") ?? ""}
-                      onChange={(v) => setValue("location", v)}
+                    <Label>Locations</Label>
+                    <CityMultiCombobox
+                      value={watch("locations") ?? []}
+                      onChange={(v) => setValue("locations", v)}
                     />
                   </div>
                   <div className="space-y-2">

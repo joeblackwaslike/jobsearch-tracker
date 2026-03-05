@@ -51,7 +51,7 @@ function calcCompleteness(c: Company): number {
   const fields = [
     c.name,
     c.industry,
-    c.location,
+    c.locations?.length ? c.locations : null,
     c.size,
     c.founded,
     c.description,
@@ -391,7 +391,7 @@ export function CompanyDetail({ company }: CompanyDetailProps) {
     .map(([type, url]) => ({ type, name: LINK_NAMES[type] ?? type, url }));
   const websiteLink = links.find((l) => l.type === "website");
   const meta = [
-    company.location && { icon: <MapPin className="size-3.5" />, text: company.location },
+    company.locations?.length && { icon: <MapPin className="size-3.5" />, text: (company.locations as string[]).join(", ") },
     websiteLink && {
       icon: <Globe className="size-3.5" />,
       text: websiteLink.url,

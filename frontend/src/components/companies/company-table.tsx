@@ -35,7 +35,7 @@ export function CompanyTable({ data, onEdit }: CompanyTableProps) {
               <TableRow key={company.id} className="cursor-pointer" onClick={() => onEdit(company)}>
                 <TableCell className="font-medium">{company.name}</TableCell>
                 <TableCell>{company.industry || "--"}</TableCell>
-                <TableCell>{company.location || "--"}</TableCell>
+                <TableCell>{(company.locations as string[] | undefined)?.join(", ") || "--"}</TableCell>
                 <TableCell>{company.size || "--"}</TableCell>
                 <TableCell>
                   {company.researched ? (
