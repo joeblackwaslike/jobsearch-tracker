@@ -1,24 +1,50 @@
 import { ashbyAdapter } from "./ashby";
+import { blindAdapter } from "./blind";
+import { builtinAdapter } from "./builtin";
+import { diceAdapter } from "./dice";
+import { githubAdapter } from "./github";
+import { googleJobsAdapter } from "./google";
 import { greenhouseAdapter } from "./greenhouse";
 import { indeedAdapter } from "./indeed";
+import { levelsAdapter } from "./levels";
 import { leverAdapter } from "./lever";
 import { linkedInAdapter } from "./linkedin";
+import { welcomeToTheJungleAdapter } from "./welcometothejungle";
+import { wellfoundAdapter } from "./wellfound";
+import { workAtAStartupAdapter } from "./workatastartup";
+import { workdayAdapter } from "./workday";
+import { ziprecruiterAdapter } from "./ziprecruiter";
 import type { Adapter } from "./types";
 
-// Adapters are registered here as they are implemented.
 const adapters: Adapter[] = [
   linkedInAdapter,
   indeedAdapter,
   greenhouseAdapter,
   leverAdapter,
   ashbyAdapter,
-  // more adapters added in subsequent tasks
+  wellfoundAdapter,
+  builtinAdapter,
+  diceAdapter,
+  levelsAdapter,
+  ziprecruiterAdapter,
+  githubAdapter,
+  googleJobsAdapter,
+  blindAdapter,
+  welcomeToTheJungleAdapter,
+  workAtAStartupAdapter,
 ];
 
 /** Look up the adapter for the current hostname. Returns null if unsupported. */
 export function findAdapter(hostname: string): Adapter | null {
-  return adapters.find((a) => a.hosts.includes(hostname)) ?? null;
+  // Exact host match
+  const exact = adapters.find((a) => a.hosts.includes(hostname));
+  if (exact) return exact;
+
+  // Workday: any *.myworkdayjobs.com subdomain
+  if (hostname.endsWith(".myworkdayjobs.com")) return workdayAdapter;
+
+  return null;
 }
 
-export { adapters };
+export { adapters, workdayAdapter, greenhouseAdapter, ashbyAdapter };
 export type { Adapter };
