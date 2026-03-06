@@ -133,6 +133,8 @@ Detailed design docs live in `docs/architecture/`. Read the relevant file before
 
 Also see `docs/plans/` for implementation plans (past and current).
 
+**Important:** Always create new design documents and implementation plans in `docs/plans/` or `docs/prds/`. Do not create a `docs/design/` directory or place design docs anywhere else under `docs/`.
+
 ## Superpowers Skills
 
 Use the uperpowers skills during development. When in doubt, invoke the skill — it's better to check and not need it than to skip it.

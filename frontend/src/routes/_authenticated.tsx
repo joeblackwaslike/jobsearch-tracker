@@ -3,6 +3,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { NavBar } from "@/components/layout/nav-bar";
 import { PageShell } from "@/components/layout/page-shell";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { NewRowsProvider } from "@/lib/realtime/new-rows-context";
+import { useRealtimeSync } from "@/lib/realtime/use-realtime-sync";
 
 const getUser = createServerFn({ method: "GET" }).handler(async () => {
   const supabase = createServerSupabaseClient();
@@ -24,6 +26,15 @@ export const Route = createFileRoute("/_authenticated")({
 });
 
 function AuthenticatedLayout() {
+  return (
+    <NewRowsProvider>
+      <AuthenticatedLayoutInner />
+    </NewRowsProvider>
+  );
+}
+
+function AuthenticatedLayoutInner() {
+  useRealtimeSync();
   return (
     <div className="flex min-h-screen flex-col">
       <NavBar />

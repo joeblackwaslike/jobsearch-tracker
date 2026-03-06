@@ -15,6 +15,13 @@ export interface Adapter {
   /**
    * Return the element to inject the Track button adjacent to.
    * Returns null if the target hasn't rendered yet (caller will retry via MutationObserver).
+   * Not required if watchForSubmission is implemented.
    */
-  getInjectTarget(): Element | null;
+  getInjectTarget?(): Element | null;
+  /**
+   * Optional: instead of a Track button, watch for the native application form to be
+   * submitted. Call onSubmit with the captured job data when submission is confirmed.
+   * Returns a cleanup function to stop watching.
+   */
+  watchForSubmission?(onSubmit: (jobData: JobData) => void): () => void;
 }

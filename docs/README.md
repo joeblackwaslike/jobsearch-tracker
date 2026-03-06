@@ -36,6 +36,9 @@ Implementation plans paired with design documents. Most recent first.
 
 | Date | Feature | Design | Plan |
 |---|---|---|---|
+| 2026-03-05 | Untitled UI Restyle | [design](./plans/2026-03-05-untitled-ui-restyle-design.md) | — |
+| 2026-03-05 | Realtime Sync | [design](./plans/2026-03-05-realtime-sync-design.md) | — |
+| 2026-03-05 | DB Schema Fixes | — | [plan](./plans/2026-03-05-db-schema-fixes.md) |
 | 2026-03-04 | OpenAPI + Scalar UI | [design](./plans/2026-03-04-openapi-scalar-design.md) | [plan](./plans/2026-03-04-openapi-scalar.md) |
 | 2026-03-04 | Chrome Extension | [design](./plans/2026-03-04-chrome-extension-design.md) | [plan](./plans/2026-03-04-chrome-extension.md) |
 | 2026-03-03 | Google OAuth Sign-In | [design](./plans/2026-03-03-google-oauth-design.md) | [plan](./plans/2026-03-03-google-oauth.md) |
@@ -63,4 +66,3 @@ Implementation plans paired with design documents. Most recent first.
 
 ---
 
-Also see [`backlog.md`](./backlog.md) for the feature backlog and [`next-iteration.md`](./next-iteration.md) for staged upcoming work.

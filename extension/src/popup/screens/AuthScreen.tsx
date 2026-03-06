@@ -2,7 +2,7 @@ import { useState } from "react";
 import { getStorage, setStorage } from "../../shared/storage";
 import { useAuth } from "../hooks/useAuth";
 
-export function AuthScreen() {
+export function AuthScreen({ onSuccess }: { onSuccess: () => void }) {
   const { signIn, error } = useAuth();
   const [backendUrl, setBackendUrl] = useState("");
   const [email, setEmail] = useState("");
@@ -22,8 +22,9 @@ export function AuthScreen() {
     if (backendUrl) {
       await setStorage({ backend_url: backendUrl.replace(/\/$/, "") });
     }
-    await signIn(email, password);
+    const ok = await signIn(email, password);
     setLoading(false);
+    if (ok) onSuccess();
   }
 
   return (

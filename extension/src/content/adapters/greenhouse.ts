@@ -1,7 +1,7 @@
 import type { Adapter, JobData } from "./types";
 
 export const greenhouseAdapter: Adapter = {
-  hosts: ["boards.greenhouse.io"],
+  hosts: ["boards.greenhouse.io", "job-boards.greenhouse.io"],
 
   extract(): JobData | null {
     const titleEl =
@@ -17,7 +17,6 @@ export const greenhouseAdapter: Adapter = {
     if (!titleEl) return null;
 
     const position = titleEl.textContent?.trim() ?? "";
-    // Company name may not be on the page; fall back to page title parsing
     const company =
       companyEl?.textContent?.trim() ||
       parseCompanyFromTitle(document.title);
@@ -26,12 +25,39 @@ export const greenhouseAdapter: Adapter = {
     return { position, company, url: location.href };
   },
 
-  getInjectTarget(): Element | null {
-    return (
-      document.querySelector("#header .btn--primary") ??
-      document.querySelector(".application-footer") ??
-      document.querySelector(".opening")
-    );
+  watchForSubmission(onSubmit: (jobData: JobData) => void): () => void {
+    // Capture job data now, before the form submission changes the DOM
+    const jobData = greenhouseAdapter.extract();
+
+    const form = document.getElementById("application-form");
+    if (!form || !jobData) return () => {};
+
+    const parent = form.parentElement;
+    if (!parent) return () => {};
+
+    const observer = new MutationObserver(() => {
+      // Form removed from DOM = successful submission / navigation
+      if (!document.getElementById("application-form")) {
+        observer.disconnect();
+        onSubmit(jobData);
+      }
+    });
+
+    observer.observe(parent, { childList: true });
+
+    // Also catch React Router URL-based navigation (some Greenhouse setups redirect)
+    const handleUrlChange = () => {
+      if (!document.getElementById("application-form")) {
+        observer.disconnect();
+        onSubmit(jobData);
+      }
+    };
+    window.addEventListener("popstate", handleUrlChange);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("popstate", handleUrlChange);
+    };
   },
 };
 

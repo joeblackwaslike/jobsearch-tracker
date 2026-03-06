@@ -11,8 +11,12 @@ describe("findAdapter", () => {
     expect(adapter).not.toBeNull();
     expect(adapter!.hosts).toContain("www.linkedin.com");
   });
-  it("finds Greenhouse adapter by boards.greenhouse.io", () => {
+  it("finds Greenhouse adapter by boards.greenhouse.io (legacy)", () => {
     expect(findAdapter("boards.greenhouse.io")).not.toBeNull();
+  });
+
+  it("finds Greenhouse adapter by job-boards.greenhouse.io (new layout)", () => {
+    expect(findAdapter("job-boards.greenhouse.io")).not.toBeNull();
   });
 
   it("returns null for greenhouse.io root (not a job board page)", () => {

@@ -1,7 +1,7 @@
-import type { SupabaseClient } from "@supabase/supabase-js"
-import type { Database } from "@/lib/supabase/types"
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/lib/supabase/types";
 
-type Client = SupabaseClient<Database>
+type Client = SupabaseClient<Database>;
 
 export async function findOrCreateCompany(
   client: Client,
@@ -13,20 +13,20 @@ export async function findOrCreateCompany(
     .select("id")
     .eq("user_id", userId)
     .ilike("name", companyName)
-    .maybeSingle()
+    .maybeSingle();
 
-  if (data?.id) return data.id
+  if (data?.id) return data.id;
 
   const { data: created, error } = await client
     .from("companies")
     .insert({ user_id: userId, name: companyName })
     .select("id")
-    .single()
+    .single();
 
   if (error || !created?.id) {
-    throw new Error(`Failed to create company: ${error?.message}`)
+    throw new Error(`Failed to create company: ${error?.message}`);
   }
-  return created.id
+  return created.id;
 }
 
 export async function checkRecentDuplicate(
@@ -35,7 +35,7 @@ export async function checkRecentDuplicate(
   companyId: string,
   position: string,
 ): Promise<string | null> {
-  const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+  const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
   const { data } = await client
     .from("applications")
@@ -44,9 +44,9 @@ export async function checkRecentDuplicate(
     .eq("company_id", companyId)
     .eq("position", position)
     .gte("applied_at", cutoff)
-    .maybeSingle()
+    .maybeSingle();
 
-  return data?.id ?? null
+  return data?.id ?? null;
 }
 
 export async function createApplication(
@@ -67,10 +67,10 @@ export async function createApplication(
       applied_at: new Date().toISOString(),
     })
     .select("id")
-    .single()
+    .single();
 
   if (error || !data?.id) {
-    throw new Error(`Failed to create application: ${error?.message}`)
+    throw new Error(`Failed to create application: ${error?.message}`);
   }
-  return data.id
+  return data.id;
 }

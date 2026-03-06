@@ -16,7 +16,7 @@ export function App() {
   }, []);
 
   if (screen === "loading") return null;
-  if (screen === "auth") return <AuthScreen />;
+  if (screen === "auth") return <AuthScreen onSuccess={() => setScreen("main")} />;
   if (screen === "settings") return <SettingsScreen onBack={() => setScreen("main")} />;
   return <MainScreen onSettings={() => setScreen("settings")} />;
 }

@@ -10,11 +10,7 @@ export default defineConfig({
   },
   plugins: [
     tsConfigPaths(),
-    tanstackStart({
-      router: {
-        routeFileIgnorePattern: "api/",
-      },
-    }),
+    tanstackStart(),
     // React's vite plugin must come after Start's vite plugin
     viteReact(),
     tailwindcss(),

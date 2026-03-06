@@ -1,3 +1,4 @@
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -15,6 +16,7 @@ interface CompanyTableProps {
 }
 
 export function CompanyTable({ data, onEdit }: CompanyTableProps) {
+  const [tbodyRef] = useAutoAnimate();
   return (
     <div className="overflow-x-auto rounded-md border w-full">
       <Table>
@@ -28,7 +30,7 @@ export function CompanyTable({ data, onEdit }: CompanyTableProps) {
             <TableHead>Tags</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody ref={tbodyRef}>
           {data.map((company) => {
             const tags = Array.isArray(company.tags) ? (company.tags as string[]) : [];
             return (

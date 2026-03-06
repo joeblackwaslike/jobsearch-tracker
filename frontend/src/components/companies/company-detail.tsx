@@ -66,11 +66,13 @@ function calcCompleteness(c: Company): number {
   return Math.round((filled / fields.length) * 100);
 }
 
-function qualityLabel(pct: number): { label: string; color: string } {
-  if (pct >= 90) return { label: "Excellent", color: "bg-green-500 text-white" };
-  if (pct >= 70) return { label: "Good", color: "bg-blue-500 text-white" };
-  if (pct >= 50) return { label: "Fair", color: "bg-amber-500 text-white" };
-  return { label: "Needs Work", color: "bg-red-500 text-white" };
+function qualityLabel(
+  pct: number,
+): { label: string; variant: "success" | "primary" | "warning" | "error" } {
+  if (pct >= 90) return { label: "Excellent", variant: "success" };
+  if (pct >= 70) return { label: "Good", variant: "primary" };
+  if (pct >= 50) return { label: "Fair", variant: "warning" };
+  return { label: "Needs Work", variant: "error" };
 }
 
 // ---------------------------------------------------------------------------
@@ -107,9 +109,9 @@ function OverviewTab({ company }: { company: Company }) {
       <div className="rounded-md border bg-muted/30 p-3 space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-lg font-medium">Data Quality</span>
-          <span className={cn("rounded-full px-2 py-0.5 text-xs font-medium", quality.color)}>
+          <Badge variant={quality.variant}>
             {quality.label}
-          </span>
+          </Badge>
         </div>
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>Completeness</span>

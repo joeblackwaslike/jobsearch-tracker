@@ -19,6 +19,7 @@
         "*://*.linkedin.com/jobs/*",
         "*://*.indeed.com/*",
         "*://boards.greenhouse.io/*",
+        "*://job-boards.greenhouse.io/*",
         "*://*.ashbyhq.com/*",
         "*://*.lever.co/*",
         "*://*.myworkdayjobs.com/*",
