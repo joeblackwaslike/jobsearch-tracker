@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "pnpm --filter frontend build",
+    "build": "pnpm --filter frontend build && pnpm --filter jobsearch-tracker-extension build",
+    "build:extension": "pnpm --filter jobsearch-tracker-extension build",
+    "dev:extension": "pnpm --filter jobsearch-tracker-extension dev",
     "dev": "supabase start; pnpm --filter frontend dev",
     "test": "pnpm --filter frontend test",
     "test:watch": "pnpm --filter frontend test:watch",
@@ -23,11 +25,7 @@
   "author": "",
   "license": "MIT",
   "packageManager": "pnpm@10.20.0",
-  "devDependencies": {
-    "@snaplet/copycat": "^6.0.0",
-    "@snaplet/seed": "0.98.0",
-    "postgres": "^3.4.8"
-  },
+  "devDependencies": {},
   "pnpm": {
     "onlyBuiltDependencies": [
       "@biomejs/biome"

@@ -120,6 +120,21 @@ Test utilities and setup are in `frontend/src/test/`.
 - Commit after each TDD cycle (red-green-refactor = one commit)
 - Keep commits small and focused
 
+## Architecture Reference
+
+Detailed design docs live in `docs/architecture/`. Read the relevant file before working in any of these areas:
+
+- `constitution.md` — stable product principles and constraints; overrides any one-off spec
+- `project.md` — high-level system overview, goals, and component map
+- `data_model.md` — database schema, entity relationships, and RLS patterns
+- `api_layer.md` — server function conventions, extension API endpoints, and OpenAPI spec
+- `edge-functions.md` — Supabase edge function patterns and deployment notes
+- `ui.md` — UI architecture, component conventions, and routing patterns
+
+Also see `docs/plans/` for implementation plans (past and current).
+
+**Important:** Always create new design documents and implementation plans in `docs/plans/` or `docs/prds/`. Do not create a `docs/design/` directory or place design docs anywhere else under `docs/`.
+
 ## Superpowers Skills
 
 Use the uperpowers skills during development. When in doubt, invoke the skill — it's better to check and not need it than to skip it.

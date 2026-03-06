@@ -55,7 +55,7 @@ vi.mock("@/lib/queries/contacts", () => ({
   useSearchContacts: () => ({ data: [], isLoading: false }),
   useCreateContact: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useUpdateContact: () => ({ mutateAsync: vi.fn(), isPending: false }),
-  useDeleteContact: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useArchiveContact: () => ({ mutateAsync: vi.fn(), isPending: false }),
 }));
 
 // ---------------------------------------------------------------------------
@@ -226,6 +226,19 @@ describe("ApplicationDetail", () => {
     const dateEls = screen.getAllByText(/Jan 20, 2026/);
     expect(dateEls.length).toBeGreaterThanOrEqual(1);
     expect(dateEls[0]).toBeVisible();
+  });
+
+  it("renders Notes card when application has notes", () => {
+    const app = { ...mockApplication, notes: "Take-home assignment notes" };
+    render(<ApplicationDetail application={app as any} />);
+    expect(screen.getByText("Notes")).toBeInTheDocument();
+    expect(screen.getByText("Take-home assignment notes")).toBeInTheDocument();
+  });
+
+  it("does not render Notes card when notes is null", () => {
+    render(<ApplicationDetail application={mockApplication} />);
+    const notesHeadings = screen.queryAllByRole("heading").filter(el => el.textContent === "Notes");
+    expect(notesHeadings).toHaveLength(0);
   });
 
   it("hides 'Bookmarked' milestone when applied_at is set", () => {

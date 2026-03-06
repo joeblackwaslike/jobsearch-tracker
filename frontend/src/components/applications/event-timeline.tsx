@@ -1,5 +1,8 @@
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+import type React from "react";
 import {
   AlertTriangle,
+  BookmarkIcon,
   Building,
   CheckCircle,
   ChevronDown,
@@ -13,6 +16,7 @@ import {
   Pencil,
   Phone,
   RefreshCw,
+  SendIcon,
   Trash2,
   User2,
   Users,
@@ -57,14 +61,17 @@ const EVENT_TYPE_CONFIG: Record<
   "peer-interview": { label: "Peer Interview", icon: Users2 },
 };
 
-const STATUS_VARIANT: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
-  "availability-requested": "outline",
-  "availability-submitted": "outline",
-  scheduled: "default",
-  completed: "secondary",
-  cancelled: "destructive",
-  rescheduled: "outline",
-  "no-show": "destructive",
+const STATUS_VARIANT: Record<
+  string,
+  "primary" | "success" | "error" | "warning" | "secondary" | "outline"
+> = {
+  "availability-requested": "secondary",
+  "availability-submitted": "primary",
+  scheduled: "primary",
+  completed: "success",
+  cancelled: "error",
+  rescheduled: "warning",
+  "no-show": "secondary",
 };
 
 function formatStatusLabel(status: string): string {
@@ -95,6 +102,37 @@ interface EventTimelineProps {
   events: Event[];
   applicationId: string;
   companyId?: string;
+  appliedAt?: string | null;
+  createdAt?: string | null;
+}
+
+// ---------------------------------------------------------------------------
+// Milestone node (Applied / Bookmarked)
+// ---------------------------------------------------------------------------
+
+function MilestoneNode({
+  icon,
+  label,
+  date,
+  hasNext,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  date: string;
+  hasNext: boolean;
+}) {
+  return (
+    <div className="relative flex gap-4">
+      {hasNext && <div className="absolute left-[17px] top-10 bottom-0 w-px bg-border" />}
+      <div className="relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full border bg-background">
+        {icon}
+      </div>
+      <div className="flex-1 pb-6">
+        <p className="text-sm font-medium">{label}</p>
+        <p className="text-xs text-muted-foreground">{date}</p>
+      </div>
+    </div>
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -280,8 +318,17 @@ function EventNode({
 // Component
 // ---------------------------------------------------------------------------
 
-export function EventTimeline({ events, applicationId, companyId }: EventTimelineProps) {
-  if (events.length === 0) {
+export function EventTimeline({
+  events,
+  applicationId,
+  companyId,
+  appliedAt,
+  createdAt,
+}: EventTimelineProps) {
+  const hasMilestone = Boolean(appliedAt || createdAt);
+  const [timelineRef] = useAutoAnimate();
+
+  if (!hasMilestone && events.length === 0) {
     return (
       <p className="text-sm text-muted-foreground py-4">
         No events yet. Add an event to start tracking your timeline.
@@ -290,7 +337,22 @@ export function EventTimeline({ events, applicationId, companyId }: EventTimelin
   }
 
   return (
-    <div className="space-y-0">
+    <div ref={timelineRef} className="space-y-0">
+      {appliedAt ? (
+        <MilestoneNode
+          icon={<SendIcon className="size-4 text-muted-foreground" />}
+          label="Applied"
+          date={formatDate(appliedAt)}
+          hasNext={events.length > 0}
+        />
+      ) : createdAt ? (
+        <MilestoneNode
+          icon={<BookmarkIcon className="size-4 text-muted-foreground" />}
+          label="Bookmarked"
+          date={formatDate(createdAt)}
+          hasNext={events.length > 0}
+        />
+      ) : null}
       {events.map((event, index) => (
         <EventNode
           key={event.id}

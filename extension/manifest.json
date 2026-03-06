@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "Job Search Tracker",
+  "version": "0.1.0",
+  "description": "One-click job application tracking from any job board.",
+  "permissions": ["storage", "activeTab", "scripting", "tabs"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "src/background/index.ts",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "src/popup/index.html",
+    "default_title": "Job Search Tracker"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.linkedin.com/jobs/*",
+        "*://*.indeed.com/*",
+        "*://boards.greenhouse.io/*",
+        "*://job-boards.greenhouse.io/*",
+        "*://*.ashbyhq.com/*",
+        "*://*.lever.co/*",
+        "*://*.myworkdayjobs.com/*",
+        "*://*.wellfound.com/*",
+        "*://*.builtin.com/*",
+        "*://*.dice.com/*",
+        "*://*.levels.fyi/*",
+        "*://*.ziprecruiter.com/*",
+        "*://github.com/*/jobs*",
+        "*://www.google.com/search*",
+        "*://www.teamblind.com/*",
+        "*://*.welcometothejungle.com/*",
+        "*://www.workatastartup.com/*"
+      ],
+      "js": ["src/content/index.ts"],
+      "run_at": "document_idle"
+    }
+  ]
+}

@@ -118,10 +118,10 @@ export function UniversalTable<T extends object>({
   const sortDirection = currentSort?.desc ? "desc" : "asc";
 
   return (
-    <div className={cn("overflow-x-auto rounded-md border w-full", className)}>
+    <div className={cn("overflow-x-auto rounded-xl border border-border shadow-xs w-full", className)}>
       <Table>
         <TableHeader>
-          <TableRow>
+          <TableRow className="bg-muted/60">
             {schema.columns.map((col, idx) => (
               <TableHead
                 key={col.id}

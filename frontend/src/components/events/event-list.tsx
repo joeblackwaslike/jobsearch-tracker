@@ -1,3 +1,4 @@
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useNavigate } from "@tanstack/react-router";
 import { CalendarIcon, ClockIcon, ExternalLinkIcon, PencilIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
@@ -20,15 +21,16 @@ const TYPE_LABELS: Record<string, string> = {
   onsite: "Onsite",
 };
 
-const STATUS_COLORS: Record<string, string> = {
-  scheduled: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  completed: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-  cancelled: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-  rescheduled: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
-  "availability-requested": "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  "availability-submitted": "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
-  "no-show": "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
-};
+const STATUS_VARIANTS: Record<string, "primary" | "success" | "error" | "warning" | "secondary"> =
+  {
+    scheduled: "primary",
+    completed: "success",
+    cancelled: "error",
+    rescheduled: "warning",
+    "availability-requested": "secondary",
+    "availability-submitted": "primary",
+    "no-show": "secondary",
+  };
 
 const STATUS_LABELS: Record<string, string> = {
   scheduled: "Scheduled",
@@ -73,6 +75,7 @@ interface EventListProps {
 export function EventList({ events, search, hideArchived = true }: EventListProps) {
   const navigate = useNavigate();
   const deleteEvent = useDeleteEvent();
+  const [listRef] = useAutoAnimate();
 
   const [editingEvent, setEditingEvent] = useState<EventWithApplication | null>(null);
 
@@ -98,7 +101,7 @@ export function EventList({ events, search, hideArchived = true }: EventListProp
   return (
     <>
       {hideArchived && <p className="text-xs text-muted-foreground">Showing active events only.</p>}
-      <div className="space-y-3">
+      <div ref={listRef} className="space-y-3">
         {filtered.map((event) => (
           <Card
             key={event.id}
@@ -123,7 +126,7 @@ export function EventList({ events, search, hideArchived = true }: EventListProp
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge variant="outline">{TYPE_LABELS[event.type] ?? event.type}</Badge>
-                  <Badge variant="secondary" className={STATUS_COLORS[event.status] ?? ""}>
+                  <Badge variant={STATUS_VARIANTS[event.status] ?? "secondary"}>
                     {STATUS_LABELS[event.status] ?? event.status}
                   </Badge>
                   <span className="text-muted-foreground flex items-center gap-1 text-xs">

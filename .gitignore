@@ -5,9 +5,12 @@ docs/next-iteration.md
 node_modules/
 
 .claude/
+.env
 
 # macOS
 .DS_Store
+
+.braid/
 
 # Snaplet (auto-generated)
 .snaplet/
