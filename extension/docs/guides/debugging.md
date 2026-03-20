@@ -9,12 +9,14 @@ Complete guide for debugging Chrome extension issues.
 Content scripts run in the context of web pages.
 
 **Open DevTools on page:**
+
 1. Visit job board page
 2. Press `F12` or `Cmd+Opt+I` (Mac) / `Ctrl+Shift+I` (Windows)
 3. Go to **Console** tab for logs
 4. Go to **Sources** tab for breakpoints
 
 **View content script logs:**
+
 ```javascript
 // In your adapter
 log("example", "extract() →", position, "@", company);
@@ -24,6 +26,7 @@ log("example", "extract() →", position, "@", company);
 ```
 
 **Set breakpoints:**
+
 1. Open **Sources** tab
 2. Expand **Content scripts** section (left sidebar)
 3. Find your adapter file
@@ -35,12 +38,14 @@ log("example", "extract() →", position, "@", company);
 Service worker (background script) handles messaging, storage, and API calls.
 
 **Open service worker console:**
+
 1. Navigate to `chrome://extensions/`
 2. Find your extension
 3. Click **service worker** link (blue text)
 4. DevTools opens with background script console
 
 **View background logs:**
+
 ```javascript
 // In background/index.ts
 console.log("Received TRACK message:", data);
@@ -49,6 +54,7 @@ console.log("Received TRACK message:", data);
 ```
 
 **Inspect storage:**
+
 ```javascript
 // In service worker console
 await chrome.storage.local.get(null)
@@ -56,6 +62,7 @@ await chrome.storage.local.get(null)
 ```
 
 **Check network requests:**
+
 1. Open service worker console
 2. Go to **Network** tab
 3. Trigger action (e.g., apply to job)
@@ -64,12 +71,14 @@ await chrome.storage.local.get(null)
 ### Popup Debugging
 
 **Open popup DevTools:**
+
 1. Click extension icon to open popup
 2. Right-click inside popup
 3. Select **Inspect**
 4. DevTools opens for popup
 
 **Features:**
+
 - React DevTools available
 - Console for React errors
 - Elements tab for DOM inspection
@@ -84,6 +93,7 @@ await chrome.storage.local.get(null)
 **Debug steps:**
 
 1. **Check extract():**
+
    ```javascript
    // Open page console
    // Look for extract log
@@ -91,6 +101,7 @@ await chrome.storage.local.get(null)
    ```
 
 2. **Check AUTO_TRACK_STATUS message:**
+
    ```javascript
    // In content/index.ts
    log("content", "AUTO_TRACK_STATUS →", hasAutoTracking);
@@ -98,12 +109,14 @@ await chrome.storage.local.get(null)
    ```
 
 3. **Check background received message:**
+
    ```javascript
    // In service worker console
    // Look for "Setting icon to green" log
    ```
 
 4. **Check setIcon call:**
+
    ```javascript
    // In background/index.ts
    chrome.action.setIcon({ tabId, path: ICON_GREEN });
@@ -117,6 +130,7 @@ await chrome.storage.local.get(null)
 **Debug steps:**
 
 1. **Check extract() returns data:**
+
    ```javascript
    // In page console, run manually:
    const adapter = { /* your adapter */ };
@@ -125,12 +139,14 @@ await chrome.storage.local.get(null)
    ```
 
 2. **Check watcher registered:**
+
    ```javascript
    // Look for log in console:
    // "[adapter] watchForSubmission: watching for success signal"
    ```
 
 3. **Check success signal:**
+
    ```javascript
    // Add debug log to observer
    const observer = new MutationObserver(() => {
@@ -145,6 +161,7 @@ await chrome.storage.local.get(null)
    ```
 
 4. **Verify observer config:**
+
    ```javascript
    // Too narrow - won't detect deep changes
    observer.observe(document.body, { childList: true });
@@ -160,6 +177,7 @@ await chrome.storage.local.get(null)
 **Debug steps:**
 
 1. **Check URL pattern:**
+
    ```javascript
    // In page console
    console.log(location.pathname);
@@ -167,6 +185,7 @@ await chrome.storage.local.get(null)
    ```
 
 2. **Check selectors:**
+
    ```javascript
    // In page console, test selectors:
    document.querySelector(".job-title");
@@ -174,6 +193,7 @@ await chrome.storage.local.get(null)
    ```
 
 3. **Check timing:**
+
    ```javascript
    // Page may not be loaded yet
    // Try adding a delay:
@@ -184,6 +204,7 @@ await chrome.storage.local.get(null)
    ```
 
 4. **Inspect actual DOM:**
+
    ```javascript
    // In Elements tab, find job title element
    // Right-click → Copy → Copy selector
@@ -197,18 +218,21 @@ await chrome.storage.local.get(null)
 **Debug steps:**
 
 1. **Check TRACK message sent:**
+
    ```javascript
    // In page console, look for:
    // "Sending TRACK message:" log
    ```
 
 2. **Check background received message:**
+
    ```javascript
    // In service worker console, look for:
    // "Received TRACK message:" log
    ```
 
 3. **Check API call:**
+
    ```javascript
    // In service worker Network tab
    // Look for POST to /api/track
@@ -216,6 +240,7 @@ await chrome.storage.local.get(null)
    ```
 
 4. **Check response:**
+
    ```javascript
    // In service worker console, look for:
    // "Track response:" log
@@ -223,6 +248,7 @@ await chrome.storage.local.get(null)
    ```
 
 5. **Check storage updated:**
+
    ```javascript
    // In service worker console:
    const { recent } = await chrome.storage.local.get("recent");
@@ -236,12 +262,14 @@ await chrome.storage.local.get(null)
 **Debug steps:**
 
 1. **Check intent recorded:**
+
    ```javascript
    // In page console when clicking Apply:
    // "[adapter] watchForIntent: recording intent"
    ```
 
 2. **Check intent stored:**
+
    ```javascript
    // In service worker console:
    const { pendingIntents } = await chrome.storage.local.get("pendingIntents");
@@ -249,6 +277,7 @@ await chrome.storage.local.get(null)
    ```
 
 3. **Check matching criteria:**
+
    ```javascript
    // In service worker console when tracking:
    // "Matching intent for: Acme Corp"
@@ -256,6 +285,7 @@ await chrome.storage.local.get(null)
    ```
 
 4. **Check TTL not expired:**
+
    ```javascript
    // High-confidence: 2 hours (7,200,000 ms)
    // Low-confidence: 30 minutes (1,800,000 ms)
@@ -275,6 +305,7 @@ await chrome.storage.local.get(null)
 **Debug steps:**
 
 1. **Check observer scope:**
+
    ```javascript
    // Bad - observes entire page
    observer.observe(document.body, { childList: true, subtree: true });
@@ -285,6 +316,7 @@ await chrome.storage.local.get(null)
    ```
 
 2. **Profile mutations:**
+
    ```javascript
    // In page Performance tab
    // Start recording
@@ -294,6 +326,7 @@ await chrome.storage.local.get(null)
    ```
 
 3. **Debounce expensive operations:**
+
    ```javascript
    let debounceTimer: number | undefined;
 
@@ -312,6 +345,7 @@ await chrome.storage.local.get(null)
 **Debug steps:**
 
 1. **Check observer cleanup:**
+
    ```javascript
    // BAD - observer never disconnected
    watchForSubmission(onSubmit) {
@@ -329,6 +363,7 @@ await chrome.storage.local.get(null)
    ```
 
 2. **Check event listener cleanup:**
+
    ```javascript
    // BAD - listener never removed
    watchForIntent(onIntent) {
@@ -347,6 +382,7 @@ await chrome.storage.local.get(null)
    ```
 
 3. **Profile memory:**
+
    ```javascript
    // In page Memory tab
    // Take heap snapshot before action

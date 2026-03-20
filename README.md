@@ -74,7 +74,7 @@ pnpm db:seed
 
 Resets the database and populates it with sample data. Then log in at [http://localhost:3000](http://localhost:3000) with:
 
-```
+```text
 Email:    dev@example.com
 Password: devpassword123
 ```

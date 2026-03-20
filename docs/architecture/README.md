@@ -8,8 +8,8 @@ Design and architecture reference for the Job Search Tracker. These docs reflect
 |---|---|
 | [constitution.md](./constitution.md) | Stable product principles and constraints. Overrides any one-off spec when they conflict. Start here if you're new to the project. |
 | [project.md](./project.md) | High-level system overview — mission, problem statement, component map, and product goals. |
-| [data_model.md](./data_model.md) | Database schema, entity relationships, RLS patterns, and the DB diagram. |
-| [api_layer.md](./api_layer.md) | The two API layers: Supabase PostgREST (web frontend) and the Extension API (Bearer token, TanStack Start routes). |
+| [data-model.md](./data-model.md) | Database schema, entity relationships, RLS patterns, and the DB diagram. |
+| [api-layer.md](./api-layer.md) | The two API layers: Supabase PostgREST (web frontend) and the Extension API (Bearer token, TanStack Start routes). |
 | [edge-functions.md](./edge-functions.md) | Supabase Edge Functions — what they're for, the function inventory, and deployment notes. |
 | [ui.md](./ui.md) | Frontend architecture — routing, component conventions, state management, and styling patterns. |
 

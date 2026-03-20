@@ -1,10 +1,12 @@
 # Welcome to the Jungle
 
 ## domains:
+
 * welcometothejungle.com
 * www.welcometothejungle.com
 
 ## Detection
+
 Hostname is `welcometothejungle.com` and path includes `/companies/{slug}/jobs/`.
 
 ```ts
@@ -13,14 +15,16 @@ Hostname is `welcometothejungle.com` and path includes `/companies/{slug}/jobs/`
 ```
 
 ## URL Patterns
-- Jobs listing: `https://www.welcometothejungle.com/en/jobs`
-- Job detail: `https://www.welcometothejungle.com/{locale}/companies/{company-slug}/jobs/{job-slug}_{location-suffix}`
-  - Example: `/en/companies/dataiku/jobs/marketing-campaign-operations-manager_new-york`
-  - Example: `/fr/companies/dataiku/jobs/responsable-marketing_paris`
-  - `{locale}` is `en` or `fr` (both variants exist)
-  - `{location-suffix}` is a location slug appended with underscore (e.g. `_new-york`, `_remote`)
+
+* Jobs listing: `https://www.welcometothejungle.com/en/jobs`
+* Job detail: `https://www.welcometothejungle.com/{locale}/companies/{company-slug}/jobs/{job-slug}_{location-suffix}`
+  * Example: `/en/companies/dataiku/jobs/marketing-campaign-operations-manager_new-york`
+  * Example: `/fr/companies/dataiku/jobs/responsable-marketing_paris`
+  * `{locale}` is `en` or `fr` (both variants exist)
+  * `{location-suffix}` is a location slug appended with underscore (e.g. `_new-york`, `_remote`)
 
 ## Application Method
+
 Redirect to external company ATS. WTTJ does not host application forms — the Apply button
 navigates the user to the company's ATS (Greenhouse, Ashby, Lever, Workday, etc.).
 
@@ -55,6 +59,7 @@ document.querySelector('h2')?.textContent?.trim()
 ```
 
 ### Apply button (JS-rendered — watch for click)
+
 The Apply button is rendered by React after page load. Use MutationObserver or click-event
 delegation on the document root to detect clicks matching an "apply" button:
 
@@ -72,6 +77,7 @@ document.addEventListener('click', (e) => {
 ```
 
 ### Is the ATS URL in the Apply href?
+
 **Unknown from curl.** The Apply button is JS-rendered; its `href` value is not in the SSR HTML.
 Needs browser verification. If the ATS URL is in the href, `atsDomain` can be decoded before
 the redirect; if not, use `null`.
@@ -88,7 +94,8 @@ the redirect; if not, use `null`.
 **Trigger on Apply click** (not page load) to minimize false positives from browsing.
 
 ## Notes
-- Site is React SPA but job content is server-rendered (290k HTML, rich content)
-- `og:title` format confirmed: `"{Title}  – {Company} – {Type} – {Location}"` (double space before dashes)
-- French locale (`/fr/...`) follows same URL and DOM structure
-- Researched via: curl + HTML extraction (zero browser tokens), 2026-03-07
+
+* Site is React SPA but job content is server-rendered (290k HTML, rich content)
+* `og:title` format confirmed: `"{Title}  – {Company} – {Type} – {Location}"` (double space before dashes)
+* French locale (`/fr/...`) follows same URL and DOM structure
+* Researched via: curl + HTML extraction (zero browser tokens), 2026-03-07

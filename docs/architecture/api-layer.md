@@ -304,7 +304,7 @@ This logic lives in the mutation function, not the database. It will eventually 
 | `useDashboardStats()` | Aggregate stat card values | `supabase.rpc('get_dashboard_stats')` |
 | `useRecentActivity()` | Last 15 events with joins | `SELECT *, application(…company(…)) ORDER BY created_at desc LIMIT 15` |
 
-`get_dashboard_stats` is a `SECURITY DEFINER` SQL function that computes all stat card values in a single round trip. See `data_model.md` → Database Infrastructure → Functions for the implementation.
+`get_dashboard_stats` is a `SECURITY DEFINER` SQL function that computes all stat card values in a single round trip. See `data-model.md` → Database Infrastructure → Functions for the implementation.
 
 ---
 

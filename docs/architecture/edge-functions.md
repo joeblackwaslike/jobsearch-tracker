@@ -212,7 +212,7 @@ Edge functions read secrets via `Deno.env.get()`. Supabase injects secrets into 
 
 Secrets for local development are stored in `supabase/.env` (gitignored). This file is **not committed**.
 
-```
+```sh
 # supabase/.env
 BROWSERLESS_API_KEY=your_key_here
 RESEND_API_KEY=your_key_here
@@ -222,7 +222,7 @@ The Supabase CLI automatically injects these when serving or starting functions 
 
 **Template:** `supabase/.env.example` lists all required keys:
 
-```
+```sh
 BROWSERLESS_API_KEY=
 RESEND_API_KEY=
 ```
@@ -291,9 +291,11 @@ verify_jwt = false   # disabled — no user session required
 ```
 
 When `verify_jwt = true` (the default), an unauthenticated request returns:
+
 ```json
 { "message": "JWT must be provided" }
 ```
+
 with status `401`.
 
 ### When to use each auth mode
@@ -367,6 +369,7 @@ const html: string = data.html;
 ```
 
 The client automatically includes these headers:
+
 - `Authorization: Bearer <user-jwt>`
 - `apikey: <anon-key>`
 - `x-client-info: <sdk-version>`
@@ -419,12 +422,13 @@ npx pnpm dev
 ```
 
 This starts:
+
 - Supabase local stack (Postgres, Auth, Storage, Edge Runtime, Studio)
 - Vite dev server at `http://localhost:3000`
 
 After `supabase start`, the CLI prints all local service URLs:
 
-```
+```text
 API URL: http://127.0.0.1:54321
 DB URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres
 Studio URL: http://127.0.0.1:54323
@@ -444,7 +448,8 @@ Edge Runtime: http://127.0.0.1:54321/functions/v1/<name>
 | Deno inspector | 8083 | Chrome DevTools |
 
 Edge functions are served at:
-```
+
+```text
 http://127.0.0.1:54321/functions/v1/<function-name>
 ```
 
@@ -485,6 +490,7 @@ curl -X POST http://127.0.0.1:54321/functions/v1/send-interview-reminders \
 ```
 
 To get the service role key:
+
 ```bash
 supabase status -o json | jq -r .SERVICE_ROLE_KEY
 ```
@@ -500,6 +506,7 @@ supabase functions serve fetch-job-url --env-file supabase/.env
 This runs only that function with hot reload on file changes. Useful when iterating on function logic without restarting the full stack.
 
 Serve all functions:
+
 ```bash
 supabase functions serve --env-file supabase/.env
 ```
@@ -541,6 +548,7 @@ supabase functions invoke fetch-job-url \
 ```
 
 Get your project ref from the Supabase dashboard URL or:
+
 ```bash
 supabase projects list
 ```
@@ -561,13 +569,13 @@ curl -X POST https://<project-ref>.supabase.co/functions/v1/fetch-job-url \
 supabase functions logs fetch-job-url --project-ref <project-ref>
 ```
 
-Or view in the Supabase dashboard under **Edge Functions → <function-name> → Logs**.
+Or view in the Supabase dashboard under **Edge Functions → \<function-name\> → Logs**.
 
 ---
 
 ## Deployment
 
-### Prerequisites
+### Deployment Prerequisites
 
 ```bash
 # Authenticate
@@ -612,7 +620,7 @@ supabase functions list --project-ref <project-ref>
 
 End-to-end workflow for adding or modifying an edge function:
 
-```
+```text
 1. Write the function
    └── supabase/functions/<name>/index.ts
 
@@ -750,6 +758,7 @@ Any function called from a browser needs an OPTIONS preflight handler. Functions
 ### Use `verify_jwt = false` sparingly
 
 Disabling JWT verification makes a function publicly accessible by URL. Only do this when:
+
 - The function is protected by another secret mechanism (e.g. `BROWSERLESS_API_KEY`)
 - There is a known JWT verification bug that blocks development (document the reason in a comment)
 

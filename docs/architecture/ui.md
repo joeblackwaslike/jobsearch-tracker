@@ -26,7 +26,7 @@ All source lives in `frontend/src/`.
 
 ## Directory Structure
 
-```
+```text
 frontend/src/
 ├── components/
 │   ├── applications/       # Application domain components
@@ -146,7 +146,7 @@ The `dark` class is toggled on `document.documentElement` to activate the `.dark
 
 `frontend/src/routes/__root.tsx` wraps the entire application in the following provider hierarchy:
 
-```
+```text
 QueryClientProvider (staleTime: 5 min, retry: 1)
   └── ThemeProvider
         └── TooltipProvider
@@ -155,6 +155,7 @@ QueryClientProvider (staleTime: 5 min, retry: 1)
 ```
 
 QueryClient config:
+
 - `staleTime: 5 * 60 * 1000` (5 minutes)
 - `retry: 1`
 
@@ -173,6 +174,7 @@ Sticky top navigation bar (`sticky top-0 z-50`). Height: `h-16`.
 **Mobile layout:** Logo · hamburger icon → Sheet drawer with vertical nav links
 
 Nav links:
+
 - Dashboard → `/dashboard`
 - Applications → `/applications`
 - Events → `/events`
@@ -253,7 +255,7 @@ interface DetailLayoutProps {
 
 All list pages follow a consistent composition:
 
-```
+```text
 PageLayout
   ├── children
   │   ├── page header (h1, subtitle, action buttons)
@@ -745,7 +747,7 @@ Component tests use **Vitest** + **@testing-library/react**.
 
 Test files co-locate with their components in `__tests__/` subdirectories:
 
-```
+```text
 components/applications/__tests__/
   application-table.test.tsx
   application-filters.test.tsx

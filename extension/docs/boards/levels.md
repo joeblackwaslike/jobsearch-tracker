@@ -37,10 +37,12 @@ Confirmed via browser eval on `levels.fyi/jobs/company/google/title/software-eng
 ```
 
 **h1 structure**: Two h1 elements on the page:
+
 1. `"Google Software Engineer Jobs"` — page header (ignore)
 2. `"Senior Software Engineer, XR Engineering Productivity"` — job title (use this)
 
 **Title selector**: Second h1 — `document.querySelectorAll('h1')[1]` or:
+
 - `document.querySelector('[class*="jobTitleRow"] h1')`
 - Or: `Array.from(document.querySelectorAll('h1')).find(h => !h.textContent.includes('Jobs'))`
 - JSON-LD also available: `script[type="application/ld+json"]` → `@type=JobPosting` → `title`

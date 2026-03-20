@@ -83,7 +83,7 @@ All 21+ existing tests still pass. Each adapter additionally has a fixture-based
 
 Add a Playwright config at `extension/playwright.config.ts` with a custom browser launch that passes:
 
-```
+```text
 --load-extension=dist/
 --disable-extensions-except=dist/
 --host-rules=MAP boards.greenhouse.io 127.0.0.1,MAP jobs.ashbyhq.com 127.0.0.1,MAP jobs.lever.co 127.0.0.1,...
@@ -135,11 +135,13 @@ Create a local HTTP server that maps URL paths to fixture files. For example:
 - Request to `https://jobs.ashbyhq.com/acme/123` → serves `fixtures/ashby.html`
 
 The server should:
+
 1. Listen on `127.0.0.1:80` (or `:443` with self-signed cert if testing HTTPS-only features)
 2. Route incoming requests based on the `Host` header to the correct fixture file
 3. Set `Content-Type: text/html` and optionally match the real site's CSP headers
 
 Implementation options:
+
 - **Simple Express app** with a hostname → fixture mapping table
 - **Static file server** (e.g., `http-server`) with a routing layer
 
@@ -171,6 +173,7 @@ Focus exclusively on logic that has no coverage elsewhere. Write these tests in 
 
 **TRACK pipeline (happy path)**
 Navigate to `https://boards.greenhouse.io/acme/jobs/123` (which resolves to the local fixture server via `--host-rules`). Trigger the form submission signal. Verify:
+
 - `chrome.storage.local` is updated with a `recent_jobs` entry
 - The mock API server received a `POST /api/extension/track` with the correct `company_name` and `position`
 
@@ -192,7 +195,7 @@ Configure the mock API to return 401 on the first TRACK call, then 200 on retry.
 **Duplicate detection (409)**
 Configure the mock API to return 409. Verify the background script responds to the content script with `{ ok: false, error: "duplicate" }` and does not append to `recent_jobs`.
 
-### Definition of done
+### Definition of done — Phase 2
 
 Pipeline tests cover intent matching (with and without TTL expiry, with and without `atsDomain`), the TRACK → storage → API path, token refresh on 401, and duplicate 409 handling. All tests use `--host-rules` DNS remapping to ensure adapters dispatch correctly while serving local HTML with no network dependency.
 
@@ -202,7 +205,7 @@ Pipeline tests cover intent matching (with and without TTL expiry, with and with
 
 **Goal:** A scheduled CI job (weekly or on-demand) that navigates to real live job pages and verifies adapters still return non-null data. This detects site DOM changes between snapshot recaptures.
 
-### Implementation
+### Implementation — Phase 3
 
 Write a separate Playwright test file: `extension/src/content/adapters/__tests__/live/drift-detection.test.ts`. Exclude it from the default test run; include it only in a `--project=live` Playwright config.
 
@@ -232,7 +235,7 @@ on:
 
 When the job fails, the Playwright report will identify exactly which board's `extract()` returned null, pointing directly to the adapter that needs updating.
 
-### Definition of done
+### Definition of done — Phase 3
 
 `pnpm test:live` runs live drift verification for all public boards. A GitHub Actions workflow runs it weekly and sends a notification on failure.
 
@@ -244,7 +247,7 @@ When the job fails, the Playwright report will identify exactly which board's `e
 
 This phase is independent of all three phases above and can be implemented at any time. It does not block or depend on extension QA.
 
-### Implementation
+### Implementation — Phase 4
 
 Use MSW to mock `GET /api/applications` with 5–10 seeded job records covering edge cases:
 
@@ -262,7 +265,7 @@ Write Playwright component tests (or React Testing Library tests) that verify:
 
 No database, no extension, and no Chrome are required for these tests. They run in standard Node/jsdom.
 
-### Definition of done
+### Definition of done — Phase 4
 
 Frontend tests run in CI and cover the main list view, status filtering, source badge rendering, and sorting.
 
