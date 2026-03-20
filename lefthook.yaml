@@ -30,3 +30,7 @@ pre-commit:
     - name: extension-test
       root: "extension/"
       run: zsh -l -c "pnpm run test"
+
+    - name: markdown-lint
+      run: zsh -l -c "npx pnpm lint:md"
+      glob: "**/*.md"
