@@ -4,14 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "pnpm --filter frontend build",
+    "build": "pnpm --filter frontend build && pnpm --filter extension build",
+    "build:extension": "pnpm --filter extension build",
+    "dev:extension": "pnpm --filter extension dev",
     "dev": "supabase start; pnpm --filter frontend dev",
-    "test": "pnpm --filter frontend test",
+    "test": "pnpm --filter frontend test && pnpm --filter extension test",
     "test:watch": "pnpm --filter frontend test:watch",
     "test:e2e": "pnpm --filter frontend test:e2e",
-    "lint": "pnpm --filter frontend lint",
-    "lint:check": "pnpm --filter frontend lint:check",
-    "type": "pnpm --filter frontend type",
+    "lint": "pnpm --filter frontend lint && pnpm --filter extension lint",
+    "lint:check": "pnpm --filter frontend lint:check && pnpm --filter extension lint:check",
+    "lint:md": "markdownlint \"**/*.md\" --ignore node_modules --ignore \"**/node_modules\" --ignore \"**/dist\"",
+    "type": "pnpm --filter frontend type && pnpm --filter extension type",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
@@ -24,13 +27,13 @@
   "license": "MIT",
   "packageManager": "pnpm@10.20.0",
   "devDependencies": {
-    "@snaplet/copycat": "^6.0.0",
-    "@snaplet/seed": "0.98.0",
-    "postgres": "^3.4.8"
+    "lefthook": "^2.1.4",
+    "markdownlint-cli": "^0.43.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "@biomejs/biome"
+      "@biomejs/biome",
+      "lefthook"
     ]
   }
 }

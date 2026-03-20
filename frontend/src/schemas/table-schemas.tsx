@@ -2,20 +2,22 @@ import { Badge } from "@/components/ui/badge";
 import { formatDate, formatRelativeTime } from "@/lib/formatters";
 
 // Constants
-export const STATUS_COLORS = {
-  applied: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
-  interview: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
-  offer: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
-  rejected: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
-  archived: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
-  bookmarked: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
+export const STATUS_VARIANTS = {
+  applied: "primary",
+  interview: "warning",
+  interviewing: "warning",
+  offer: "success",
+  accepted: "success",
+  rejected: "error",
+  archived: "secondary",
+  bookmarked: "secondary",
 } as const;
 
-export const INTEREST_COLORS = {
-  low: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
-  medium: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
-  high: "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300",
-  dream: "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
+export const INTEREST_VARIANTS = {
+  low: "secondary",
+  medium: "primary",
+  high: "warning",
+  dream: "primary",
 } as const;
 
 export const EVENT_TYPE_LABELS: Record<string, string> = {
@@ -27,14 +29,17 @@ export const EVENT_TYPE_LABELS: Record<string, string> = {
   onsite: "Onsite",
 };
 
-export const EVENT_STATUS_COLORS: Record<string, string> = {
-  scheduled: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  completed: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-  cancelled: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-  rescheduled: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
-  "availability-requested": "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  "availability-submitted": "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
-  "no-show": "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
+export const EVENT_STATUS_VARIANTS: Record<
+  string,
+  "primary" | "success" | "error" | "warning" | "secondary"
+> = {
+  scheduled: "primary",
+  completed: "success",
+  cancelled: "error",
+  rescheduled: "warning",
+  "availability-requested": "secondary",
+  "availability-submitted": "primary",
+  "no-show": "secondary",
 };
 
 // Helper function
@@ -81,8 +86,10 @@ export const applicationTableSchema = {
         "rejected",
         "archived",
       ],
-      cell: (data: { status: keyof typeof STATUS_COLORS }) => (
-        <Badge variant="secondary" className={STATUS_COLORS[data.status] ?? ""}>
+      cell: (data: { status: string }) => (
+        <Badge
+          variant={STATUS_VARIANTS[data.status as keyof typeof STATUS_VARIANTS] ?? "secondary"}
+        >
           {capitalize(data.status)}
         </Badge>
       ),
@@ -94,10 +101,14 @@ export const applicationTableSchema = {
       sortable: false,
       minWidth: 100,
       options: ["low", "medium", "high", "dream"],
-      cell: (data: { interest?: keyof typeof INTEREST_COLORS }) => {
+      cell: (data: { interest?: string }) => {
         if (!data.interest) return <span className="text-muted-foreground">-</span>;
         return (
-          <Badge variant="secondary" className={INTEREST_COLORS[data.interest] ?? ""}>
+          <Badge
+            variant={
+              INTEREST_VARIANTS[data.interest as keyof typeof INTEREST_VARIANTS] ?? "secondary"
+            }
+          >
             {capitalize(data.interest)}
           </Badge>
         );
@@ -247,8 +258,8 @@ export const eventTableSchema = {
       type: "enum" as const,
       sortable: false,
       minWidth: 140,
-      cell: (data: { status: keyof typeof EVENT_STATUS_COLORS }) => (
-        <Badge variant="secondary" className={EVENT_STATUS_COLORS[data.status] ?? ""}>
+      cell: (data: { status: string }) => (
+        <Badge variant={EVENT_STATUS_VARIANTS[data.status] ?? "secondary"}>
           {capitalize(data.status)}
         </Badge>
       ),

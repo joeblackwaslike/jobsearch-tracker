@@ -9,7 +9,10 @@ vi.mock("@/lib/queries/application-documents", () => ({
 
 vi.mock("@/lib/queries/documents", () => ({
   useDocuments: vi.fn(() => ({ data: [], isLoading: false })),
-  useSnapshotDocument: vi.fn(() => ({ mutateAsync: vi.fn(), isPending: false })),
+  useSnapshotDocument: vi.fn(() => ({
+    mutateAsync: vi.fn(),
+    isPending: false,
+  })),
 }));
 
 describe("ApplicationDocuments", () => {

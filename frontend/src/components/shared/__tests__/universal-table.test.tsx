@@ -5,8 +5,20 @@ import { UniversalTable } from "../universal-table";
 
 const mockSchema = {
   columns: [
-    { id: "name", header: "Name", type: "text" as const, sortable: true, minWidth: 150 },
-    { id: "value", header: "Value", type: "number" as const, sortable: false, minWidth: 100 },
+    {
+      id: "name",
+      header: "Name",
+      type: "text" as const,
+      sortable: true,
+      minWidth: 150,
+    },
+    {
+      id: "value",
+      header: "Value",
+      type: "number" as const,
+      sortable: false,
+      minWidth: 100,
+    },
   ],
 } as const;
 
@@ -55,7 +67,15 @@ describe("UniversalTable", () => {
   it("renders rowActions in each row and stops propagation", async () => {
     const onRowClick = vi.fn();
     const schema: TableSchema<{ id: string; name: string }> = {
-      columns: [{ id: "name", header: "Name", type: "text", sortable: false, minWidth: 100 }],
+      columns: [
+        {
+          id: "name",
+          header: "Name",
+          type: "text",
+          sortable: false,
+          minWidth: 100,
+        },
+      ],
     };
     const data = [{ id: "1", name: "Test" }];
     render(

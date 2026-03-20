@@ -23,14 +23,17 @@ const EVENT_TYPE_LABELS: Record<string, string> = {
   "peer-interview": "Peer Interview",
 };
 
-const EVENT_STATUS_COLORS: Record<string, string> = {
-  scheduled: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  completed: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-  cancelled: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-  rescheduled: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
-  "availability-requested": "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  "availability-submitted": "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
-  "no-show": "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
+const EVENT_STATUS_VARIANTS: Record<
+  string,
+  "primary" | "success" | "error" | "warning" | "secondary"
+> = {
+  scheduled: "primary",
+  completed: "success",
+  cancelled: "error",
+  rescheduled: "warning",
+  "availability-requested": "secondary",
+  "availability-submitted": "primary",
+  "no-show": "secondary",
 };
 
 interface EventDetailProps {
@@ -45,9 +48,7 @@ export function EventDetail({ event }: EventDetailProps) {
     <div className="space-y-6">
       <div className="space-y-2">
         <h3 className="text-lg font-semibold">{event.title ?? typeLabel}</h3>
-        <Badge variant="secondary" className={EVENT_STATUS_COLORS[event.status] ?? ""}>
-          {event.status}
-        </Badge>
+        <Badge variant={EVENT_STATUS_VARIANTS[event.status] ?? "secondary"}>{event.status}</Badge>
       </div>
 
       {event.application && (
