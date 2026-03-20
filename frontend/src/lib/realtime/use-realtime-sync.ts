@@ -1,8 +1,8 @@
-import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
-import { createClient } from "@/lib/supabase/client";
 import type { ApplicationListItem } from "@/lib/queries/applications";
+import { createClient } from "@/lib/supabase/client";
 import type { Tables } from "@/lib/supabase/types";
 import { useNewRows } from "./new-rows-context";
 
@@ -56,7 +56,10 @@ export function useRealtimeSync() {
       const id = payload.new.id as string;
 
       // Check if this window already has the row (e.g. the tab that made the insert)
-      const cached = queryClient.getQueriesData<{ data: ApplicationListItem[]; count: number }>({
+      const cached = queryClient.getQueriesData<{
+        data: ApplicationListItem[];
+        count: number;
+      }>({
         queryKey: ["applications"],
         exact: false,
       });
@@ -77,13 +80,13 @@ export function useRealtimeSync() {
         });
         addNewId(id);
 
-        queryClient.setQueriesData<{ data: ApplicationListItem[]; count: number }>(
-          { queryKey: ["applications"], exact: false },
-          (old) => {
-            if (!old) return old;
-            return { data: [item, ...old.data], count: old.count + 1 };
-          },
-        );
+        queryClient.setQueriesData<{
+          data: ApplicationListItem[];
+          count: number;
+        }>({ queryKey: ["applications"], exact: false }, (old) => {
+          if (!old) return old;
+          return { data: [item, ...old.data], count: old.count + 1 };
+        });
       }
 
       invalidateDashboard();
@@ -98,33 +101,31 @@ export function useRealtimeSync() {
         .single();
       if (!data) return;
 
-      queryClient.setQueriesData<{ data: ApplicationListItem[]; count: number }>(
-        { queryKey: ["applications"], exact: false },
-        (old) => {
-          if (!old) return old;
-          return {
-            ...old,
-            data: old.data.map((item) =>
-              item.id === id ? (data as ApplicationListItem) : item,
-            ),
-          };
-        },
-      );
+      queryClient.setQueriesData<{
+        data: ApplicationListItem[];
+        count: number;
+      }>({ queryKey: ["applications"], exact: false }, (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          data: old.data.map((item) => (item.id === id ? (data as ApplicationListItem) : item)),
+        };
+      });
       invalidateDashboard();
     }
 
     function handleApplicationDelete(payload: RealtimePayload) {
       const id = payload.old.id as string;
-      queryClient.setQueriesData<{ data: ApplicationListItem[]; count: number }>(
-        { queryKey: ["applications"], exact: false },
-        (old) => {
-          if (!old) return old;
-          return {
-            data: old.data.filter((item) => item.id !== id),
-            count: old.count - 1,
-          };
-        },
-      );
+      queryClient.setQueriesData<{
+        data: ApplicationListItem[];
+        count: number;
+      }>({ queryKey: ["applications"], exact: false }, (old) => {
+        if (!old) return old;
+        return {
+          data: old.data.filter((item) => item.id !== id),
+          count: old.count - 1,
+        };
+      });
       invalidateDashboard();
     }
 
@@ -133,8 +134,9 @@ export function useRealtimeSync() {
     // -----------------------------------------------------------------------
 
     function handleEventChange(payload: RealtimePayload) {
-      const applicationId = (payload.new.application_id ??
-        payload.old.application_id) as string | undefined;
+      const applicationId = (payload.new.application_id ?? payload.old.application_id) as
+        | string
+        | undefined;
 
       // Direct cache update for the per-application event list (no joins needed)
       if (applicationId) {
@@ -160,7 +162,9 @@ export function useRealtimeSync() {
       // Global event lists include deep joins — invalidate rather than patch
       queryClient.invalidateQueries({ queryKey: ["events", "upcoming"] });
       queryClient.invalidateQueries({ queryKey: ["events", "past"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard", "recent-activity"] });
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard", "recent-activity"],
+      });
     }
 
     // -----------------------------------------------------------------------
@@ -168,46 +172,44 @@ export function useRealtimeSync() {
     // -----------------------------------------------------------------------
 
     function handleCompanyInsert(payload: RealtimePayload) {
-      queryClient.setQueriesData<{ data: Tables<"companies">[]; count: number }>(
-        { queryKey: ["companies"], exact: false },
-        (old) => {
-          if (!old) return old;
-          return {
-            data: [payload.new as Tables<"companies">, ...old.data],
-            count: old.count + 1,
-          };
-        },
-      );
+      queryClient.setQueriesData<{
+        data: Tables<"companies">[];
+        count: number;
+      }>({ queryKey: ["companies"], exact: false }, (old) => {
+        if (!old) return old;
+        return {
+          data: [payload.new as Tables<"companies">, ...old.data],
+          count: old.count + 1,
+        };
+      });
     }
 
     function handleCompanyUpdate(payload: RealtimePayload) {
       const id = payload.new.id as string;
-      queryClient.setQueriesData<{ data: Tables<"companies">[]; count: number }>(
-        { queryKey: ["companies"], exact: false },
-        (old) => {
-          if (!old) return old;
-          return {
-            ...old,
-            data: old.data.map((c) =>
-              c.id === id ? (payload.new as Tables<"companies">) : c,
-            ),
-          };
-        },
-      );
+      queryClient.setQueriesData<{
+        data: Tables<"companies">[];
+        count: number;
+      }>({ queryKey: ["companies"], exact: false }, (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          data: old.data.map((c) => (c.id === id ? (payload.new as Tables<"companies">) : c)),
+        };
+      });
     }
 
     function handleCompanyDelete(payload: RealtimePayload) {
       const id = payload.old.id as string;
-      queryClient.setQueriesData<{ data: Tables<"companies">[]; count: number }>(
-        { queryKey: ["companies"], exact: false },
-        (old) => {
-          if (!old) return old;
-          return {
-            data: old.data.filter((c) => c.id !== id),
-            count: old.count - 1,
-          };
-        },
-      );
+      queryClient.setQueriesData<{
+        data: Tables<"companies">[];
+        count: number;
+      }>({ queryKey: ["companies"], exact: false }, (old) => {
+        if (!old) return old;
+        return {
+          data: old.data.filter((c) => c.id !== id),
+          count: old.count - 1,
+        };
+      });
       invalidateDashboard();
     }
 
@@ -227,36 +229,24 @@ export function useRealtimeSync() {
           else if (p.eventType === "DELETE") handleApplicationDelete(p);
         },
       )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "events" },
-        (payload) => {
-          handleEventChange(payload as unknown as RealtimePayload);
-        },
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "companies" },
-        (payload) => {
-          const p = payload as unknown as RealtimePayload;
-          if (p.eventType === "INSERT") handleCompanyInsert(p);
-          else if (p.eventType === "UPDATE") handleCompanyUpdate(p);
-          else if (p.eventType === "DELETE") handleCompanyDelete(p);
-        },
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "contacts" },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ["contacts"] });
-          invalidateDashboard();
-        },
-      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "events" }, (payload) => {
+        handleEventChange(payload as unknown as RealtimePayload);
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "companies" }, (payload) => {
+        const p = payload as unknown as RealtimePayload;
+        if (p.eventType === "INSERT") handleCompanyInsert(p);
+        else if (p.eventType === "UPDATE") handleCompanyUpdate(p);
+        else if (p.eventType === "DELETE") handleCompanyDelete(p);
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "contacts" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["contacts"] });
+        invalidateDashboard();
+      })
       .subscribe();
 
     return () => {
       if (dashboardTimerRef.current) clearTimeout(dashboardTimerRef.current);
       supabase.removeChannel(channel);
     };
-  }, [queryClient]);
+  }, [queryClient, addNewId]);
 }

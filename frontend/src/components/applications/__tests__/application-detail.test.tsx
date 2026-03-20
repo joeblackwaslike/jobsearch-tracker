@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import type { ApplicationWithCompany } from "@/lib/queries/applications";
 import { render, screen } from "@/test/test-utils";
 import { ApplicationDetail } from "../application-detail";
 
@@ -230,14 +231,16 @@ describe("ApplicationDetail", () => {
 
   it("renders Notes card when application has notes", () => {
     const app = { ...mockApplication, notes: "Take-home assignment notes" };
-    render(<ApplicationDetail application={app as any} />);
+    render(<ApplicationDetail application={app as unknown as ApplicationWithCompany} />);
     expect(screen.getByText("Notes")).toBeInTheDocument();
     expect(screen.getByText("Take-home assignment notes")).toBeInTheDocument();
   });
 
   it("does not render Notes card when notes is null", () => {
     render(<ApplicationDetail application={mockApplication} />);
-    const notesHeadings = screen.queryAllByRole("heading").filter(el => el.textContent === "Notes");
+    const notesHeadings = screen
+      .queryAllByRole("heading")
+      .filter((el) => el.textContent === "Notes");
     expect(notesHeadings).toHaveLength(0);
   });
 

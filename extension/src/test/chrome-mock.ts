@@ -11,17 +11,20 @@ export const chromeMock = {
         if (Array.isArray(keys)) {
           return Object.fromEntries(keys.map((k) => [k, store[k]]));
         }
-        return Object.fromEntries(Object.keys(keys).map((k) => [k, store[k] ?? (keys as Record<string, unknown>)[k]]));
-      }),
+        return Object.fromEntries(
+          Object.keys(keys).map((k) => [k, store[k] ?? (keys as Record<string, unknown>)[k]]),
+        );
+        // biome-ignore lint/suspicious/noExplicitAny: Chrome storage.get has overloaded signatures not expressible in vi.fn() generics
+      }) as any,
       set: vi.fn(async (items: Record<string, unknown>) => {
         Object.assign(store, items);
       }),
       remove: vi.fn(async (keys: string | string[]) => {
         const ks = typeof keys === "string" ? [keys] : keys;
-        ks.forEach((k) => delete store[k]);
+        for (const k of ks) delete store[k];
       }),
       clear: vi.fn(async () => {
-        Object.keys(store).forEach((k) => delete store[k]);
+        for (const k of Object.keys(store)) delete store[k];
       }),
     },
   },
@@ -30,7 +33,8 @@ export const chromeMock = {
     onMessage: {
       addListener: vi.fn(),
       removeListener: vi.fn(),
-    },
+      // biome-ignore lint/suspicious/noExplicitAny: partial Chrome API mock
+    } as any,
     lastError: undefined as chrome.runtime.LastError | undefined,
   },
   tabs: {
@@ -38,14 +42,23 @@ export const chromeMock = {
     onUpdated: {
       addListener: vi.fn(),
       removeListener: vi.fn(),
-    },
+      // biome-ignore lint/suspicious/noExplicitAny: partial Chrome API mock
+    } as any,
   },
   scripting: {
     executeScript: vi.fn(),
-  },
-} satisfies Partial<typeof chrome>;
+    // biome-ignore lint/suspicious/noExplicitAny: partial Chrome API mock
+  } as any,
+  action: {
+    setBadgeText: vi.fn(async () => {}),
+    setBadgeBackgroundColor: vi.fn(async () => {}),
+    setTitle: vi.fn(async () => {}),
+    setIcon: vi.fn(async () => {}),
+    // biome-ignore lint/suspicious/noExplicitAny: partial Chrome API mock
+  } as any,
+};
 
 export function resetChromeMock() {
-  Object.keys(store).forEach((k) => delete store[k]);
+  for (const k of Object.keys(store)) delete store[k];
   vi.clearAllMocks();
 }

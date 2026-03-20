@@ -35,7 +35,9 @@ export function ApplicationTrendsChart() {
         ) : !hasData ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <TrendingUpIcon className="mb-3 size-10 text-muted-foreground/40" />
-            <p className="text-sm text-muted-foreground">Add applications to see trends over time</p>
+            <p className="text-sm text-muted-foreground">
+              Add applications to see trends over time
+            </p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={192}>
@@ -133,7 +135,11 @@ export function DistributionChart() {
               layout="vertical"
               margin={{ top: 4, right: 32, bottom: 0, left: 0 }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" horizontal={false} />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="var(--color-border)"
+                horizontal={false}
+              />
               <XAxis
                 type="number"
                 allowDecimals={false}
@@ -186,10 +192,30 @@ export function SuccessMetricsChart() {
 
   const metrics: MetricItem[] = m
     ? [
-        { label: "Response Rate", value: m.responseRate, suffix: "%", color: "#7C3AED" },
-        { label: "Interview Rate", value: m.interviewRate, suffix: "%", color: "#D97706" },
-        { label: "Offer Rate", value: m.offerRate, suffix: "%", color: "#059669" },
-        { label: "Acceptance Rate", value: m.acceptanceRate, suffix: "%", color: "#065F46" },
+        {
+          label: "Response Rate",
+          value: m.responseRate,
+          suffix: "%",
+          color: "#7C3AED",
+        },
+        {
+          label: "Interview Rate",
+          value: m.interviewRate,
+          suffix: "%",
+          color: "#D97706",
+        },
+        {
+          label: "Offer Rate",
+          value: m.offerRate,
+          suffix: "%",
+          color: "#059669",
+        },
+        {
+          label: "Acceptance Rate",
+          value: m.acceptanceRate,
+          suffix: "%",
+          color: "#065F46",
+        },
       ]
     : [];
 

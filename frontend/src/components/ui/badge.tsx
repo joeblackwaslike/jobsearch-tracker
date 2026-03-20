@@ -10,15 +10,11 @@ const badgeVariants = cva(
     variants: {
       variant: {
         // Solid
-        default:
-          "bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-white [a&]:hover:bg-destructive/90",
+        default: "bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
+        destructive: "bg-destructive text-white [a&]:hover:bg-destructive/90",
         // Soft — tinted background (Untitled UI default style)
-        primary:
-          "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
-        secondary:
-          "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
+        primary: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
+        secondary: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
         success:
           "bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800",
         warning:
@@ -28,10 +24,8 @@ const badgeVariants = cva(
         // Outline / ghost
         outline:
           "border-border text-foreground bg-transparent [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
-        ghost:
-          "text-muted-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
-        link:
-          "text-primary underline-offset-4 [a&]:hover:underline",
+        ghost: "text-muted-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+        link: "text-primary underline-offset-4 [a&]:hover:underline",
       },
     },
     defaultVariants: {

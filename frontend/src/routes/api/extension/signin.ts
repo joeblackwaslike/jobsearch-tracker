@@ -23,7 +23,10 @@ export const Route = createFileRoute("/api/extension/signin")({
         const { email, password } = result.data;
 
         const supabase = createAnonApiClient();
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
         if (error || !data.session) {
           return corsJson({ error: "Invalid credentials" }, 401);

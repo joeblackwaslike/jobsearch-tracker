@@ -153,15 +153,19 @@ describe("ApplicationForm", () => {
 
 describe("notes field", () => {
   it("renders Notes textarea", () => {
-    render(
-      <ApplicationForm open={true} onOpenChange={vi.fn()} application={mockApplication} />,
-    );
+    render(<ApplicationForm open={true} onOpenChange={vi.fn()} application={mockApplication} />);
     expect(screen.getByLabelText(/notes/i)).toBeInTheDocument();
   });
 
   it("pre-fills notes when application has notes", () => {
     const app = { ...mockApplication, notes: "My private notes" };
-    render(<ApplicationForm open={true} onOpenChange={vi.fn()} application={app as any} />);
+    render(
+      <ApplicationForm
+        open={true}
+        onOpenChange={vi.fn()}
+        application={app as ApplicationWithCompany}
+      />,
+    );
     expect(screen.getByLabelText(/notes/i)).toHaveValue("My private notes");
   });
 });

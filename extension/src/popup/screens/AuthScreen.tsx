@@ -34,8 +34,11 @@ export function AuthScreen({ onSuccess }: { onSuccess: () => void }) {
       </div>
 
       <div className="field">
-        <label className="label">Backend URL</label>
+        <label className="label" htmlFor="auth-backend-url">
+          Backend URL
+        </label>
         <input
+          id="auth-backend-url"
           className="input"
           type="url"
           placeholder="https://your-app.com"
@@ -46,8 +49,11 @@ export function AuthScreen({ onSuccess }: { onSuccess: () => void }) {
       </div>
 
       <div className="field">
-        <label className="label">Email</label>
+        <label className="label" htmlFor="auth-email">
+          Email
+        </label>
         <input
+          id="auth-email"
           className="input"
           type="email"
           value={email}
@@ -57,8 +63,11 @@ export function AuthScreen({ onSuccess }: { onSuccess: () => void }) {
       </div>
 
       <div className="field">
-        <label className="label">Password</label>
+        <label className="label" htmlFor="auth-password">
+          Password
+        </label>
         <input
+          id="auth-password"
           className="input"
           type="password"
           value={password}

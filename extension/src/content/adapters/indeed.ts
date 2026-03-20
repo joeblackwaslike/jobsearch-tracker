@@ -5,15 +5,11 @@ export const indeedAdapter: Adapter = {
 
   extract(): JobData | null {
     const titleEl =
-      document.querySelector<HTMLElement>(
-        '[data-testid="jobsearch-JobInfoHeader-title"]',
-      ) ??
+      document.querySelector<HTMLElement>('[data-testid="jobsearch-JobInfoHeader-title"]') ??
       document.querySelector<HTMLElement>("h1.jobsearch-JobInfoHeader-title");
 
     const companyEl =
-      document.querySelector<HTMLElement>(
-        '[data-testid="inlineHeader-companyName"]',
-      ) ??
+      document.querySelector<HTMLElement>('[data-testid="inlineHeader-companyName"]') ??
       document.querySelector<HTMLElement>('[data-testid="companyName"]');
 
     if (!titleEl || !companyEl) return null;

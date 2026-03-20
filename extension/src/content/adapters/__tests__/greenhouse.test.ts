@@ -1,3 +1,5 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { describe, expect, it } from "vitest";
 import { greenhouseAdapter } from "../greenhouse";
 import type { JobData } from "../types";
@@ -71,7 +73,7 @@ describe("greenhouseAdapter", () => {
       document.body.appendChild(form);
 
       const received = await new Promise<JobData>((resolve) => {
-        const cleanup = greenhouseAdapter.watchForSubmission!(resolve);
+        const cleanup = greenhouseAdapter.watchForSubmission?.(resolve);
         // Simulate form removal (successful submission)
         form.remove();
         // Return cleanup so it can be called if needed
@@ -85,8 +87,35 @@ describe("greenhouseAdapter", () => {
     it("returns a no-op cleanup when form is not present", () => {
       makeNewDOM("Engineer", "Acme");
       document.getElementById("application-form")?.remove();
-      const cleanup = greenhouseAdapter.watchForSubmission!(() => {});
-      expect(() => cleanup()).not.toThrow();
+      const cleanup = greenhouseAdapter.watchForSubmission?.(() => {});
+      expect(() => cleanup?.()).not.toThrow();
+    });
+  });
+
+  describe("extract() — fixture-based regression test", () => {
+    it("extracts valid data from real captured HTML", () => {
+      const fixturePath = path.join(__dirname, "fixtures/greenhouse.html");
+
+      // Skip if fixture doesn't exist yet (hasn't been captured)
+      if (!fs.existsSync(fixturePath)) {
+        console.warn("⚠️  Skipping fixture test: fixtures/greenhouse.html not found");
+        console.warn("   Run: npx tsx scripts/capture-fixtures.ts greenhouse");
+        return;
+      }
+
+      const fixtureHTML = fs.readFileSync(fixturePath, "utf-8");
+      document.documentElement.innerHTML = fixtureHTML;
+
+      const data = greenhouseAdapter.extract();
+
+      // Assert that extraction succeeds and returns valid data
+      expect(data).not.toBeNull();
+      expect(data?.position).toBeTruthy();
+      expect(data?.company).toBeTruthy();
+      expect(data?.url).toBeTruthy();
+
+      // Log the extracted data for visibility
+      console.log(`   Extracted from fixture: ${data?.position} at ${data?.company}`);
     });
   });
 });

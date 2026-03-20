@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import type { TrackData } from "../../shared/api";
 
-type TrackStatus = "idle" | "loading" | "success" | "duplicate" | "expired" | "error";
+type TrackStatus = "idle" | "loading" | "success" | "duplicate" | "expired" | "queued" | "error";
 
 export function useTrack() {
   const [status, setStatus] = useState<TrackStatus>("idle");
@@ -23,6 +23,8 @@ export function useTrack() {
             setStatus("duplicate");
           } else if (response.error === "session_expired") {
             setStatus("expired");
+          } else if (response.error === "offline_queued") {
+            setStatus("queued");
           } else {
             setStatus("error");
           }

@@ -1,6 +1,4 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { useNewRows } from "@/lib/realtime/new-rows-context";
-import { cn } from "@/lib/utils";
 import { useNavigate } from "@tanstack/react-router";
 import {
   type ColumnDef,
@@ -23,22 +21,23 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { ApplicationListItem } from "@/lib/queries/applications";
+import { useNewRows } from "@/lib/realtime/new-rows-context";
+import { cn } from "@/lib/utils";
 import { ArchiveDialog } from "./archive-dialog";
 
 // ---------------------------------------------------------------------------
 // Badge color maps
 // ---------------------------------------------------------------------------
 
-const STATUS_VARIANTS: Record<string, "secondary" | "primary" | "warning" | "success" | "error"> =
-  {
-    bookmarked: "secondary",
-    applied: "primary",
-    interviewing: "warning",
-    offer: "success",
-    accepted: "success",
-    rejected: "error",
-    archived: "secondary",
-  };
+const STATUS_VARIANTS: Record<string, "secondary" | "primary" | "warning" | "success" | "error"> = {
+  bookmarked: "secondary",
+  applied: "primary",
+  interviewing: "warning",
+  offer: "success",
+  accepted: "success",
+  rejected: "error",
+  archived: "secondary",
+};
 
 const INTEREST_VARIANTS: Record<string, "secondary" | "primary" | "warning"> = {
   low: "secondary",
@@ -147,11 +146,7 @@ function createColumns(
       enableSorting: false,
       cell: ({ row }) => {
         const status = row.original.status;
-        return (
-          <Badge variant={STATUS_VARIANTS[status] ?? "secondary"}>
-            {capitalize(status)}
-          </Badge>
-        );
+        return <Badge variant={STATUS_VARIANTS[status] ?? "secondary"}>{capitalize(status)}</Badge>;
       },
     },
     {
@@ -162,9 +157,7 @@ function createColumns(
         const interest = row.original.interest;
         if (!interest) return <span className="text-muted-foreground">-</span>;
         return (
-          <Badge variant={INTEREST_VARIANTS[interest] ?? "secondary"}>
-            {capitalize(interest)}
-          </Badge>
+          <Badge variant={INTEREST_VARIANTS[interest] ?? "secondary"}>{capitalize(interest)}</Badge>
         );
       },
     },

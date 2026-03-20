@@ -1,5 +1,5 @@
 import { act, renderHook } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, type vi } from "vitest";
 import { resetChromeMock } from "../../../test/chrome-mock";
 import { useTrack } from "../useTrack";
 

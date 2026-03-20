@@ -9,7 +9,7 @@ describe("findAdapter", () => {
   it("finds the LinkedIn adapter by hostname", () => {
     const adapter = findAdapter("www.linkedin.com");
     expect(adapter).not.toBeNull();
-    expect(adapter!.hosts).toContain("www.linkedin.com");
+    expect(adapter?.hosts).toContain("www.linkedin.com");
   });
   it("finds Greenhouse adapter by boards.greenhouse.io (legacy)", () => {
     expect(findAdapter("boards.greenhouse.io")).not.toBeNull();

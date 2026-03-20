@@ -66,9 +66,10 @@ function calcCompleteness(c: Company): number {
   return Math.round((filled / fields.length) * 100);
 }
 
-function qualityLabel(
-  pct: number,
-): { label: string; variant: "success" | "primary" | "warning" | "error" } {
+function qualityLabel(pct: number): {
+  label: string;
+  variant: "success" | "primary" | "warning" | "error";
+} {
   if (pct >= 90) return { label: "Excellent", variant: "success" };
   if (pct >= 70) return { label: "Good", variant: "primary" };
   if (pct >= 50) return { label: "Fair", variant: "warning" };
@@ -109,9 +110,7 @@ function OverviewTab({ company }: { company: Company }) {
       <div className="rounded-md border bg-muted/30 p-3 space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-lg font-medium">Data Quality</span>
-          <Badge variant={quality.variant}>
-            {quality.label}
-          </Badge>
+          <Badge variant={quality.variant}>{quality.label}</Badge>
         </div>
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>Completeness</span>
@@ -291,7 +290,12 @@ function AppsTab({
   apps,
   onAppClick,
 }: {
-  apps: { id: string; position: string; status: string; applied_at: string | null }[];
+  apps: {
+    id: string;
+    position: string;
+    status: string;
+    applied_at: string | null;
+  }[];
   onAppClick: (appId: string) => void;
 }) {
   return (
@@ -393,7 +397,10 @@ export function CompanyDetail({ company }: CompanyDetailProps) {
     .map(([type, url]) => ({ type, name: LINK_NAMES[type] ?? type, url }));
   const websiteLink = links.find((l) => l.type === "website");
   const meta = [
-    company.locations?.length && { icon: <MapPin className="size-3.5" />, text: (company.locations as string[]).join(", ") },
+    company.locations?.length && {
+      icon: <MapPin className="size-3.5" />,
+      text: (company.locations as string[]).join(", "),
+    },
     websiteLink && {
       icon: <Globe className="size-3.5" />,
       text: websiteLink.url,

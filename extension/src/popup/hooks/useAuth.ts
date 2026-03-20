@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { clearStorage, getStorage, setStorage } from "../../shared/storage";
 import { signin as apiSignin } from "../../shared/api";
+import { clearStorage, getStorage, setStorage } from "../../shared/storage";
 
 export type SignInError = "invalid_credentials" | "no_backend_url" | "unknown";
 

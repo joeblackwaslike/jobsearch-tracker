@@ -41,7 +41,10 @@ describe("useTableState", () => {
       result.current.setFilters({ status: "active", priority: "high" });
     });
 
-    expect(result.current.filters).toEqual({ status: "active", priority: "high" });
+    expect(result.current.filters).toEqual({
+      status: "active",
+      priority: "high",
+    });
   });
 
   it("should update filters with updateFilter", () => {
@@ -52,7 +55,10 @@ describe("useTableState", () => {
       result.current.updateFilter("priority", "high");
     });
 
-    expect(result.current.filters).toEqual({ status: "active", priority: "high" });
+    expect(result.current.filters).toEqual({
+      status: "active",
+      priority: "high",
+    });
   });
 
   it("should update sorting with setSorting", () => {
@@ -178,7 +184,10 @@ describe("useTableState", () => {
       result.current.updateFilter("priority", "high");
     });
 
-    expect(result.current.filters).toEqual({ status: "active", priority: "high" });
+    expect(result.current.filters).toEqual({
+      status: "active",
+      priority: "high",
+    });
   });
 
   it("should preserve existing filters when updating single filter", () => {
@@ -186,7 +195,11 @@ describe("useTableState", () => {
 
     // Set multiple filters
     act(() => {
-      result.current.setFilters({ status: "active", priority: "high", location: "NYC" });
+      result.current.setFilters({
+        status: "active",
+        priority: "high",
+        location: "NYC",
+      });
     });
 
     // Update only one filter

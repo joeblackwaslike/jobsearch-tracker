@@ -110,7 +110,8 @@ export function showTrackedToast(jobData: JobData): void {
 
   const container = document.createElement("div");
   container.id = TOAST_ID;
-  container.style.cssText = "position:fixed;bottom:0;right:0;z-index:2147483647;pointer-events:none;";
+  container.style.cssText =
+    "position:fixed;bottom:0;right:0;z-index:2147483647;pointer-events:none;";
   document.body.appendChild(container);
 
   const shadow = container.attachShadow({ mode: "open" });
@@ -159,13 +160,16 @@ export function showTrackErrorToast(): void {
 
   const container = document.createElement("div");
   container.id = TOAST_ID;
-  container.style.cssText = "position:fixed;bottom:0;right:0;z-index:2147483647;pointer-events:none;";
+  container.style.cssText =
+    "position:fixed;bottom:0;right:0;z-index:2147483647;pointer-events:none;";
   document.body.appendChild(container);
 
   const shadow = container.attachShadow({ mode: "open" });
 
   const style = document.createElement("style");
-  style.textContent = CSS.replace("#dcfce7", "#fee2e2").replace("#16a34a", "#dc2626").replace("linear forwards", "linear forwards; display:none");
+  style.textContent = CSS.replace("#dcfce7", "#fee2e2")
+    .replace("#16a34a", "#dc2626")
+    .replace("linear forwards", "linear forwards; display:none");
 
   const toast = document.createElement("div");
   toast.className = "toast";
@@ -200,5 +204,9 @@ export function showTrackErrorToast(): void {
 }
 
 function escHtml(s: string): string {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }

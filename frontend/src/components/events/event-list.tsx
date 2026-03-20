@@ -21,16 +21,15 @@ const TYPE_LABELS: Record<string, string> = {
   onsite: "Onsite",
 };
 
-const STATUS_VARIANTS: Record<string, "primary" | "success" | "error" | "warning" | "secondary"> =
-  {
-    scheduled: "primary",
-    completed: "success",
-    cancelled: "error",
-    rescheduled: "warning",
-    "availability-requested": "secondary",
-    "availability-submitted": "primary",
-    "no-show": "secondary",
-  };
+const STATUS_VARIANTS: Record<string, "primary" | "success" | "error" | "warning" | "secondary"> = {
+  scheduled: "primary",
+  completed: "success",
+  cancelled: "error",
+  rescheduled: "warning",
+  "availability-requested": "secondary",
+  "availability-submitted": "primary",
+  "no-show": "secondary",
+};
 
 const STATUS_LABELS: Record<string, string> = {
   scheduled: "Scheduled",

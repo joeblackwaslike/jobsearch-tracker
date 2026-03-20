@@ -23,7 +23,9 @@ export const Route = createFileRoute("/api/extension/refresh")({
         const { refresh_token } = result.data;
 
         const supabase = createAnonApiClient();
-        const { data, error } = await supabase.auth.refreshSession({ refresh_token });
+        const { data, error } = await supabase.auth.refreshSession({
+          refresh_token,
+        });
 
         if (error || !data.session) {
           return corsJson({ error: "Invalid or expired refresh token" }, 401);

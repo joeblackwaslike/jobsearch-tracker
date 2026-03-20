@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ApplicationFunnelChart } from "@/components/dashboard/funnel-chart";
 import {
   ApplicationTrendsChart,
   DistributionChart,
   SuccessMetricsChart,
 } from "@/components/dashboard/charts";
+import { ApplicationFunnelChart } from "@/components/dashboard/funnel-chart";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { StatsCards } from "@/components/dashboard/stats-cards";

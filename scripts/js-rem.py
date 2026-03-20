@@ -1,7 +1,7 @@
 import httpx
+import os
 
-
-API_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2VibGFja3dhc2xpa2VAZ21haWwuY29tIiwicGVybWlzc2lvbnMiOiJ1c2VyIiwiY3JlYXRlZF9hdCI6IjIwMjUtMTEtMjdUMDI6MTY6MjcuMDYzNDEwKzAwOjAwIn0.TPiRFsVwnL8TQi1DM1oDvDkTtArRY4d9c4xuus-D8tU"
+API_TOKEN = os.getenv("THEIRSTACK_API_KEY")
 API_URL = "https://api.theirstack.com/v1/jobs/search"
 
 payload = {

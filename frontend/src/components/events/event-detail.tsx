@@ -48,9 +48,7 @@ export function EventDetail({ event }: EventDetailProps) {
     <div className="space-y-6">
       <div className="space-y-2">
         <h3 className="text-lg font-semibold">{event.title ?? typeLabel}</h3>
-        <Badge variant={EVENT_STATUS_VARIANTS[event.status] ?? "secondary"}>
-          {event.status}
-        </Badge>
+        <Badge variant={EVENT_STATUS_VARIANTS[event.status] ?? "secondary"}>{event.status}</Badge>
       </div>
 
       {event.application && (

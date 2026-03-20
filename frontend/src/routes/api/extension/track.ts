@@ -49,13 +49,19 @@ export const Route = createFileRoute("/api/extension/track")({
           const existingId = await checkRecentDuplicate(client, user.id, companyId, position);
           if (existingId) {
             return corsJson(
-              { error: "Application already tracked", application_id: existingId },
+              {
+                error: "Application already tracked",
+                application_id: existingId,
+              },
               409,
             );
           }
 
           const applicationId = await createApplication(client, user.id, companyId, position, url);
-          return corsJson({ application_id: applicationId, company_id: companyId });
+          return corsJson({
+            application_id: applicationId,
+            company_id: companyId,
+          });
         } catch (err) {
           console.error("Track error:", err);
           return corsJson({ error: "Internal server error" }, 500);

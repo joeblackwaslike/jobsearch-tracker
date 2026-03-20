@@ -166,7 +166,9 @@ export function useCreateApplication() {
 
   return useMutation({
     mutationFn: async (
-      input: Omit<ApplicationInsert, "user_id" | "status"> & { status?: string },
+      input: Omit<ApplicationInsert, "user_id" | "status"> & {
+        status?: string;
+      },
     ) => {
       const {
         data: { user },

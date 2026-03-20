@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { injectTrackButton, removeTrackButton, BUTTON_ID } from "../inject";
 import type { JobData } from "../adapters/types";
+import { BUTTON_ID, injectTrackButton, removeTrackButton } from "../inject";
 
 const jobData: JobData = {
   company: "Acme Corp",

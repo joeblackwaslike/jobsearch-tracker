@@ -85,13 +85,16 @@ All development in this repo MUST follow Test-Driven Development (red-green-refa
 Never write feature code without a failing test first. Use `superpowers:test-driven-development` for guidance.
 
 ## VERY IMPORTANT: Google gemini models only
+
 Google gemini models have problems hanging indefinately when they try to run `pnpm vitest`.  For this reason gemini based agents must run vitest like so:
+
 ```sh
 npx vitest run <test_file_name>
 ```
+
 DO NOT RUN `pnpm test` or `pnpm test:watch`.
 
-#### Test File Locations
+### Test File Locations
 
 Tests can live either colocated with components in `__tests__/` directories or as `.test.tsx` files alongside the source. Both patterns are acceptable:
 
@@ -137,4 +140,42 @@ Also see `docs/plans/` for implementation plans (past and current).
 
 ## Superpowers Skills
 
-Use the uperpowers skills during development. When in doubt, invoke the skill — it's better to check and not need it than to skip it.
+Use the superpowers skills during development. When in doubt, invoke the skill — it's better to check and not need it than to skip it.
+
+## Issue Tracking with bd (beads)
+
+**IMPORTANT**: This project uses **bd (beads)** for ALL issue tracking. Do NOT use markdown TODOs, task lists, or other tracking methods.
+
+**Use the `using-beads` skill for:**
+
+- Starting a session (check `bd ready`)
+- Completing tasks (close issues)
+- Discovering new work (create linked issues)
+- Ending a session ("Landing the Plane")
+
+**Quick commands:**
+
+```bash
+bd ready --json                    # Check for ready work
+bd update <id> --claim --json      # Claim work
+bd close <id> --reason "Done" --json  # Complete work
+bd dolt push && git push           # Sync (required at session end)
+```
+
+**Critical rules:**
+
+- ✅ Use bd for ALL task tracking
+- ✅ Always use `--json` flag
+- ✅ Push to remote before ending session
+- ❌ Do NOT create markdown TODO lists
+- ❌ Work is NOT complete until `git push` succeeds
+
+## Multi-Agent Compatibility
+
+This project follows the [Agent Skills](https://agentskills.io) open standard:
+
+- **Skills**: Located in `.agents/skills/` (works across 30+ AI tools)
+- **Tool-specific settings**: `.claude/settings.json` for Claude Code permissions
+- **Documentation**: `AGENTS.md` (universal), tool-specific docs where needed
+
+**Supported tools:** Claude Code, Gemini CLI, OpenAI Codex, Cursor, GitHub Copilot, VS Code, OpenHands, and more.

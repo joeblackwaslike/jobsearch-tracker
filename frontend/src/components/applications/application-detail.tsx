@@ -1,10 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import {
-  BuildingIcon,
-  ChevronRightIcon,
-  ExternalLinkIcon,
-  PlusIcon,
-} from "lucide-react";
+import { BuildingIcon, ChevronRightIcon, ExternalLinkIcon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

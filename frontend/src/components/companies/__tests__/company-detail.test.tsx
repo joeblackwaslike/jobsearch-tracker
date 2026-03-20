@@ -79,7 +79,12 @@ describe("CompanyDetail", () => {
   it("renders description when present", () => {
     render(
       <CompanyDetail
-        company={{ ...mockCompany, description: "Great company to work for" } as Company}
+        company={
+          {
+            ...mockCompany,
+            description: "Great company to work for",
+          } as Company
+        }
       />,
     );
     expect(screen.getByText("Great company to work for")).toBeInTheDocument();
@@ -118,7 +123,12 @@ describe("CompanyDetail", () => {
     const user = userEvent.setup();
     render(
       <CompanyDetail
-        company={{ ...mockCompany, notes: "Important company notes" } as unknown as Company}
+        company={
+          {
+            ...mockCompany,
+            notes: "Important company notes",
+          } as unknown as Company
+        }
       />,
     );
     await user.click(screen.getByRole("tab", { name: "Notes" }));

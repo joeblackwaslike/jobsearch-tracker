@@ -1,8 +1,8 @@
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { resetChromeMock } from "../../../test/chrome-mock";
-import { setStorage } from "../../../shared/storage";
 import * as api from "../../../shared/api";
+import { setStorage } from "../../../shared/storage";
+import { resetChromeMock } from "../../../test/chrome-mock";
 import { useAuth } from "../useAuth";
 
 beforeEach(async () => {
@@ -43,7 +43,9 @@ describe("useAuth", () => {
     await setStorage({ access_token: "tok", refresh_token: "ref", backend_url: "https://app.com" });
     const { result } = renderHook(() => useAuth());
     await act(async () => {});
-    await act(async () => { result.current.signOut(); });
+    await act(async () => {
+      result.current.signOut();
+    });
     expect(result.current.isAuthenticated).toBe(false);
   });
 });

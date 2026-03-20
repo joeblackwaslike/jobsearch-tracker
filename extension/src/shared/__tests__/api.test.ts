@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { signin, refresh, track } from "../api";
+import { refresh, signin, track } from "../api";
 
 const BACKEND = "https://myapp.com";
 
@@ -28,7 +28,9 @@ describe("signin", () => {
 describe("refresh", () => {
   it("returns new tokens on 200", async () => {
     vi.spyOn(global, "fetch").mockResolvedValueOnce(
-      new Response(JSON.stringify({ access_token: "new-a", refresh_token: "new-b" }), { status: 200 }),
+      new Response(JSON.stringify({ access_token: "new-a", refresh_token: "new-b" }), {
+        status: 200,
+      }),
     );
     const result = await refresh(BACKEND, "old-refresh-token");
     expect(result).toEqual({ ok: true, access_token: "new-a", refresh_token: "new-b" });
@@ -46,7 +48,9 @@ describe("refresh", () => {
 describe("track", () => {
   it("returns application_id on 200", async () => {
     vi.spyOn(global, "fetch").mockResolvedValueOnce(
-      new Response(JSON.stringify({ application_id: "uuid-1", company_id: "uuid-2" }), { status: 200 }),
+      new Response(JSON.stringify({ application_id: "uuid-1", company_id: "uuid-2" }), {
+        status: 200,
+      }),
     );
     const result = await track(BACKEND, "tok", {
       company_name: "Acme",
@@ -58,7 +62,10 @@ describe("track", () => {
 
   it("returns duplicate on 409", async () => {
     vi.spyOn(global, "fetch").mockResolvedValueOnce(
-      new Response(JSON.stringify({ error: "Application already tracked", application_id: "uuid-1" }), { status: 409 }),
+      new Response(
+        JSON.stringify({ error: "Application already tracked", application_id: "uuid-1" }),
+        { status: 409 },
+      ),
     );
     const result = await track(BACKEND, "tok", {
       company_name: "Acme",

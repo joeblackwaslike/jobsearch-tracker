@@ -10,12 +10,16 @@ export type TrackData = {
   company_name: string;
   position: string;
   url: string;
+  /** Board that originated the job view (e.g. "Builtin"), merged from PendingIntent. */
+  source?: string;
 };
 
 export type TrackResult =
   | { ok: true; application_id: string; company_id: string }
   | { ok: false; error: "duplicate"; application_id: string }
   | { ok: false; error: "unauthorized" }
+  | { ok: false; error: "offline_queued" }
+  | { ok: false; error: "network_error" }
   | { ok: false; error: string };
 
 export async function signin(
@@ -29,14 +33,12 @@ export async function signin(
     body: JSON.stringify({ email, password }),
   });
   const json = await res.json();
-  if (res.ok) return { ok: true, access_token: json.access_token, refresh_token: json.refresh_token };
+  if (res.ok)
+    return { ok: true, access_token: json.access_token, refresh_token: json.refresh_token };
   return { ok: false, error: json.error ?? "Sign in failed" };
 }
 
-export async function refresh(
-  backendUrl: string,
-  refreshToken: string,
-): Promise<RefreshResult> {
+export async function refresh(backendUrl: string, refreshToken: string): Promise<RefreshResult> {
   const res = await fetch(`${backendUrl}/api/extension/refresh`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -52,17 +54,24 @@ export async function track(
   accessToken: string,
   data: TrackData,
 ): Promise<TrackResult> {
-  const res = await fetch(`${backendUrl}/api/extension/track`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify(data),
-  });
-  const json = await res.json();
-  if (res.ok) return { ok: true, application_id: json.application_id, company_id: json.company_id };
-  if (res.status === 401) return { ok: false, error: "unauthorized" };
-  if (res.status === 409) return { ok: false, error: "duplicate", application_id: json.application_id };
-  return { ok: false, error: json.error ?? "Unknown error" };
+  try {
+    const res = await fetch(`${backendUrl}/api/extension/track`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(data),
+    });
+    const json = await res.json();
+    if (res.ok)
+      return { ok: true, application_id: json.application_id, company_id: json.company_id };
+    if (res.status === 401) return { ok: false, error: "unauthorized" };
+    if (res.status === 409)
+      return { ok: false, error: "duplicate", application_id: json.application_id };
+    return { ok: false, error: json.error ?? "Unknown error" };
+  } catch (_error) {
+    // Network error (fetch failed, backend unreachable, etc.)
+    return { ok: false, error: "network_error" };
+  }
 }

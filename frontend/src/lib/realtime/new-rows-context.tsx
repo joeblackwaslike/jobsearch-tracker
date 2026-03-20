@@ -34,11 +34,7 @@ export function NewRowsProvider({ children }: { children: React.ReactNode }) {
     timersRef.current.set(id, timer);
   }, []);
 
-  return (
-    <NewRowsContext.Provider value={{ newIds, addNewId }}>
-      {children}
-    </NewRowsContext.Provider>
-  );
+  return <NewRowsContext.Provider value={{ newIds, addNewId }}>{children}</NewRowsContext.Provider>;
 }
 
 export function useNewRows() {

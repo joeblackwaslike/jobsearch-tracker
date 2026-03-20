@@ -1,0 +1,32 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - name: frontend-lint
+      root: "frontend/"
+      run: zsh -l -c "pnpm run lint"
+      glob: "**/*.{ts,tsx,js,jsx,mjs}"
+      stage_fixed: true
+
+    - name: frontend-type
+      root: "frontend/"
+      run: zsh -l -c "pnpm run type"
+      glob: "**/*.{ts,tsx}"
+
+    - name: frontend-test
+      root: "frontend/"
+      run: zsh -l -c "pnpm run test"
+
+    - name: extension-lint
+      root: "extension/"
+      run: zsh -l -c "pnpm run lint"
+      glob: "**/*.{ts,tsx,js,jsx,mjs}"
+      stage_fixed: true
+
+    - name: extension-type
+      root: "extension/"
+      run: zsh -l -c "pnpm run type"
+      glob: "**/*.{ts,tsx}"
+
+    - name: extension-test
+      root: "extension/"
+      run: zsh -l -c "pnpm run test"

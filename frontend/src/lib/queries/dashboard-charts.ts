@@ -72,13 +72,14 @@ function computeChartData(rows: AppRow[]): ChartData {
 
   for (const row of rows) {
     const d = new Date(row.created_at);
-    const bucket = buckets.find(
-      (b) => b.year === d.getFullYear() && b.month === d.getMonth(),
-    );
+    const bucket = buckets.find((b) => b.year === d.getFullYear() && b.month === d.getMonth());
     if (bucket) bucket.count++;
   }
 
-  const trends: TrendPoint[] = buckets.map((b) => ({ month: b.label, count: b.count }));
+  const trends: TrendPoint[] = buckets.map((b) => ({
+    month: b.label,
+    count: b.count,
+  }));
 
   // Status distribution
   const statusCounts: Record<string, number> = {};

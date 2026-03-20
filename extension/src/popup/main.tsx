@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { App } from "./App";
 import "./popup.css";
 
+// biome-ignore lint/style/noNonNullAssertion: root element is always present in popup.html
 const root = document.getElementById("root")!;
 createRoot(root).render(
   <React.StrictMode>

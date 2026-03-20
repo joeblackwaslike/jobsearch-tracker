@@ -52,7 +52,12 @@ export function ApplicationFunnelChart() {
             <p className="text-sm text-muted-foreground">Add applications to see your funnel</p>
           </div>
         ) : (
-          <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} className="w-full">
+          <svg
+            viewBox={`0 0 ${SVG_W} ${SVG_H}`}
+            className="w-full"
+            role="img"
+            aria-label="Application funnel chart"
+          >
             {stages.map((stage, i) => {
               // Each stage top connects to the next stage's width (continuous funnel)
               const topW = widths[i];

@@ -7,8 +7,14 @@ const createMutateAsync = vi.fn();
 const updateMutateAsync = vi.fn();
 
 vi.mock("@/lib/queries/companies", () => ({
-  useCreateCompany: () => ({ mutateAsync: createMutateAsync, isPending: false }),
-  useUpdateCompany: () => ({ mutateAsync: updateMutateAsync, isPending: false }),
+  useCreateCompany: () => ({
+    mutateAsync: createMutateAsync,
+    isPending: false,
+  }),
+  useUpdateCompany: () => ({
+    mutateAsync: updateMutateAsync,
+    isPending: false,
+  }),
 }));
 
 vi.mock("@/lib/queries/contacts", () => ({
@@ -207,9 +213,7 @@ describe("notes field", () => {
 
   it("pre-fills notes in edit mode", () => {
     const company = { ...mockCompany, notes: "Some important notes" };
-    render(
-      <CompanyForm open={true} onOpenChange={noop} mode="edit" company={company as never} />,
-    );
+    render(<CompanyForm open={true} onOpenChange={noop} mode="edit" company={company as never} />);
     expect(screen.getByLabelText("Notes")).toHaveValue("Some important notes");
   });
 });
@@ -225,9 +229,7 @@ describe("locations multi-city field", () => {
       ...mockCompany,
       locations: ["San Francisco, CA", "New York, NY"],
     };
-    render(
-      <CompanyForm open={true} onOpenChange={noop} mode="edit" company={company as never} />,
-    );
+    render(<CompanyForm open={true} onOpenChange={noop} mode="edit" company={company as never} />);
     expect(screen.getByText("San Francisco, CA")).toBeInTheDocument();
     expect(screen.getByText("New York, NY")).toBeInTheDocument();
   });

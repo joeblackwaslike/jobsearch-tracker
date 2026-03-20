@@ -87,7 +87,9 @@ export const applicationTableSchema = {
         "archived",
       ],
       cell: (data: { status: string }) => (
-        <Badge variant={STATUS_VARIANTS[data.status as keyof typeof STATUS_VARIANTS] ?? "secondary"}>
+        <Badge
+          variant={STATUS_VARIANTS[data.status as keyof typeof STATUS_VARIANTS] ?? "secondary"}
+        >
           {capitalize(data.status)}
         </Badge>
       ),
@@ -102,7 +104,11 @@ export const applicationTableSchema = {
       cell: (data: { interest?: string }) => {
         if (!data.interest) return <span className="text-muted-foreground">-</span>;
         return (
-          <Badge variant={INTEREST_VARIANTS[data.interest as keyof typeof INTEREST_VARIANTS] ?? "secondary"}>
+          <Badge
+            variant={
+              INTEREST_VARIANTS[data.interest as keyof typeof INTEREST_VARIANTS] ?? "secondary"
+            }
+          >
             {capitalize(data.interest)}
           </Badge>
         );
