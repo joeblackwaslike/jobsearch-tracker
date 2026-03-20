@@ -45,7 +45,7 @@ export function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
         email: data.email,
         password: data.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
       if (authError) {
