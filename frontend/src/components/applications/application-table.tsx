@@ -1,3 +1,4 @@
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useNavigate } from "@tanstack/react-router";
 import {
   type ColumnDef,
@@ -20,27 +21,29 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { ApplicationListItem } from "@/lib/queries/applications";
+import { useNewRows } from "@/lib/realtime/new-rows-context";
+import { cn } from "@/lib/utils";
 import { ArchiveDialog } from "./archive-dialog";
 
 // ---------------------------------------------------------------------------
 // Badge color maps
 // ---------------------------------------------------------------------------
 
-const STATUS_COLORS: Record<string, string> = {
-  bookmarked: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
-  applied: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
-  interviewing: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
-  offer: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
-  accepted: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300",
-  rejected: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
-  archived: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+const STATUS_VARIANTS: Record<string, "secondary" | "primary" | "warning" | "success" | "error"> = {
+  bookmarked: "secondary",
+  applied: "primary",
+  interviewing: "warning",
+  offer: "success",
+  accepted: "success",
+  rejected: "error",
+  archived: "secondary",
 };
 
-const INTEREST_COLORS: Record<string, string> = {
-  low: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
-  medium: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
-  high: "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300",
-  dream: "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
+const INTEREST_VARIANTS: Record<string, "secondary" | "primary" | "warning"> = {
+  low: "secondary",
+  medium: "primary",
+  high: "warning",
+  dream: "primary",
 };
 
 // ---------------------------------------------------------------------------
@@ -143,11 +146,7 @@ function createColumns(
       enableSorting: false,
       cell: ({ row }) => {
         const status = row.original.status;
-        return (
-          <Badge variant="secondary" className={STATUS_COLORS[status] ?? ""}>
-            {capitalize(status)}
-          </Badge>
-        );
+        return <Badge variant={STATUS_VARIANTS[status] ?? "secondary"}>{capitalize(status)}</Badge>;
       },
     },
     {
@@ -158,9 +157,7 @@ function createColumns(
         const interest = row.original.interest;
         if (!interest) return <span className="text-muted-foreground">-</span>;
         return (
-          <Badge variant="secondary" className={INTEREST_COLORS[interest] ?? ""}>
-            {capitalize(interest)}
-          </Badge>
+          <Badge variant={INTEREST_VARIANTS[interest] ?? "secondary"}>{capitalize(interest)}</Badge>
         );
       },
     },
@@ -269,6 +266,8 @@ export function ApplicationTable({
   onEdit,
 }: ApplicationTableProps) {
   const navigate = useNavigate();
+  const [tbodyRef] = useAutoAnimate();
+  const { newIds } = useNewRows();
 
   const handleSort = (columnId: string) => {
     const currentSort = sorting.find((s) => s.id === columnId);
@@ -327,11 +326,11 @@ export function ApplicationTable({
   });
 
   return (
-    <div className="overflow-x-auto rounded-md border w-full">
+    <div className="overflow-x-auto rounded-xl border border-border shadow-xs w-full">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow key={headerGroup.id} className="bg-muted/60">
               {headerGroup.headers.map((header) => (
                 <TableHead key={header.id}>
                   {header.isPlaceholder
@@ -342,7 +341,7 @@ export function ApplicationTable({
             </TableRow>
           ))}
         </TableHeader>
-        <TableBody>
+        <TableBody ref={tbodyRef}>
           {table.getRowModel().rows.length === 0 ? (
             <TableRow>
               <TableCell
@@ -361,7 +360,7 @@ export function ApplicationTable({
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
-                className="cursor-pointer"
+                className={cn("cursor-pointer", newIds.has(row.original.id) && "animate-row-flash")}
                 onClick={() =>
                   navigate({
                     to: `/applications/${row.original.id}` as string,

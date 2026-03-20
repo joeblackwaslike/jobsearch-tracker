@@ -60,7 +60,9 @@ describe("UrlImportDialog", () => {
     await userEvent.type(input, "https://jobs.example.com/swe");
     await userEvent.click(screen.getByRole("button", { name: /import/i }));
     await waitFor(() =>
-      expect(onImport).toHaveBeenCalledWith({ jobUrl: "https://jobs.example.com/swe" }),
+      expect(onImport).toHaveBeenCalledWith({
+        jobUrl: "https://jobs.example.com/swe",
+      }),
     );
   });
 });

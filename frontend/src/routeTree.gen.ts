@@ -12,12 +12,17 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiOpenapiRouteImport } from './routes/api/openapi'
+import { Route as ApiDocsRouteImport } from './routes/api/docs'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedEventsRouteImport } from './routes/_authenticated/events'
 import { Route as AuthenticatedDocumentsRouteImport } from './routes/_authenticated/documents'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCompaniesRouteImport } from './routes/_authenticated/companies'
 import { Route as AuthenticatedApplicationsRouteImport } from './routes/_authenticated/applications'
+import { Route as ApiExtensionTrackRouteImport } from './routes/api/extension/track'
+import { Route as ApiExtensionSigninRouteImport } from './routes/api/extension/signin'
+import { Route as ApiExtensionRefreshRouteImport } from './routes/api/extension/refresh'
 import { Route as AuthenticatedApplicationsApplicationIdRouteImport } from './routes/_authenticated/applications/$applicationId'
 
 const LoginRoute = LoginRouteImport.update({
@@ -32,6 +37,16 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiOpenapiRoute = ApiOpenapiRouteImport.update({
+  id: '/api/openapi',
+  path: '/api/openapi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDocsRoute = ApiDocsRouteImport.update({
+  id: '/api/docs',
+  path: '/api/docs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
@@ -65,6 +80,21 @@ const AuthenticatedApplicationsRoute =
     path: '/applications',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const ApiExtensionTrackRoute = ApiExtensionTrackRouteImport.update({
+  id: '/api/extension/track',
+  path: '/api/extension/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiExtensionSigninRoute = ApiExtensionSigninRouteImport.update({
+  id: '/api/extension/signin',
+  path: '/api/extension/signin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiExtensionRefreshRoute = ApiExtensionRefreshRouteImport.update({
+  id: '/api/extension/refresh',
+  path: '/api/extension/refresh',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedApplicationsApplicationIdRoute =
   AuthenticatedApplicationsApplicationIdRouteImport.update({
     id: '/$applicationId',
@@ -81,7 +111,12 @@ export interface FileRoutesByFullPath {
   '/documents': typeof AuthenticatedDocumentsRoute
   '/events': typeof AuthenticatedEventsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/api/docs': typeof ApiDocsRoute
+  '/api/openapi': typeof ApiOpenapiRoute
   '/applications/$applicationId': typeof AuthenticatedApplicationsApplicationIdRoute
+  '/api/extension/refresh': typeof ApiExtensionRefreshRoute
+  '/api/extension/signin': typeof ApiExtensionSigninRoute
+  '/api/extension/track': typeof ApiExtensionTrackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -92,7 +127,12 @@ export interface FileRoutesByTo {
   '/documents': typeof AuthenticatedDocumentsRoute
   '/events': typeof AuthenticatedEventsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/api/docs': typeof ApiDocsRoute
+  '/api/openapi': typeof ApiOpenapiRoute
   '/applications/$applicationId': typeof AuthenticatedApplicationsApplicationIdRoute
+  '/api/extension/refresh': typeof ApiExtensionRefreshRoute
+  '/api/extension/signin': typeof ApiExtensionSigninRoute
+  '/api/extension/track': typeof ApiExtensionTrackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -105,7 +145,12 @@ export interface FileRoutesById {
   '/_authenticated/documents': typeof AuthenticatedDocumentsRoute
   '/_authenticated/events': typeof AuthenticatedEventsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/api/docs': typeof ApiDocsRoute
+  '/api/openapi': typeof ApiOpenapiRoute
   '/_authenticated/applications/$applicationId': typeof AuthenticatedApplicationsApplicationIdRoute
+  '/api/extension/refresh': typeof ApiExtensionRefreshRoute
+  '/api/extension/signin': typeof ApiExtensionSigninRoute
+  '/api/extension/track': typeof ApiExtensionTrackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -118,7 +163,12 @@ export interface FileRouteTypes {
     | '/documents'
     | '/events'
     | '/settings'
+    | '/api/docs'
+    | '/api/openapi'
     | '/applications/$applicationId'
+    | '/api/extension/refresh'
+    | '/api/extension/signin'
+    | '/api/extension/track'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -129,7 +179,12 @@ export interface FileRouteTypes {
     | '/documents'
     | '/events'
     | '/settings'
+    | '/api/docs'
+    | '/api/openapi'
     | '/applications/$applicationId'
+    | '/api/extension/refresh'
+    | '/api/extension/signin'
+    | '/api/extension/track'
   id:
     | '__root__'
     | '/'
@@ -141,13 +196,23 @@ export interface FileRouteTypes {
     | '/_authenticated/documents'
     | '/_authenticated/events'
     | '/_authenticated/settings'
+    | '/api/docs'
+    | '/api/openapi'
     | '/_authenticated/applications/$applicationId'
+    | '/api/extension/refresh'
+    | '/api/extension/signin'
+    | '/api/extension/track'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
+  ApiDocsRoute: typeof ApiDocsRoute
+  ApiOpenapiRoute: typeof ApiOpenapiRoute
+  ApiExtensionRefreshRoute: typeof ApiExtensionRefreshRoute
+  ApiExtensionSigninRoute: typeof ApiExtensionSigninRoute
+  ApiExtensionTrackRoute: typeof ApiExtensionTrackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -171,6 +236,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/openapi': {
+      id: '/api/openapi'
+      path: '/api/openapi'
+      fullPath: '/api/openapi'
+      preLoaderRoute: typeof ApiOpenapiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/docs': {
+      id: '/api/docs'
+      path: '/api/docs'
+      fullPath: '/api/docs'
+      preLoaderRoute: typeof ApiDocsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/settings': {
@@ -214,6 +293,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/applications'
       preLoaderRoute: typeof AuthenticatedApplicationsRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/api/extension/track': {
+      id: '/api/extension/track'
+      path: '/api/extension/track'
+      fullPath: '/api/extension/track'
+      preLoaderRoute: typeof ApiExtensionTrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/extension/signin': {
+      id: '/api/extension/signin'
+      path: '/api/extension/signin'
+      fullPath: '/api/extension/signin'
+      preLoaderRoute: typeof ApiExtensionSigninRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/extension/refresh': {
+      id: '/api/extension/refresh'
+      path: '/api/extension/refresh'
+      fullPath: '/api/extension/refresh'
+      preLoaderRoute: typeof ApiExtensionRefreshRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/applications/$applicationId': {
       id: '/_authenticated/applications/$applicationId'
@@ -266,6 +366,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
+  ApiDocsRoute: ApiDocsRoute,
+  ApiOpenapiRoute: ApiOpenapiRoute,
+  ApiExtensionRefreshRoute: ApiExtensionRefreshRoute,
+  ApiExtensionSigninRoute: ApiExtensionSigninRoute,
+  ApiExtensionTrackRoute: ApiExtensionTrackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

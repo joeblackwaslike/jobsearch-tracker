@@ -109,9 +109,10 @@ fi
 
 # User configuration
 export MANPATH="/usr/local/man:$MANPATH"
-
-# You may need to manually set your language environment
 export LANG=en_US.UTF-8
+
+# init Homebrew
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 # Claude Code: activate tool search tool for preventing MCP server tools from using up all the context
 export ENABLE_EXPERIMENTAL_MCP_CLI=true

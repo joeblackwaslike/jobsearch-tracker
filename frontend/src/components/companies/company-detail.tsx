@@ -51,7 +51,7 @@ function calcCompleteness(c: Company): number {
   const fields = [
     c.name,
     c.industry,
-    c.location,
+    c.locations?.length ? c.locations : null,
     c.size,
     c.founded,
     c.description,
@@ -66,11 +66,14 @@ function calcCompleteness(c: Company): number {
   return Math.round((filled / fields.length) * 100);
 }
 
-function qualityLabel(pct: number): { label: string; color: string } {
-  if (pct >= 90) return { label: "Excellent", color: "bg-green-500 text-white" };
-  if (pct >= 70) return { label: "Good", color: "bg-blue-500 text-white" };
-  if (pct >= 50) return { label: "Fair", color: "bg-amber-500 text-white" };
-  return { label: "Needs Work", color: "bg-red-500 text-white" };
+function qualityLabel(pct: number): {
+  label: string;
+  variant: "success" | "primary" | "warning" | "error";
+} {
+  if (pct >= 90) return { label: "Excellent", variant: "success" };
+  if (pct >= 70) return { label: "Good", variant: "primary" };
+  if (pct >= 50) return { label: "Fair", variant: "warning" };
+  return { label: "Needs Work", variant: "error" };
 }
 
 // ---------------------------------------------------------------------------
@@ -107,9 +110,7 @@ function OverviewTab({ company }: { company: Company }) {
       <div className="rounded-md border bg-muted/30 p-3 space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-lg font-medium">Data Quality</span>
-          <span className={cn("rounded-full px-2 py-0.5 text-xs font-medium", quality.color)}>
-            {quality.label}
-          </span>
+          <Badge variant={quality.variant}>{quality.label}</Badge>
         </div>
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>Completeness</span>
@@ -289,7 +290,12 @@ function AppsTab({
   apps,
   onAppClick,
 }: {
-  apps: { id: string; position: string; status: string; applied_at: string | null }[];
+  apps: {
+    id: string;
+    position: string;
+    status: string;
+    applied_at: string | null;
+  }[];
   onAppClick: (appId: string) => void;
 }) {
   return (
@@ -361,6 +367,13 @@ function LinksTab({ links }: { links: CompanyLink[] }) {
   );
 }
 
+function NotesTab({ company }: { company: Company }) {
+  if (!company.notes) {
+    return <p className="text-sm text-muted-foreground">No notes yet.</p>;
+  }
+  return <MarkdownContent content={company.notes} />;
+}
+
 // ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
@@ -384,7 +397,10 @@ export function CompanyDetail({ company }: CompanyDetailProps) {
     .map(([type, url]) => ({ type, name: LINK_NAMES[type] ?? type, url }));
   const websiteLink = links.find((l) => l.type === "website");
   const meta = [
-    company.location && { icon: <MapPin className="size-3.5" />, text: company.location },
+    company.locations?.length && {
+      icon: <MapPin className="size-3.5" />,
+      text: (company.locations as string[]).join(", "),
+    },
     websiteLink && {
       icon: <Globe className="size-3.5" />,
       text: websiteLink.url,
@@ -405,6 +421,11 @@ export function CompanyDetail({ company }: CompanyDetailProps) {
       id: "research",
       label: "Research",
       content: <ResearchTab company={company} />,
+    },
+    {
+      id: "notes",
+      label: "Notes",
+      content: <NotesTab company={company} />,
     },
     {
       id: "apps",

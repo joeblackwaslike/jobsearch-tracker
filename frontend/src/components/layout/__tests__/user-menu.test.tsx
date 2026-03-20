@@ -7,7 +7,9 @@ vi.mock("@/lib/supabase/client", () => ({
     auth: {
       getUser: vi.fn().mockResolvedValue({ data: { user: null } }),
       signOut: vi.fn().mockResolvedValue({}),
-      onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
+      onAuthStateChange: vi.fn(() => ({
+        data: { subscription: { unsubscribe: vi.fn() } },
+      })),
     },
   }),
 }));
