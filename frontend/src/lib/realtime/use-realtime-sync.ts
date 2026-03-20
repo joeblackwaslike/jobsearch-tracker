@@ -26,24 +26,15 @@ export function useRealtimeSync() {
   const queryClient = useQueryClient();
   const { addNewId } = useNewRows();
 
-  // Leading+trailing debounce refs for dashboard invalidation
   const dashboardTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const dashboardFiredRef = useRef(false);
 
   useEffect(() => {
     const supabase = createClient();
 
-    // Invalidate dashboard stats as one atomic unit during bursts.
-    // Leading edge fires immediately (single changes feel instant),
-    // trailing edge coalesces rapid bursts into one refetch.
+    // Trailing-edge debounce: coalesces rapid bursts into a single invalidation.
     function invalidateDashboard() {
-      if (!dashboardFiredRef.current) {
-        dashboardFiredRef.current = true;
-        queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      }
       if (dashboardTimerRef.current) clearTimeout(dashboardTimerRef.current);
       dashboardTimerRef.current = setTimeout(() => {
-        dashboardFiredRef.current = false;
         queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       }, 200);
     }
