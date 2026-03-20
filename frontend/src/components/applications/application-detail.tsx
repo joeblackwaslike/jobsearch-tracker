@@ -1,12 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import {
-  BookmarkIcon,
-  BuildingIcon,
-  ChevronRightIcon,
-  ExternalLinkIcon,
-  PlusIcon,
-  SendIcon,
-} from "lucide-react";
+import { BuildingIcon, ChevronRightIcon, ExternalLinkIcon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -65,22 +58,22 @@ function formatDate(dateStr: string | null | undefined): string {
   });
 }
 
-const STATUS_VARIANT: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
-  bookmarked: "outline",
-  applied: "default",
-  interviewing: "default",
-  offer: "default",
-  accepted: "default",
-  rejected: "destructive",
+const STATUS_VARIANT = {
+  bookmarked: "secondary",
+  applied: "primary",
+  interviewing: "warning",
+  offer: "success",
+  accepted: "success",
+  rejected: "error",
   archived: "secondary",
-};
+} as const;
 
-const INTEREST_VARIANT: Record<string, "default" | "secondary" | "outline"> = {
-  low: "outline",
-  medium: "secondary",
-  high: "default",
-  dream: "default",
-};
+const INTEREST_VARIANT = {
+  low: "secondary",
+  medium: "primary",
+  high: "warning",
+  dream: "primary",
+} as const;
 
 // ---------------------------------------------------------------------------
 // Props
@@ -242,6 +235,18 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
             </CardContent>
           </Card>
         )}
+
+        {/* Notes */}
+        {application.notes && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Notes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <MarkdownContent content={application.notes} />
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Documents */}
@@ -259,39 +264,6 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
           </Button>
         </div>
 
-        {/* Timeline milestones */}
-        <div className="space-y-0">
-          {/* Bookmarked milestone — only shown when not yet applied */}
-          {!application.applied_at && (
-            <div className="flex gap-4">
-              <div className="relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full border bg-background">
-                <BookmarkIcon className="size-4 text-muted-foreground" />
-              </div>
-              <div className="flex-1 pb-6">
-                <p className="text-sm font-medium">Bookmarked</p>
-                <p className="text-xs text-muted-foreground">
-                  {formatDate(application.created_at)}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Applied milestone */}
-          {application.applied_at && (
-            <div className="flex gap-4">
-              <div className="relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full border bg-background">
-                <SendIcon className="size-4 text-muted-foreground" />
-              </div>
-              <div className="flex-1 pb-6">
-                <p className="text-sm font-medium">Applied</p>
-                <p className="text-xs text-muted-foreground">
-                  {formatDate(application.applied_at)}
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-
         {eventsLoading ? (
           <p className="text-sm text-muted-foreground">Loading events...</p>
         ) : (
@@ -299,6 +271,8 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
             events={events}
             applicationId={application.id}
             companyId={application.company_id}
+            appliedAt={application.applied_at}
+            createdAt={application.created_at}
           />
         )}
       </div>

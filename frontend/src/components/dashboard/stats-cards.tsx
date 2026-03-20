@@ -28,10 +28,27 @@ interface StatCardConfig {
 // ---------------------------------------------------------------------------
 
 const STAT_CARDS: StatCardConfig[] = [
-  { title: "Total Applications", key: "total_applications", icon: BriefcaseIcon },
-  { title: "Upcoming Interviews", key: "interviews_upcoming", icon: CalendarIcon },
-  { title: "Active Applications", key: "active_applications", icon: TrendingUpIcon },
-  { title: "Response Rate", key: "response_rate", icon: BarChartIcon, format: "percentage" },
+  {
+    title: "Total Applications",
+    key: "total_applications",
+    icon: BriefcaseIcon,
+  },
+  {
+    title: "Upcoming Interviews",
+    key: "interviews_upcoming",
+    icon: CalendarIcon,
+  },
+  {
+    title: "Active Applications",
+    key: "active_applications",
+    icon: TrendingUpIcon,
+  },
+  {
+    title: "Response Rate",
+    key: "response_rate",
+    icon: BarChartIcon,
+    format: "percentage",
+  },
   { title: "Offers", key: "offers", icon: GiftIcon },
   { title: "Rejections", key: "rejections", icon: XCircleIcon },
   { title: "Contacts", key: "contacts", icon: UsersIcon },

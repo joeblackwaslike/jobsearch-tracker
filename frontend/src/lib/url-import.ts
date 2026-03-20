@@ -6,7 +6,10 @@
 import TurndownService from "turndown";
 import { createClient } from "@/lib/supabase/client";
 
-const turndown = new TurndownService({ headingStyle: "atx", bulletListMarker: "-" });
+const turndown = new TurndownService({
+  headingStyle: "atx",
+  bulletListMarker: "-",
+});
 
 /**
  * Extracted job data from URL
@@ -300,12 +303,30 @@ export function detectEmploymentType(
 ): "full-time" | "part-time" | "contract" | "internship" | undefined {
   // First, check for explicit employment type labels (most reliable)
   const explicitPatterns = [
-    { pattern: /employment\s*type[:\s]*(full[\s-]?time)/i, type: "full-time" as const },
-    { pattern: /employment\s*type[:\s]*(part[\s-]?time)/i, type: "part-time" as const },
-    { pattern: /employment\s*type[:\s]*(contract|contractor)/i, type: "contract" as const },
-    { pattern: /employment\s*type[:\s]*(intern|internship)/i, type: "internship" as const },
-    { pattern: /job\s*type[:\s]*(full[\s-]?time)/i, type: "full-time" as const },
-    { pattern: /job\s*type[:\s]*(part[\s-]?time)/i, type: "part-time" as const },
+    {
+      pattern: /employment\s*type[:\s]*(full[\s-]?time)/i,
+      type: "full-time" as const,
+    },
+    {
+      pattern: /employment\s*type[:\s]*(part[\s-]?time)/i,
+      type: "part-time" as const,
+    },
+    {
+      pattern: /employment\s*type[:\s]*(contract|contractor)/i,
+      type: "contract" as const,
+    },
+    {
+      pattern: /employment\s*type[:\s]*(intern|internship)/i,
+      type: "internship" as const,
+    },
+    {
+      pattern: /job\s*type[:\s]*(full[\s-]?time)/i,
+      type: "full-time" as const,
+    },
+    {
+      pattern: /job\s*type[:\s]*(part[\s-]?time)/i,
+      type: "part-time" as const,
+    },
     { pattern: /job\s*type[:\s]*(contract)/i, type: "contract" as const },
     { pattern: /job\s*type[:\s]*(intern)/i, type: "internship" as const },
   ];

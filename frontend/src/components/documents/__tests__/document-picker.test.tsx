@@ -7,7 +7,12 @@ vi.mock("@/lib/queries/documents", () => ({
   useDocuments: vi.fn(() => ({
     data: [
       { id: "d1", name: "My Resume", type: "resume", updated_at: "2026-01-01" },
-      { id: "d2", name: "Cover Letter", type: "cover-letter", updated_at: "2026-01-02" },
+      {
+        id: "d2",
+        name: "Cover Letter",
+        type: "cover-letter",
+        updated_at: "2026-01-02",
+      },
       { id: "d3", name: "Portfolio", type: "other", updated_at: "2026-01-03" },
     ],
     isLoading: false,
