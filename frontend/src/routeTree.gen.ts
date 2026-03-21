@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as ApiOpenapiRouteImport } from './routes/api/openapi'
 import { Route as ApiDocsRouteImport } from './routes/api/docs'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
@@ -37,6 +38,11 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiOpenapiRoute = ApiOpenapiRouteImport.update({
@@ -113,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/api/docs': typeof ApiDocsRoute
   '/api/openapi': typeof ApiOpenapiRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/applications/$applicationId': typeof AuthenticatedApplicationsApplicationIdRoute
   '/api/extension/refresh': typeof ApiExtensionRefreshRoute
   '/api/extension/signin': typeof ApiExtensionSigninRoute
@@ -129,6 +136,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/api/docs': typeof ApiDocsRoute
   '/api/openapi': typeof ApiOpenapiRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/applications/$applicationId': typeof AuthenticatedApplicationsApplicationIdRoute
   '/api/extension/refresh': typeof ApiExtensionRefreshRoute
   '/api/extension/signin': typeof ApiExtensionSigninRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/api/docs': typeof ApiDocsRoute
   '/api/openapi': typeof ApiOpenapiRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/_authenticated/applications/$applicationId': typeof AuthenticatedApplicationsApplicationIdRoute
   '/api/extension/refresh': typeof ApiExtensionRefreshRoute
   '/api/extension/signin': typeof ApiExtensionSigninRoute
@@ -165,6 +174,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/api/docs'
     | '/api/openapi'
+    | '/auth/callback'
     | '/applications/$applicationId'
     | '/api/extension/refresh'
     | '/api/extension/signin'
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/api/docs'
     | '/api/openapi'
+    | '/auth/callback'
     | '/applications/$applicationId'
     | '/api/extension/refresh'
     | '/api/extension/signin'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/api/docs'
     | '/api/openapi'
+    | '/auth/callback'
     | '/_authenticated/applications/$applicationId'
     | '/api/extension/refresh'
     | '/api/extension/signin'
@@ -210,6 +222,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   ApiDocsRoute: typeof ApiDocsRoute
   ApiOpenapiRoute: typeof ApiOpenapiRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
   ApiExtensionRefreshRoute: typeof ApiExtensionRefreshRoute
   ApiExtensionSigninRoute: typeof ApiExtensionSigninRoute
   ApiExtensionTrackRoute: typeof ApiExtensionTrackRoute
@@ -236,6 +249,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/openapi': {
@@ -368,6 +388,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   ApiDocsRoute: ApiDocsRoute,
   ApiOpenapiRoute: ApiOpenapiRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
   ApiExtensionRefreshRoute: ApiExtensionRefreshRoute,
   ApiExtensionSigninRoute: ApiExtensionSigninRoute,
   ApiExtensionTrackRoute: ApiExtensionTrackRoute,
