@@ -63,8 +63,12 @@ export const Route = createFileRoute("/auth/callback")({
 
         const { error } = await supabase.auth.exchangeCodeForSession(code);
 
+        if (error) {
+          console.error("[auth/callback] exchangeCodeForSession failed:", error.message, error);
+        }
+
         const destination = error
-          ? new URL("/login", url.origin).toString()
+          ? new URL(`/login?auth_error=${encodeURIComponent(error.message)}`, url.origin).toString()
           : new URL("/dashboard", url.origin).toString();
 
         const headers = new Headers({ Location: destination });
