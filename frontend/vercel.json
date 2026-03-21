@@ -1,6 +1,18 @@
 {
   "buildCommand": "pnpm build",
-  "outputDirectory": "dist",
+  "outputDirectory": "dist/client",
   "installCommand": "pnpm install",
-  "framework": null
+  "framework": null,
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "dist/server/**",
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/index"
+    }
+  ]
 }
