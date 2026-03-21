@@ -44,6 +44,9 @@ export function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
       const { error: authError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
       });
       if (authError) {
         setError(authError.message);
