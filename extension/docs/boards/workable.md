@@ -6,7 +6,7 @@
 
 ## URL Pattern
 
-```
+```text
 https://apply.workable.com/{companySlug}/j/{jobId}/
 https://apply.workable.com/{companySlug}/j/{jobId}/apply/
 ```
@@ -27,10 +27,13 @@ Example: `https://apply.workable.com/code-metal/j/3E07B0C252/`
 ## Key Endpoints
 
 ### 1. Job Metadata ⭐
-```
+
+```text
 GET /api/v2/accounts/{companySlug}/jobs/{jobId}
 ```
+
 Fires on page load. Returns the richest job data:
+
 ```json
 {
   "id": 5459955,
@@ -46,21 +49,26 @@ Fires on page load. Returns the richest job data:
 ```
 
 ### 2. Form Fields
-```
+
+```text
 GET /api/v1/jobs/{jobId}/form
 ```
+
 Returns form sections and field definitions (name, type, required, maxLength). Standard sections: Personal information, Profile, Details. Field IDs match the `candidate` array names in the submit body.
 
 ### 3. Submit Application ⭐
-```
+
+```text
 POST /api/v1/jobs/{jobId}/apply
 ```
 
 **Required headers:**
+
 * `content-type: application/json`
 * `x-turnstile-token: <cloudflare-turnstile-token>` (412 if missing/invalid)
 
 **Request body:**
+
 ```json
 {
   "candidate": [
@@ -100,7 +108,8 @@ Resume is uploaded to Workable's S3 bucket first (separate upload flow), then re
 **Response (200 — success):** Presumed JSON with application ID (not captured — captcha blocked actual submission).
 
 **Response (412 — captcha fail):**
-```
+
+```text
 Precondition Failed
 ```
 

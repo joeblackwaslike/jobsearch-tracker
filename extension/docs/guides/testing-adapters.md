@@ -279,10 +279,12 @@ pnpm dev  # Build in watch mode
 ### 3. Test Icon State
 
 **Auto-tracking boards** (watchForSubmission or watchForIntent):
+
 - Icon should turn **green** on job pages
 - Icon should be **gray** on non-job pages
 
 **Manual boards** (getInjectTarget):
+
 - Icon always **gray**
 - Manual "Track" button appears on page
 
@@ -317,6 +319,7 @@ pnpm dev  # Build in watch mode
 **Cause:** HTML structure in test doesn't match adapter selectors
 
 **Fix:**
+
 ```typescript
 // Verify selectors match
 document.body.innerHTML = `
@@ -329,6 +332,7 @@ document.body.innerHTML = `
 **Cause:** Success signal never triggered in test
 
 **Fix:**
+
 ```typescript
 const cleanup = adapter.watchForSubmission!(callback);
 
@@ -349,6 +353,7 @@ setTimeout(() => {
 **Cause:** Watcher never fires or test doesn't wait long enough
 
 **Fix:**
+
 ```typescript
 // Increase timeout
 it("fires callback", async () => {
@@ -363,6 +368,7 @@ it("fires callback", async () => {
 **Current stats:** 248 tests across 28 files, ~5 seconds total
 
 **Best practices:**
+
 - Use `beforeEach()` to reset DOM state
 - Don't use real network requests (mock if needed)
 - Keep fixtures minimal (<1KB)
@@ -371,11 +377,13 @@ it("fires callback", async () => {
 ## Debugging Tests
 
 **Run single test file:**
+
 ```bash
 npx vitest run src/content/adapters/__tests__/example.test.ts
 ```
 
 **Run single test case:**
+
 ```typescript
 it.only("extracts position and company", () => {
   // Only this test runs
@@ -383,6 +391,7 @@ it.only("extracts position and company", () => {
 ```
 
 **Add console logs:**
+
 ```typescript
 it("extracts data", () => {
   const data = adapter.extract();
@@ -392,6 +401,7 @@ it("extracts data", () => {
 ```
 
 **Check DOM state:**
+
 ```typescript
 it("extracts data", () => {
   console.log("DOM:", document.body.innerHTML);

@@ -13,7 +13,7 @@
     "test:e2e": "pnpm --filter frontend test:e2e",
     "lint": "pnpm --filter frontend lint && pnpm --filter extension lint",
     "lint:check": "pnpm --filter frontend lint:check && pnpm --filter extension lint:check",
-    "lint:md": "markdownlint \"**/*.md\" --ignore node_modules --ignore \"**/node_modules\" --ignore \"**/dist\"",
+    "lint:md": "markdownlint \"**/*.md\" --ignore node_modules --ignore \"**/node_modules\" --ignore \"**/dist\" --ignore-path .markdownlintignore",
     "type": "pnpm --filter frontend type && pnpm --filter extension type",
     "db:start": "supabase start",
     "db:stop": "supabase stop",

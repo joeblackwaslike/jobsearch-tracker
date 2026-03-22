@@ -23,12 +23,14 @@ Confirmed via browser eval on `builtin.com/job/software-engineer-new-grad-2026/7
 **Title selector**: `h1` (class `fw-extrabold fs-xl mb-sm`, but bare `h1` is sufficient)
 
 **Company** — three reliable options (ranked):
+
 1. **JSON-LD** (most reliable): `script[type="application/ld+json"]` → `@graph[?(@type=="JobPosting")].hiringOrganization.name`
 2. **Page title**: `document.title` → `"{title} - {company} | Built In"` → split on ` - ` and ` | `
 3. **DOM link**: `Array.from(document.querySelectorAll('a[href*="/company/"]')).find(a => a.textContent.trim())?.textContent.trim()`
    - Note: first `a[href*="/company/"]` wraps a logo `<img>` and has empty text — skip it
 
 **h1 parent HTML** (confirms structure):
+
 ```html
 <div class="mb-sm d-inline-flex align-items-center">
   <a href="/company/benchling" target="_blank"><picture>...</picture></a>
@@ -66,6 +68,7 @@ Alternatively: listen for the Apply `@click` event on the button before the new 
 ## Current Adapter Selectors
 
 From `extension/src/content/adapters/builtin.ts` (pre-research):
+
 - Title: `h1[class*='job-title']`, `.job-info h1` — **WRONG**, real h1 class is `fw-extrabold fs-xl mb-sm`
 - Company: `a[class*='company']`, `[class*='company-title']` — **WRONG**, real company link class is `hover-underline text-pretty-blue font-barlow fw-med...`
 

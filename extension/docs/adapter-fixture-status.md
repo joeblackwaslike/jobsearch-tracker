@@ -63,6 +63,7 @@ Generated: 2026-03-10
 ## Recommended Approach
 
 ### Phase 1: Quick Wins (Estimated: 1-2 hours)
+
 Capture fixtures for simple DOM-based boards (no auth, no SPA complications):
 
 1. **blind** - Team Blind job posting
@@ -76,6 +77,7 @@ Capture fixtures for simple DOM-based boards (no auth, no SPA complications):
 **Method**: Manual browser "Save Page As" → HTML, place in fixtures/
 
 ### Phase 2: SPA Challenges (Estimated: 3-4 hours)
+
 Use Playwright to capture fully-rendered pages:
 
 1. **workday** - Wait for React SPA to render
@@ -86,6 +88,7 @@ Use Playwright to capture fully-rendered pages:
 **Method**: Playwright script with proper wait conditions
 
 ### Phase 3: Authentication Required (Estimated: 4-6 hours)
+
 Handle auth flows with Playwright:
 
 1. **linkedin** - Most complex (GraphQL + SDUI)
@@ -94,6 +97,7 @@ Handle auth flows with Playwright:
 **Method**: Playwright with saved session cookies OR manual capture
 
 ### Phase 4: Research Needed
+
 Investigate whether these are worth supporting:
 
 1. **dice** - Check if commonly used

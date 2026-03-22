@@ -7,16 +7,19 @@ Captured via Chrome DevTools MCP on 2026-03-06.
 ## Key Endpoints
 
 ### 1. Load Job Posting Detail
-```
+
+```text
 GET /voyager/api/graphql
   ?includeWebMetadata=true
   &variables=(cardSectionTypes:List(TOP_CARD,HOW_YOU_FIT_CARD),jobPostingUrn:urn%3Ali%3Afsd_jobPosting%3A{jobId},...)
   &queryId=voyagerJobsDashJobPostings.891aed7916d7453a37e4bbf5f1f60de4
 ```
+
 Returns full job posting metadata. Card sections are fetched individually (TOP_CARD, JOB_DESCRIPTION_CARD, COMPANY_CARD, SALARY_CARD, BENEFITS_CARD, HOW_YOU_MATCH_CARD, etc.).
 
 ### 2. Load Application Form
-```
+
+```text
 GET /voyager/api/graphql
   ?includeWebMetadata=true
   &variables=(jobPostingUrn:urn%3Ali%3Afsd_jobPosting%3A{jobId})
@@ -26,6 +29,7 @@ GET /voyager/api/graphql
 Loads the Easy Apply form fields and pre-filled profile data. The `included` array contains 16 objects. Key types:
 
 **`com.linkedin.voyager.dash.jobs.JobPosting`**
+
 ```json
 {
   "entityUrn": "urn:li:fsd_jobPosting:4370884325",
@@ -36,9 +40,11 @@ Loads the Easy Apply form fields and pre-filled profile data. The `included` arr
   }
 }
 ```
+
 ⚠️ Job **title** is NOT in this recipe's `JobPosting` object — use the TOP_CARD or `voyagerJobsDashJobPostings` call instead (see below).
 
 **`com.linkedin.voyager.dash.organization.Company`**
+
 ```json
 {
   "entityUrn": "urn:li:fsd_company:9300556",
@@ -47,6 +53,7 @@ Loads the Easy Apply form fields and pre-filled profile data. The `included` arr
 ```
 
 **`com.linkedin.voyager.dash.jobs.OnsiteApplyApplication`**
+
 ```json
 {
   "entityUrn": "urn:li:fsd_onsiteApplyApplication:4370884325",
@@ -59,15 +66,18 @@ Loads the Easy Apply form fields and pre-filled profile data. The `included` arr
 ```
 
 **`com.linkedin.voyager.dash.jobs.JobSeekerApplicationDetail`**
+
 ```json
 {
   "entityUrn": "urn:li:fsd_jobSeekerApplicationDetail:4370884325",
   "applicantTrackingSystemName": "LinkedIn"
 }
 ```
+
 `applicantTrackingSystemName` = `"LinkedIn"` for Easy Apply jobs (LinkedIn's own ATS). Will differ for jobs that redirect to an external ATS.
 
 **`com.linkedin.voyager.dash.jobs.Resume`** (one per uploaded resume, all returned)
+
 ```json
 {
   "entityUrn": "urn:li:fsd_resume:/{base64}.pdf",
@@ -79,24 +89,29 @@ Loads the Easy Apply form fields and pre-filled profile data. The `included` arr
   "downloadUrl": "https://www.linkedin.com/ambry/?x-li-ambry-ep=..."
 }
 ```
+
 All resumes on the account are returned. Cross-reference `entityUrn` with `fileUploadResponses[0].inputUrn` from the submit body to identify which resume was used.
 
 **`com.linkedin.voyager.dash.common.forms.FormElement`** (one per form field)
+
 - Fields observed: `phoneNumber~country`, `phoneNumber~nationalNumber`, `multipleChoice` (email)
 - Each has `urn`, `title.text`, `required`, and pre-filled `input` value
 
 ### 3. Submit Application ⭐
-```
+
+```text
 POST /voyager/api/voyagerJobsDashOnsiteApplyApplication?action=submitApplication
 ```
 
 **Required headers:**
+
 - `csrf-token: ajax:{value}` — matches the `JSESSIONID` cookie value
 - `x-restli-protocol-version: 2.0.0`
 - `accept: application/vnd.linkedin.normalized+json+2.1`
 - `content-type: application/json; charset=UTF-8`
 
 **Request body:**
+
 ```json
 {
   "followCompany": false,
@@ -138,6 +153,7 @@ POST /voyager/api/voyagerJobsDashOnsiteApplyApplication?action=submitApplication
 ```
 
 **Response (200):**
+
 ```json
 {
   "data": {
@@ -156,7 +172,8 @@ POST /voyager/api/voyagerJobsDashOnsiteApplyApplication?action=submitApplication
 ```
 
 ### 4. Job Posting Detail — TOP_CARD ⭐ (job title + location)
-```
+
+```text
 GET /voyager/api/graphql
   ?includeWebMetadata=true
   &variables=(cardSectionTypes:List(TOP_CARD,HOW_YOU_FIT_CARD),jobPostingUrn:urn%3Ali%3Afsd_jobPosting%3A{jobId},includeSecondaryActionsV2:true,jobDetailsContext:(isJobSearch:false))
@@ -166,6 +183,7 @@ GET /voyager/api/graphql
 Fires when the job detail panel opens. Contains `JobPosting` and `JobPostingCard` objects:
 
 **`com.linkedin.voyager.dash.jobs.JobPosting`**
+
 ```json
 {
   "entityUrn": "urn:li:fsd_jobPosting:4370884325",
@@ -180,6 +198,7 @@ Fires when the job detail panel opens. Contains `JobPosting` and `JobPostingCard
 ```
 
 **`com.linkedin.voyager.dash.jobs.JobPostingCard`**
+
 ```json
 {
   "entityUrn": "urn:li:fsd_jobPostingCard:(4370884325,JOB_DETAILS)",
@@ -188,10 +207,12 @@ Fires when the job detail panel opens. Contains `JobPosting` and `JobPostingCard
   "primaryDescription": { "text": "Alpaca" }
 }
 ```
+
 `navigationBarSubtitle` is a pre-formatted `"Company · Location"` string — very convenient.
 
 ### 5. Job Posting Full Detail — voyagerJobsDashJobPostings ⭐ (richest source)
-```
+
+```text
 GET /voyager/api/graphql
   ?includeWebMetadata=true
   &variables=(jobPostingUrn:urn%3Ali%3Afsd_jobPosting%3A{jobId})
@@ -199,6 +220,7 @@ GET /voyager/api/graphql
 ```
 
 The richest single endpoint. Contains the full `JobPosting` object:
+
 ```json
 {
   "entityUrn": "urn:li:fsd_jobPosting:4370884325",
@@ -219,6 +241,7 @@ The richest single endpoint. Contains the full `JobPosting` object:
 ```
 
 Also returns `Geo`, `Company`, `EmploymentStatus`, `StandardizedTitle`, `IndustryV2` in `included`:
+
 ```json
 {
   "geo": { "abbreviatedLocalizedName": "United States", "countryISOCode": "US" },
@@ -234,7 +257,8 @@ Also returns `Geo`, `Company`, `EmploymentStatus`, `StandardizedTitle`, `Industr
 ```
 
 ### 6. External ATS Apply Signal ⭐
-```
+
+```text
 POST /flagship-web/rsc-action/actions/server-request
   ?sduiid=com.linkedin.sdui.requests.jobSeeker.shareProfileWithJobPosterRequest
 ```
@@ -242,6 +266,7 @@ POST /flagship-web/rsc-action/actions/server-request
 Fires when user clicks Apply on a non-Easy Apply job (before the external tab opens). This is the only LinkedIn-side signal for external applications.
 
 **Request body:**
+
 ```json
 {
   "requestId": "com.linkedin.sdui.requests.jobSeeker.shareProfileWithJobPosterRequest",
@@ -259,48 +284,57 @@ Fires when user clicks Apply on a non-Easy Apply job (before the external tab op
 The external ATS URL opens in a new tab simultaneously. LinkedIn does **not** provide the ATS URL in this API call — it's only available in the DOM (the Apply button's `href`) or from the `companyApplyUrl` field in `voyagerJobsDashJobPostings` (only fires from search results view, not direct `/jobs/view/` URLs).
 
 **Apply button href (DOM):**
-```
+
+```text
 https://www.linkedin.com/redir/redirect/?url={encoded_ats_url}&urlhash={hash}&isSdui=true
 ```
+
 Decode the `url` query param to get the raw ATS URL:
-```
+
+```text
 https://jobs.ashbyhq.com/kindred/ac098955-f86f-4aeb-8578-c2b2b96c11d9/application?utm_source=57133knwx9&source=LinkedIn
 ```
+
 The ATS hostname (`jobs.ashbyhq.com`) identifies the ATS. `source=LinkedIn` is appended by LinkedIn to all external redirects.
 
 **Architecture note:** LinkedIn has fully migrated to SDUI/RSC architecture. All job detail calls (`peopleWhoCanHelp`, `aboutTheJob`, `jobMatch`, etc.) are now `POST /flagship-web/rsc-action/actions/component` returning binary `application/octet-stream` — not parseable JSON. The `voyagerJobsDashJobPostings` graphql calls only appeared in older client sessions (`clientVersion: 1.13.42636`) and may no longer be reliably available.
 
 **Getting job metadata on SDUI pages:**
+
 - `document.title` → `"Senior / Staff Backend Engineer | Kindred | LinkedIn"` — parse as `"{title} | {company} | LinkedIn"` ✓
 - Job ID → from `window.location` (`currentJobId=` param on search results, or `/jobs/view/{id}/` on detail pages) ✓
 - ATS URL → decode Apply button `href` `url` param ✓
 - No h1 elements on SDUI pages — obfuscated class names, DOM structure not reliable beyond `document.title`
 
 **Implication for extension:** The DOM is the most reliable source for external ATS jobs. On click of Apply:
+
 1. Read `document.title` → parse title + company
 2. Read `window.location` → extract jobId
 3. Read Apply button `href` → decode `url` param for ATS URL + detect ATS from hostname
 4. Confirm via `shareProfileWithJobPosterRequest` firing (has jobId in payload)
 
 ### 7. Post-Apply Promos (confirmation modal data)
-```
+
+```text
 GET /voyager/api/graphql
   ?variables=(jobPosting:urn%3Ali%3Afsd_jobPosting%3A{jobId},screenContext:POST_APPLY_MODAL)
   &queryId=voyagerJobsDashPostApplyPromos.3705ea6526066bf185aebc1c942c339b
 ```
 
 ### 5. Job Posting Activity Log (fires on job view)
-```
+
+```text
 POST /flagship-web/rsc-action/actions/server-request
   ?sduiid=com.linkedin.sdui.requests.jobSeeker.jobPostingActivityLog
 ```
+
 Fires when you open/view a job posting. Useful signal for detecting "viewed" state.
 
 ---
 
 ## Stable Job URL
 
-```
+```text
 https://www.linkedin.com/jobs/view/{jobId}/
 ```
 
@@ -336,7 +370,7 @@ For CSRF: the `csrf-token` header value equals the `JSESSIONID` cookie (format: 
 ## URN Patterns
 
 | Entity | URN format |
-|--------|-----------|
+| ------ | ---------- |
 | Job posting | `urn:li:fsd_jobPosting:{jobId}` |
 | Application detail | `urn:li:fsd_jobSeekerApplicationDetail:{jobId}` |
 | Resume | `urn:li:fsd_resume:/{base64}.pdf` |
@@ -350,7 +384,7 @@ For CSRF: the `csrf-token` header value equals the `JSESSIONID` cookie (format: 
 
 When the user clicks Apply on a non-Easy-Apply job, LinkedIn fires:
 
-```
+```text
 POST /flagship-web/rsc-action/actions/server-request
   ?sduiid=com.linkedin.sdui.requests.jobSeeker.shareProfileWithJobPosterRequest
 ```
@@ -361,11 +395,13 @@ API body only contains `jobId`.
 ### Apply Button Decode
 
 The Apply button href is a LinkedIn redirect wrapper:
-```
+
+```text
 https://www.linkedin.com/redir/redirect/?url={encoded_ats_url}&urlhash={hash}&isSdui=true
 ```
 
 Decode:
+
 ```ts
 const params = new URLSearchParams(new URL(applyHref).search);
 const atsUrl = decodeURIComponent(params.get("url") ?? "");
@@ -376,6 +412,7 @@ const atsDomain = atsUrl ? new URL(atsUrl).hostname : null;
 ### Recommended Adapter Strategy (`watchForIntent`)
 
 On the job detail page:
+
 1. Call `extract()` → get `{ position, company }` from `document.title`.
 2. Find the Apply button via `[aria-label*="Apply"]` or `.jobs-apply-button--top-card`.
 3. Check if the button's `href` is a LinkedIn redirect (contains `/redir/redirect/`):
@@ -392,7 +429,8 @@ apply action.
 ### Easy Apply — Submission Detection (`watchForSubmission`)
 
 Intercept:
-```
+
+```text
 POST /voyager/api/voyagerJobsDashOnsiteApplyApplication?action=submitApplication
 ```
 

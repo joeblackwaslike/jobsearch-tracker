@@ -25,6 +25,7 @@ Confirmed via browser eval on `teamblind.com/jobs/305253011` (Klaviyo - Lead Sof
 **Title selector**: `h1` (class `text-lg/5 font-bold` — or bare `h1`)
 
 **Company** — two reliable options:
+
 1. **Page title**: `document.title` → `"{title} at {company} | Blind Job Board - Blind"` → split on ` at ` (last occurrence before ` | `)
 2. **DOM link**: `Array.from(document.querySelectorAll('a[href*="/company/"]')).find(a => a.textContent.trim())?.textContent.trim()`
    - First `a[href*="/company/"]` wraps a logo (empty text) — skip it; second has company name
@@ -62,6 +63,7 @@ TeamBlind is a **pure aggregator** — no hosted application form.
 ## Current Adapter Selectors
 
 From `extension/src/content/adapters/blind.ts` (pre-research):
+
 - Title: `h1[class*='title']`, `.posting-header h1` — **WRONG**, real h1 class is `text-lg/5 font-bold`
 - Company: `[class*='company-name']`, `.company-info a` — **WRONG**, real company is `a[href*="/company/"]` (skip first empty match)
 

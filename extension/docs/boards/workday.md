@@ -35,6 +35,7 @@ Workday's apply flow is an **inline multi-step wizard** within the same SPA:
 4. Final confirmation: typically shows a success message, URL may contain `/confirmationCheckout/` or `/apply/success`
 
 > **TODO**: Browser research on the apply wizard to confirm:
+>
 > - Exact URL pattern during apply steps
 > - Whether form submit fires XHR (interceptable) or is opaque SPA state change
 > - Success DOM element (`[data-automation-id="confirmation"]`?)
@@ -45,6 +46,7 @@ Workday's apply flow is an **inline multi-step wizard** within the same SPA:
 **`watchForSubmission`** — but complex due to SPA nature.
 
 Options:
+
 1. **URL-change observer**: Watch for URL to contain `/apply/` — fires when user enters the apply wizard. Record intent at that point.
 2. **XHR intercept**: Workday's apply wizard likely POSTs to a Workday API endpoint. Intercepting `fetch`/`XHR` on `myworkdayjobs.com/api/apply` would give the cleanest signal.
 3. **DOM confirmation observer**: `MutationObserver` watching for a success confirmation element.
@@ -54,6 +56,7 @@ The URL-change approach is simplest to implement reliably, but fires on entry to
 ## Current Adapter Selectors
 
 From `extension/src/content/adapters/workday.ts`:
+
 - Title: `[data-automation-id="jobPostingHeader"]`
 - Apply button: `[data-automation-id="applyButton"]`
 - Company: `hostname.split('.')[0]`

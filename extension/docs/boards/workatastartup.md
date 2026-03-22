@@ -22,12 +22,14 @@ Confirmed via browser eval on `workatastartup.com/jobs/90059` (Software Engineer
 **Title selector**: `.job-name` (class `job-name shrink text-orange-500`) — text is the raw job title ("Software Engineer")
 
 **Company** — tricky, several options:
-1. `.company-name` text = `"Software Engineer at Forge (W24)"` — needs parsing: split on `" at "`, take everything after, strip ` (W24)` batch suffix with regex `/\s*\([A-Z]\d+\)$/`
+
+1. `.company-name` text = `"Software Engineer at Forge (W24)"` — needs parsing: split on `" at "`, take everything after, strip `(W24)` batch suffix with regex `/\s*\([A-Z]\d+\)$/`
 2. `a[href*="/companies/"]` → href `workatastartup.com/companies/forge` → extract slug, capitalize
 3. **Page title**: `"{title} at {company} | Y Combinator's Work at a Startup"` → split on `" at "` and `" | "` → "Forge"
 
 **DOM structure**:
-```
+
+```text
 span.company-name.text-2xl.font-bold  → "Software Engineer at Forge (W24)"
 div.job-name.shrink.text-orange-500   → "Software Engineer"  ← job title
 h2.text-2xl.mb-5                      → "Other jobs at Forge"
@@ -40,7 +42,7 @@ No h1 found on the page — title is NOT in an h1.
 
 Apply requires **YC account login**.
 
-```
+```text
 Apply button → https://account.ycombinator.com/authenticate?continue=https://www.workatastartup.com/
 ```
 
@@ -50,6 +52,7 @@ Apply button → https://account.ycombinator.com/authenticate?continue=https://w
 - After login: presumably shows a YC-hosted application form (profile-based, not external ATS redirect)
 
 > **TODO**: Login and research the post-auth apply flow to confirm:
+>
 > - What URL appears after login (specific job apply page?)
 > - Does YC show a hosted form or redirect to external ATS?
 > - What network request fires on submit?
@@ -66,6 +69,7 @@ Apply button → https://account.ycombinator.com/authenticate?continue=https://w
 ## Current Adapter Selectors
 
 From `extension/src/content/adapters/workatastartup.ts` (pre-research):
+
 - Title: `h1.company-name`, `.listing-title h1`, `.job-name` — **`.job-name` is CORRECT** ✓
 - Company: `.company-header h1`, `[class*='startup-name']` — **WRONG**; use `.company-name` with parsing or page title
 

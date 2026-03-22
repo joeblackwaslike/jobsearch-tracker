@@ -16,10 +16,12 @@ Note: `udm=8` is the more reliable signal. The DOM-based fallback catches jobs p
 ## Job Detail Panel
 
 Google Jobs renders a two-panel layout:
+
 - **Left panel**: List of job results
 - **Right panel**: Selected job detail (`.gws-plugins-horizon-jobs__tl-lif`)
 
 **Selectors** (from adapter + general knowledge):
+
 - **Title**: `.gws-plugins-horizon-jobs__tl-lif h2` or `[data-ved] h2`
 - **Company**: `.gws-plugins-horizon-jobs__tl-lif [class*='company']`
 - **Panel container**: `.gws-plugins-horizon-jobs__tl-lif` or `[class*="jobDetails"]`
@@ -33,6 +35,7 @@ Google Jobs renders a two-panel layout:
 Google Jobs is an **aggregator only** — it does not host application forms.
 
 Clicking "Apply" on a Google Jobs listing:
+
 - Opens the external company ATS (Greenhouse, Lever, Workday, Wellfound, etc.) in a **new tab** or same tab
 - The destination URL is the company's actual job posting
 - Google does not participate in or observe the application submission
@@ -55,6 +58,7 @@ The intent is recorded when the user views a job in Google Jobs. The actual TRAC
 ## Current Adapter
 
 From `extension/src/content/adapters/google.ts`:
+
 ```ts
 hosts: ["www.google.com"]
 // extract(): checks udm=8 OR jobs panel DOM presence
