@@ -2,7 +2,7 @@
 
 This document covers deploying the Job Search Tracker to production. The system has three independently deployed components:
 
-```
+```text
 Browser Extension (Chrome Web Store)
         │
         │  POST /api/extension/{signin,refresh,track}
@@ -65,7 +65,7 @@ In the Supabase dashboard, go to **Database → Replication** and enable Realtim
 
 After deploying the frontend (see below), also add your Vercel URL to **Authentication → URL Configuration → Redirect URLs**:
 
-```
+```text
 https://<your-app>.vercel.app/**
 ```
 
@@ -137,7 +137,7 @@ Update `GOOGLE_OAUTH_CALLBACK_URL` to your final Vercel domain once assigned (e.
 
 The extension stores the backend URL in Chrome storage. Users set this once via the extension popup → **Settings** → **Backend URL**. The value should be your Vercel deployment URL:
 
-```
+```text
 https://<your-app>.vercel.app
 ```
 
@@ -174,7 +174,7 @@ The workflow at [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs o
 
 ### Job graph
 
-```
+```text
 ┌────────────────┐  ┌──────────────────┐  ┌────────────┐  ┌──────────────┐
 │ markdown-lint  │  │  lint (Biome)    │  │ type-check │  │ unit tests   │
 └───────┬────────┘  └────────┬─────────┘  └─────┬──────┘  └──────┬───────┘
@@ -225,6 +225,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 { "ok": true, "access_token": "...", "refresh_token": "..." }
 { "ok": false, "error": "Invalid credentials" }
@@ -242,6 +243,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 { "ok": true, "access_token": "...", "refresh_token": "..." }
 { "ok": false, "error": "session_expired" }
@@ -265,6 +267,7 @@ Authorization: Bearer <access_token>
 ```
 
 **Response:**
+
 ```json
 { "ok": true, "application_id": "uuid", "company_id": "uuid" }
 { "ok": false, "error": "duplicate", "application_id": "uuid" }  // 409

@@ -12,7 +12,7 @@
 
 ## URL Patterns
 
-```
+```text
 https://job-boards.greenhouse.io/{companyName}/jobs/{jobId}
 https://boards.greenhouse.io/{companyName}/jobs/{jobId}
 ```
@@ -107,6 +107,7 @@ https://boards.greenhouse.io/{companyName}/jobs/{jobId}
     "fingerprint": "1671de7276130b2f6d1fac10d83b80d6e4dacec2"
 }
 ```
+
 Response: `200 OK` (HTML — redirects to a "Thank you for applying" page; no JSON body)
 
 ## Extension Interception Strategy

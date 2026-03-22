@@ -79,7 +79,7 @@ PRs should include tests for any new functionality. Keep the scope narrow — on
 
 ## Commit Style
 
-```
+```text
 feat: add archive button to application table
 fix: prevent double-submit on application form
 test: add tests for archive dialog

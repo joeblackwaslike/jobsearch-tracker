@@ -14,7 +14,7 @@ Complete guide for understanding and implementing intent tracking.
 
 ### Intent Lifecycle
 
-```
+```text
 1. User clicks "Apply" on LinkedIn
    → Content script records intent: { company: "Acme", source: "LinkedIn", atsDomain: "ashbyhq.com" }
 
@@ -190,28 +190,32 @@ function resolveIntent(company_name: string, atsDomain?: string): PendingIntent 
 ### Matching Examples
 
 **High-confidence match:**
-```
+
+```text
 Intent: { company_name: "acme corp", source: "LinkedIn", atsDomain: "ashbyhq.com", timestamp: T }
 Submit: { company_name: "Acme Corp", atsDomain: "ashbyhq.com", timestamp: T+1h }
 → MATCH ✅ (normalized company + atsDomain match)
 ```
 
 **Low-confidence match:**
-```
+
+```text
 Intent: { company_name: "stripe", source: "Wellfound", atsDomain: null, timestamp: T }
 Submit: { company_name: "Stripe", atsDomain: "greenhouse.io", timestamp: T+10min }
 → MATCH ✅ (normalized company match, within 30 min)
 ```
 
 **No match (expired):**
-```
+
+```text
 Intent: { company_name: "openai", source: "LinkedIn", atsDomain: null, timestamp: T }
 Submit: { company_name: "OpenAI", timestamp: T+45min }
 → NO MATCH ❌ (low-confidence intent expired after 30 min)
 ```
 
 **No match (different company):**
-```
+
+```text
 Intent: { company_name: "anthropic", source: "LinkedIn", atsDomain: "ashbyhq.com", timestamp: T }
 Submit: { company_name: "Stripe", atsDomain: "ashbyhq.com", timestamp: T+10min }
 → NO MATCH ❌ (company names don't match)
@@ -312,6 +316,7 @@ chrome.runtime.onMessage.addListener(async (message, sender) => {
 **Scenario:** User clicks Apply on LinkedIn and Wellfound for the same company
 
 **Behavior:**
+
 - Both intents stored (different source)
 - First submission consumes first matching intent
 - Second submission finds no intent (already consumed)
@@ -323,6 +328,7 @@ chrome.runtime.onMessage.addListener(async (message, sender) => {
 **Scenario:** User clicks Apply, gets distracted, submits 3 hours later
 
 **Behavior:**
+
 - Low-confidence intent (no atsDomain): expires after 30 min ❌
 - High-confidence intent (atsDomain): expires after 2 hours ❌
 - Submission has no source attribution
@@ -334,6 +340,7 @@ chrome.runtime.onMessage.addListener(async (message, sender) => {
 **Scenario:** LinkedIn shows `lever.co` but redirects to `jobs.lever.co`
 
 **Behavior:**
+
 - Intent stored with `lever.co`
 - Submission on `jobs.lever.co`
 - No high-confidence match (different domains)
@@ -346,6 +353,7 @@ chrome.runtime.onMessage.addListener(async (message, sender) => {
 **Scenario:** LinkedIn shows "Anthropic PBC" but ATS shows "Anthropic"
 
 **Behavior:**
+
 - Intent: `{ company_name: "anthropic pbc", ... }`
 - Submit: `{ company_name: "anthropic", ... }`
 - No match (different normalized names)

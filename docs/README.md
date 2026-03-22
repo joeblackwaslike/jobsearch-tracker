@@ -12,11 +12,11 @@ Stable reference documents describing the current system. Start here before work
 |---|---|
 | [constitution.md](./architecture/constitution.md) | Stable product principles and constraints. Overrides any one-off spec when they conflict. |
 | [project.md](./architecture/project.md) | High-level system overview — mission, problem statement, component map, and product goals. |
-| [data_model.md](./architecture/data_model.md) | Database schema, entity relationships, RLS patterns, and the DB diagram. |
-| [api_layer.md](./architecture/api_layer.md) | The two API layers: Supabase PostgREST (web frontend) and the Extension API (Bearer token, OpenAPI, Zod). |
+| [data-model.md](./architecture/data-model.md) | Database schema, entity relationships, RLS patterns, and the DB diagram. |
+| [api-layer.md](./architecture/api-layer.md) | The two API layers: Supabase PostgREST (web frontend) and the Extension API (Bearer token, OpenAPI, Zod). |
 | [edge-functions.md](./architecture/edge-functions.md) | Supabase Edge Functions — what they're for, the function inventory, and deployment notes. |
 | [ui.md](./architecture/ui.md) | Frontend architecture — routing, component conventions, state management, and styling patterns. |
-| [demo_seed_data.md](./architecture/demo_seed_data.md) | Demo seed data conventions and schema for development and testing. |
+| [demo-seed-data.md](./architecture/demo-seed-data.md) | Demo seed data conventions and schema for development and testing. |
 
 ---
 
@@ -65,4 +65,3 @@ Implementation plans paired with design documents. Most recent first.
 | 2026-02-16 | THRIVE Clone | [design](./plans/2026-02-16-thrive-clone-design.md) | [plan](./plans/2026-02-16-thrive-clone-implementation.md) |
 
 ---
-

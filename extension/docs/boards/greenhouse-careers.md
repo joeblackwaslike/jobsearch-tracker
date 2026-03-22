@@ -10,7 +10,7 @@ Greenhouse offers a hosted career site CMS product where companies serve applica
 
 ## URL Pattern
 
-```
+```text
 https://{company-domain}/jobs/{job-slug}?gh_jid={numericJobId}
 ```
 
@@ -37,13 +37,14 @@ The career site page contains **two embedded forms**:
 2. **Application form** (`postfix=7_0`) — the actual apply form. Identified by having `phone_value`, `job_questions`, and resume file upload fields.
 
 Both are loaded via:
-```
+
+```text
 GET /pages/{pageId}/blocks/{blockUuid}?job_uid={jobUuid}&postfix={n}
 ```
 
 ## Submit Application ⭐
 
-```
+```text
 POST https://{company-domain}/call_to_actions/{ctaId}/form_submissions?job_id={jobUuid}&page_id={pageId}
 ```
 
@@ -52,7 +53,8 @@ POST https://{company-domain}/call_to_actions/{ctaId}/form_submissions?job_id={j
 **Form encoding:** `multipart/form-data` (Rails-style nested params)
 
 **Key fields:**
-```
+
+```text
 authenticity_token={railsCsrfToken}
 container_id=call_to_action_container_{blockUuid}
 pass_through={}

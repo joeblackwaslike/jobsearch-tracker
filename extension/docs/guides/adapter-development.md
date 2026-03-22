@@ -34,6 +34,7 @@ export interface Adapter {
 - **Examples:** Greenhouse, Ashby, Lever, Workday, LinkedIn Easy Apply
 
 **Pattern:**
+
 ```typescript
 watchForSubmission(onSubmit: (jobData: JobData) => void): () => void {
   const jobData = this.extract();
@@ -59,6 +60,7 @@ watchForSubmission(onSubmit: (jobData: JobData) => void): () => void {
 - **Examples:** LinkedIn external apply, Wellfound, Google Jobs, Levels.fyi
 
 **Pattern:**
+
 ```typescript
 watchForIntent(onIntent: (jobData: JobData) => void): () => void {
   const applyButton = document.querySelector<HTMLAnchorElement>('a.apply-button');
@@ -112,6 +114,7 @@ Create `docs/boards/<board-name>.md`:
 ```
 
 **Capture network traffic:**
+
 - Open DevTools → Network tab
 - Fill out application form
 - Click Submit
@@ -292,6 +295,7 @@ const company = companyEl.textContent.trim();
 ### When to Record Intent
 
 **Prefer Apply button click:**
+
 ```typescript
 watchForIntent(onIntent: (jobData: JobData) => void): () => void {
   const applyBtn = document.querySelector<HTMLAnchorElement>('.apply-button');
@@ -308,6 +312,7 @@ watchForIntent(onIntent: (jobData: JobData) => void): () => void {
 ```
 
 **Fallback to page load** (if no click event available):
+
 ```typescript
 watchForIntent(onIntent: (jobData: JobData) => void): () => void {
   const jobData = this.extract();
@@ -322,6 +327,7 @@ watchForIntent(onIntent: (jobData: JobData) => void): () => void {
 ### Decoding ATS Domain
 
 **If destination is in href:**
+
 ```typescript
 const applyBtn = document.querySelector<HTMLAnchorElement>('.apply-button');
 const href = applyBtn?.href;
@@ -337,6 +343,7 @@ if (href) {
 ```
 
 **If href is a redirect wrapper** (LinkedIn, Google):
+
 ```typescript
 // LinkedIn: /redir/redirect/?url=https%3A%2F%2Fjobs.ashbyhq.com%2F...
 const href = applyBtn?.href;
