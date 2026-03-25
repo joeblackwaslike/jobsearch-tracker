@@ -49,6 +49,42 @@ export async function refresh(backendUrl: string, refreshToken: string): Promise
   return { ok: true, access_token: json.access_token, refresh_token: json.refresh_token };
 }
 
+export async function getGoogleOAuthUrl(
+  backendUrl: string,
+  redirectTo: string,
+  codeChallenge: string,
+): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
+  try {
+    const params = new URLSearchParams({ redirect_to: redirectTo, code_challenge: codeChallenge });
+    const res = await fetch(`${backendUrl}/api/extension/google-oauth-url?${params}`);
+    const json = await res.json();
+    if (res.ok) return { ok: true, url: json.url };
+    return { ok: false, error: json.error ?? "Failed to get OAuth URL" };
+  } catch {
+    return { ok: false, error: "network_error" };
+  }
+}
+
+export async function googleExchange(
+  backendUrl: string,
+  code: string,
+  codeVerifier: string,
+): Promise<SigninResult> {
+  try {
+    const res = await fetch(`${backendUrl}/api/extension/google-exchange`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code, code_verifier: codeVerifier }),
+    });
+    const json = await res.json();
+    if (res.ok)
+      return { ok: true, access_token: json.access_token, refresh_token: json.refresh_token };
+    return { ok: false, error: json.error ?? "Exchange failed" };
+  } catch {
+    return { ok: false, error: "network_error" };
+  }
+}
+
 export async function track(
   backendUrl: string,
   accessToken: string,
