@@ -91,9 +91,15 @@ body {
   background: var(--primary-hover);
 }
 .btn-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: var(--bg-secondary);
   color: var(--text);
   border: 1px solid var(--border);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--border);
 }
 .btn:disabled {
   opacity: 0.6;
@@ -119,8 +125,23 @@ body {
   background: var(--bg-secondary);
 }
 .divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
   height: 1px;
   background: var(--border);
+}
+.btn-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
 }
 .recent-list {
   display: flex;
