@@ -9,7 +9,7 @@ import { Resend } from "https://esm.sh/resend@3";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")!;
-const APP_URL = Deno.env.get("APP_URL") ?? "https://thrive.app";
+const APP_URL = Deno.env.get("APP_URL") ?? "https://jobsearch-tracker-frontend.vercel.app";
 
 const TYPE_LABELS: Record<string, string> = {
   "screening-interview": "Screening Interview",
@@ -90,7 +90,7 @@ Deno.serve(async (_req) => {
     `;
 
     await resend.emails.send({
-      from: "THRIVE <reminders@thrive.app>",
+      from: "Job Search Tracker <noreply@jobsearch-tracker-frontend.vercel.app>",
       to: user.email,
       subject: `Interview tomorrow: ${app.position} at ${app.company?.name ?? "Unknown"}`,
       html: emailHtml,
