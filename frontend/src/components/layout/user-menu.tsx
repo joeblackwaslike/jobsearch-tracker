@@ -98,7 +98,7 @@ export function UserMenu() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Sign In</DialogTitle>
-            <DialogDescription>Sign in to your THRIVE account.</DialogDescription>
+            <DialogDescription>Sign in to your account.</DialogDescription>
           </DialogHeader>
           <LoginForm onSuccess={() => setAuthModal(null)} />
         </DialogContent>
