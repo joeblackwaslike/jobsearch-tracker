@@ -117,8 +117,8 @@ export function InterviewReminderEmail({
           </Section>
           <Hr />
           <Text style={{ color: "#888888", fontSize: "12px" }}>
-            You're receiving this because you have email reminders enabled in Job Search Tracker. You can update
-            your preferences in Settings.
+            You're receiving this because you have email reminders enabled in Job Search Tracker.
+            You can update your preferences in Settings.
           </Text>
         </Container>
       </Body>
