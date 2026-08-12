@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "vite build --watch",
-    "build": "vite build",
-    "build:zip": "vite build && zip -r extension.zip dist/",
+    "build": "vite build && mkdir -p dist/src/assets && cp -r src/assets/icons dist/src/assets/icons",
+    "build:zip": "vite build && mkdir -p dist/src/assets && cp -r src/assets/icons dist/src/assets/icons && zip -r extension.zip dist/",
     "test": "NODE_OPTIONS='--max-old-space-size=8192' vitest run",
     "test:watch": "NODE_OPTIONS='--max-old-space-size=8192' vitest",
     "type": "tsc --noEmit",

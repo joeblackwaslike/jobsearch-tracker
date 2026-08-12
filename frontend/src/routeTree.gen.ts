@@ -9,76 +9,38 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
-import { Route as ApiOpenapiRouteImport } from './routes/api/openapi'
-import { Route as ApiDocsRouteImport } from './routes/api/docs'
-import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
-import { Route as AuthenticatedEventsRouteImport } from './routes/_authenticated/events'
-import { Route as AuthenticatedDocumentsRouteImport } from './routes/_authenticated/documents'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedCompaniesRouteImport } from './routes/_authenticated/companies'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedApplicationsRouteImport } from './routes/_authenticated/applications'
-import { Route as ApiExtensionTrackRouteImport } from './routes/api/extension/track'
-import { Route as ApiExtensionSigninRouteImport } from './routes/api/extension/signin'
-import { Route as ApiExtensionRefreshRouteImport } from './routes/api/extension/refresh'
+import { Route as AuthenticatedCompaniesRouteImport } from './routes/_authenticated/companies'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDocumentsRouteImport } from './routes/_authenticated/documents'
+import { Route as AuthenticatedEventsRouteImport } from './routes/_authenticated/events'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as ApiDocsRouteImport } from './routes/api/docs'
+import { Route as ApiOpenapiRouteImport } from './routes/api/openapi'
+import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as AuthenticatedApplicationsApplicationIdRouteImport } from './routes/_authenticated/applications/$applicationId'
+import { Route as ApiExtensionGoogleExchangeRouteImport } from './routes/api/extension/google-exchange'
+import { Route as ApiExtensionGoogleOauthUrlRouteImport } from './routes/api/extension/google-oauth-url'
+import { Route as ApiExtensionRefreshRouteImport } from './routes/api/extension/refresh'
+import { Route as ApiExtensionSigninRouteImport } from './routes/api/extension/signin'
+import { Route as ApiExtensionTrackRouteImport } from './routes/api/extension/track'
 
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthCallbackRoute = AuthCallbackRouteImport.update({
-  id: '/auth/callback',
-  path: '/auth/callback',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiOpenapiRoute = ApiOpenapiRouteImport.update({
-  id: '/api/openapi',
-  path: '/api/openapi',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiDocsRoute = ApiDocsRouteImport.update({
-  id: '/api/docs',
-  path: '/api/docs',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedEventsRoute = AuthenticatedEventsRouteImport.update({
-  id: '/events',
-  path: '/events',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedDocumentsRoute = AuthenticatedDocumentsRouteImport.update({
-  id: '/documents',
-  path: '/documents',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedCompaniesRoute = AuthenticatedCompaniesRouteImport.update({
-  id: '/companies',
-  path: '/companies',
-  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedApplicationsRoute =
   AuthenticatedApplicationsRouteImport.update({
@@ -86,19 +48,44 @@ const AuthenticatedApplicationsRoute =
     path: '/applications',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const ApiExtensionTrackRoute = ApiExtensionTrackRouteImport.update({
-  id: '/api/extension/track',
-  path: '/api/extension/track',
+const AuthenticatedCompaniesRoute = AuthenticatedCompaniesRouteImport.update({
+  id: '/companies',
+  path: '/companies',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedDocumentsRoute = AuthenticatedDocumentsRouteImport.update({
+  id: '/documents',
+  path: '/documents',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedEventsRoute = AuthenticatedEventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const ApiDocsRoute = ApiDocsRouteImport.update({
+  id: '/api/docs',
+  path: '/api/docs',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiExtensionSigninRoute = ApiExtensionSigninRouteImport.update({
-  id: '/api/extension/signin',
-  path: '/api/extension/signin',
+const ApiOpenapiRoute = ApiOpenapiRouteImport.update({
+  id: '/api/openapi',
+  path: '/api/openapi',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiExtensionRefreshRoute = ApiExtensionRefreshRouteImport.update({
-  id: '/api/extension/refresh',
-  path: '/api/extension/refresh',
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedApplicationsApplicationIdRoute =
@@ -107,6 +94,33 @@ const AuthenticatedApplicationsApplicationIdRoute =
     path: '/$applicationId',
     getParentRoute: () => AuthenticatedApplicationsRoute,
   } as any)
+const ApiExtensionGoogleExchangeRoute =
+  ApiExtensionGoogleExchangeRouteImport.update({
+    id: '/api/extension/google-exchange',
+    path: '/api/extension/google-exchange',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiExtensionGoogleOauthUrlRoute =
+  ApiExtensionGoogleOauthUrlRouteImport.update({
+    id: '/api/extension/google-oauth-url',
+    path: '/api/extension/google-oauth-url',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiExtensionRefreshRoute = ApiExtensionRefreshRouteImport.update({
+  id: '/api/extension/refresh',
+  path: '/api/extension/refresh',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiExtensionSigninRoute = ApiExtensionSigninRouteImport.update({
+  id: '/api/extension/signin',
+  path: '/api/extension/signin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiExtensionTrackRoute = ApiExtensionTrackRouteImport.update({
+  id: '/api/extension/track',
+  path: '/api/extension/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -121,6 +135,8 @@ export interface FileRoutesByFullPath {
   '/api/openapi': typeof ApiOpenapiRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/applications/$applicationId': typeof AuthenticatedApplicationsApplicationIdRoute
+  '/api/extension/google-exchange': typeof ApiExtensionGoogleExchangeRoute
+  '/api/extension/google-oauth-url': typeof ApiExtensionGoogleOauthUrlRoute
   '/api/extension/refresh': typeof ApiExtensionRefreshRoute
   '/api/extension/signin': typeof ApiExtensionSigninRoute
   '/api/extension/track': typeof ApiExtensionTrackRoute
@@ -138,6 +154,8 @@ export interface FileRoutesByTo {
   '/api/openapi': typeof ApiOpenapiRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/applications/$applicationId': typeof AuthenticatedApplicationsApplicationIdRoute
+  '/api/extension/google-exchange': typeof ApiExtensionGoogleExchangeRoute
+  '/api/extension/google-oauth-url': typeof ApiExtensionGoogleOauthUrlRoute
   '/api/extension/refresh': typeof ApiExtensionRefreshRoute
   '/api/extension/signin': typeof ApiExtensionSigninRoute
   '/api/extension/track': typeof ApiExtensionTrackRoute
@@ -157,6 +175,8 @@ export interface FileRoutesById {
   '/api/openapi': typeof ApiOpenapiRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/_authenticated/applications/$applicationId': typeof AuthenticatedApplicationsApplicationIdRoute
+  '/api/extension/google-exchange': typeof ApiExtensionGoogleExchangeRoute
+  '/api/extension/google-oauth-url': typeof ApiExtensionGoogleOauthUrlRoute
   '/api/extension/refresh': typeof ApiExtensionRefreshRoute
   '/api/extension/signin': typeof ApiExtensionSigninRoute
   '/api/extension/track': typeof ApiExtensionTrackRoute
@@ -176,6 +196,8 @@ export interface FileRouteTypes {
     | '/api/openapi'
     | '/auth/callback'
     | '/applications/$applicationId'
+    | '/api/extension/google-exchange'
+    | '/api/extension/google-oauth-url'
     | '/api/extension/refresh'
     | '/api/extension/signin'
     | '/api/extension/track'
@@ -193,6 +215,8 @@ export interface FileRouteTypes {
     | '/api/openapi'
     | '/auth/callback'
     | '/applications/$applicationId'
+    | '/api/extension/google-exchange'
+    | '/api/extension/google-oauth-url'
     | '/api/extension/refresh'
     | '/api/extension/signin'
     | '/api/extension/track'
@@ -211,6 +235,8 @@ export interface FileRouteTypes {
     | '/api/openapi'
     | '/auth/callback'
     | '/_authenticated/applications/$applicationId'
+    | '/api/extension/google-exchange'
+    | '/api/extension/google-oauth-url'
     | '/api/extension/refresh'
     | '/api/extension/signin'
     | '/api/extension/track'
@@ -223,6 +249,8 @@ export interface RootRouteChildren {
   ApiDocsRoute: typeof ApiDocsRoute
   ApiOpenapiRoute: typeof ApiOpenapiRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
+  ApiExtensionGoogleExchangeRoute: typeof ApiExtensionGoogleExchangeRoute
+  ApiExtensionGoogleOauthUrlRoute: typeof ApiExtensionGoogleOauthUrlRoute
   ApiExtensionRefreshRoute: typeof ApiExtensionRefreshRoute
   ApiExtensionSigninRoute: typeof ApiExtensionSigninRoute
   ApiExtensionTrackRoute: typeof ApiExtensionTrackRoute
@@ -230,11 +258,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -244,60 +272,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/callback': {
-      id: '/auth/callback'
-      path: '/auth/callback'
-      fullPath: '/auth/callback'
-      preLoaderRoute: typeof AuthCallbackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/openapi': {
-      id: '/api/openapi'
-      path: '/api/openapi'
-      fullPath: '/api/openapi'
-      preLoaderRoute: typeof ApiOpenapiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/docs': {
-      id: '/api/docs'
-      path: '/api/docs'
-      fullPath: '/api/docs'
-      preLoaderRoute: typeof ApiDocsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/settings': {
-      id: '/_authenticated/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/events': {
-      id: '/_authenticated/events'
-      path: '/events'
-      fullPath: '/events'
-      preLoaderRoute: typeof AuthenticatedEventsRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/documents': {
-      id: '/_authenticated/documents'
-      path: '/documents'
-      fullPath: '/documents'
-      preLoaderRoute: typeof AuthenticatedDocumentsRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+    '/_authenticated/applications': {
+      id: '/_authenticated/applications'
+      path: '/applications'
+      fullPath: '/applications'
+      preLoaderRoute: typeof AuthenticatedApplicationsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/companies': {
@@ -307,25 +293,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCompaniesRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/applications': {
-      id: '/_authenticated/applications'
-      path: '/applications'
-      fullPath: '/applications'
-      preLoaderRoute: typeof AuthenticatedApplicationsRouteImport
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/api/extension/track': {
-      id: '/api/extension/track'
-      path: '/api/extension/track'
-      fullPath: '/api/extension/track'
-      preLoaderRoute: typeof ApiExtensionTrackRouteImport
+    '/_authenticated/documents': {
+      id: '/_authenticated/documents'
+      path: '/documents'
+      fullPath: '/documents'
+      preLoaderRoute: typeof AuthenticatedDocumentsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/events': {
+      id: '/_authenticated/events'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof AuthenticatedEventsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/api/docs': {
+      id: '/api/docs'
+      path: '/api/docs'
+      fullPath: '/api/docs'
+      preLoaderRoute: typeof ApiDocsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/extension/signin': {
-      id: '/api/extension/signin'
-      path: '/api/extension/signin'
-      fullPath: '/api/extension/signin'
-      preLoaderRoute: typeof ApiExtensionSigninRouteImport
+    '/api/openapi': {
+      id: '/api/openapi'
+      path: '/api/openapi'
+      fullPath: '/api/openapi'
+      preLoaderRoute: typeof ApiOpenapiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/applications/$applicationId': {
+      id: '/_authenticated/applications/$applicationId'
+      path: '/$applicationId'
+      fullPath: '/applications/$applicationId'
+      preLoaderRoute: typeof AuthenticatedApplicationsApplicationIdRouteImport
+      parentRoute: typeof AuthenticatedApplicationsRoute
+    }
+    '/api/extension/google-exchange': {
+      id: '/api/extension/google-exchange'
+      path: '/api/extension/google-exchange'
+      fullPath: '/api/extension/google-exchange'
+      preLoaderRoute: typeof ApiExtensionGoogleExchangeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/extension/google-oauth-url': {
+      id: '/api/extension/google-oauth-url'
+      path: '/api/extension/google-oauth-url'
+      fullPath: '/api/extension/google-oauth-url'
+      preLoaderRoute: typeof ApiExtensionGoogleOauthUrlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/extension/refresh': {
@@ -335,12 +370,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiExtensionRefreshRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/applications/$applicationId': {
-      id: '/_authenticated/applications/$applicationId'
-      path: '/$applicationId'
-      fullPath: '/applications/$applicationId'
-      preLoaderRoute: typeof AuthenticatedApplicationsApplicationIdRouteImport
-      parentRoute: typeof AuthenticatedApplicationsRoute
+    '/api/extension/signin': {
+      id: '/api/extension/signin'
+      path: '/api/extension/signin'
+      fullPath: '/api/extension/signin'
+      preLoaderRoute: typeof ApiExtensionSigninRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/extension/track': {
+      id: '/api/extension/track'
+      path: '/api/extension/track'
+      fullPath: '/api/extension/track'
+      preLoaderRoute: typeof ApiExtensionTrackRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -389,6 +431,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiDocsRoute: ApiDocsRoute,
   ApiOpenapiRoute: ApiOpenapiRoute,
   AuthCallbackRoute: AuthCallbackRoute,
+  ApiExtensionGoogleExchangeRoute: ApiExtensionGoogleExchangeRoute,
+  ApiExtensionGoogleOauthUrlRoute: ApiExtensionGoogleOauthUrlRoute,
   ApiExtensionRefreshRoute: ApiExtensionRefreshRoute,
   ApiExtensionSigninRoute: ApiExtensionSigninRoute,
   ApiExtensionTrackRoute: ApiExtensionTrackRoute,
@@ -396,12 +440,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

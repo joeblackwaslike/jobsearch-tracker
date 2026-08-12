@@ -141,6 +141,7 @@ When consent is revoked, insert a new row with `granted = false` rather than del
 ## Core Abstractions
 
 ### Events (extended)
+
 Events are already the primary timeline entity. This epic formalizes two events that are currently implicit:
 
 - **`bookmarked`** — created when an application is saved without applying yet
@@ -149,9 +150,10 @@ Events are already the primary timeline entity. This epic formalizes two events 
 Every AI workflow is triggered by a specific event type. The event is the "why" for the task.
 
 ### Tasks
+
 The new central entity. A **task** represents a single AI workflow step: it has a type, a lifecycle status, a payload (AI outputs), and produces zero or one documents as output. Tasks are durable — they're created when triggered, survive server restarts, and their complete history (including terminations and feedback iterations) is preserved.
 
-```
+```text
 pending → running → awaiting_approval → approved → completed
         ↘ blocked                     ↘ terminated
           (auth error on integration)
@@ -175,6 +177,7 @@ pending → running → awaiting_approval → approved → completed
 | `failed`            | Exceeded max retries or non-retriable data error                                |
 
 ### Documents (extended)
+
 Documents gain two new fields:
 
 - **`source`**: `'user'` (uploaded/written) or `'ai_generated'`
