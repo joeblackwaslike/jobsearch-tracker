@@ -41,7 +41,10 @@ export const Route = createFileRoute("/api/extension/google-exchange")({
 
         const data = await res.json();
         if (!res.ok) {
-          return corsJson({ error: data.error_description ?? data.error ?? "Exchange failed" }, 401);
+          return corsJson(
+            { error: data.error_description ?? data.error ?? "Exchange failed" },
+            401,
+          );
         }
 
         return corsJson({
