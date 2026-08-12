@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-THRIVE is a job search tracking application built with TanStack Start, Supabase, and shadcn/ui. It helps users manage job applications, companies, interviews, documents, and contacts from a single dashboard.
+Job Search Tracker is a full-stack job search management platform built with TanStack Start, Supabase, and shadcn/ui. It helps users manage job applications, companies, interviews, documents, and contacts from a single dashboard.
 
 ## Tech Stack
 
@@ -48,8 +48,7 @@ THRIVE is a job search tracking application built with TanStack Start, Supabase,
 │   ├── config.toml            # Local Supabase config
 │   ├── migrations/            # SQL migrations (RLS, triggers, indexes)
 │   └── seed.sql               # Development seed data
-├── docs/plans/                # Design docs and implementation plans
-└── Makefile                   # Dev commands
+└── docs/plans/                # Design docs and implementation plans
 ```
 
 ## Development Commands

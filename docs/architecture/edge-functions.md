@@ -108,7 +108,7 @@ The PostgreSQL settings `app.supabase_url` and `app.service_role_key` must be se
 | `SUPABASE_URL` | Supabase project URL (auto-injected by runtime) |
 | `SUPABASE_SERVICE_ROLE_KEY` | Service role key (auto-injected by runtime) |
 | `RESEND_API_KEY` | API key for Resend email service |
-| `APP_URL` | Base URL for application links in emails (default: `https://thrive.app`) |
+| `APP_URL` | Base URL for application links in emails (default: `https://jobsearch-tracker-frontend.vercel.app`) |
 
 **Behavior:**
 
