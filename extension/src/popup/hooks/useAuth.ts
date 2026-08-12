@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { getGoogleOAuthUrl, googleExchange, signin as apiSignin } from "../../shared/api";
+import { signin as apiSignin, getGoogleOAuthUrl, googleExchange } from "../../shared/api";
 import { clearStorage, getStorage, setStorage } from "../../shared/storage";
 
 function generateCodeVerifier(): string {
@@ -72,15 +72,12 @@ export function useAuth() {
     console.log("[useAuth] Got OAuth URL, launching web auth flow…");
 
     const responseUrl = await new Promise<string | undefined>((resolve) => {
-      chrome.identity.launchWebAuthFlow(
-        { url: urlResult.url, interactive: true },
-        (url) => {
-          if (chrome.runtime.lastError) {
-            console.error("[useAuth] launchWebAuthFlow error:", chrome.runtime.lastError.message);
-          }
-          resolve(url);
-        },
-      );
+      chrome.identity.launchWebAuthFlow({ url: urlResult.url, interactive: true }, (url) => {
+        if (chrome.runtime.lastError) {
+          console.error("[useAuth] launchWebAuthFlow error:", chrome.runtime.lastError.message);
+        }
+        resolve(url);
+      });
     });
 
     if (!responseUrl) {
