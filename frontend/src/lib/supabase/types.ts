@@ -94,6 +94,7 @@ export type Database = {
           interest: string | null;
           job_description: string | null;
           locations: string[];
+          notes: string | null;
           position: string;
           salary: Json | null;
           source: string | null;
@@ -115,6 +116,7 @@ export type Database = {
           interest?: string | null;
           job_description?: string | null;
           locations?: string[];
+          notes?: string | null;
           position: string;
           salary?: Json | null;
           source?: string | null;
@@ -136,6 +138,7 @@ export type Database = {
           interest?: string | null;
           job_description?: string | null;
           locations?: string[];
+          notes?: string | null;
           position?: string;
           salary?: Json | null;
           source?: string | null;
@@ -168,8 +171,9 @@ export type Database = {
           id: string;
           industry: string | null;
           links: Json | null;
-          location: string | null;
+          locations: string[] | null;
           name: string;
+          notes: string | null;
           pros: string | null;
           ratings: Json | null;
           researched: boolean | null;
@@ -190,8 +194,9 @@ export type Database = {
           id?: string;
           industry?: string | null;
           links?: Json | null;
-          location?: string | null;
+          locations?: string[] | null;
           name: string;
+          notes?: string | null;
           pros?: string | null;
           ratings?: Json | null;
           researched?: boolean | null;
@@ -212,8 +217,9 @@ export type Database = {
           id?: string;
           industry?: string | null;
           links?: Json | null;
-          location?: string | null;
+          locations?: string[] | null;
           name?: string;
+          notes?: string | null;
           pros?: string | null;
           ratings?: Json | null;
           researched?: boolean | null;
@@ -227,6 +233,7 @@ export type Database = {
       };
       contacts: {
         Row: {
+          archived_at: string | null;
           company_id: string | null;
           created_at: string;
           email: string | null;
@@ -235,11 +242,13 @@ export type Database = {
           name: string;
           notes: string | null;
           phone: string | null;
+          source: string | null;
           title: string | null;
           updated_at: string;
           user_id: string;
         };
         Insert: {
+          archived_at?: string | null;
           company_id?: string | null;
           created_at?: string;
           email?: string | null;
@@ -248,11 +257,13 @@ export type Database = {
           name: string;
           notes?: string | null;
           phone?: string | null;
+          source?: string | null;
           title?: string | null;
           updated_at?: string;
           user_id: string;
         };
         Update: {
+          archived_at?: string | null;
           company_id?: string | null;
           created_at?: string;
           email?: string | null;
@@ -261,6 +272,7 @@ export type Database = {
           name?: string;
           notes?: string | null;
           phone?: string | null;
+          source?: string | null;
           title?: string | null;
           updated_at?: string;
           user_id?: string;
@@ -430,6 +442,7 @@ export type Database = {
           created_at: string;
           date_format: string;
           email_reminders: boolean;
+          id: string;
           language: string;
           notify_backup: boolean;
           notify_deadline: boolean;
@@ -447,6 +460,7 @@ export type Database = {
           created_at?: string;
           date_format?: string;
           email_reminders?: boolean;
+          id?: string;
           language?: string;
           notify_backup?: boolean;
           notify_deadline?: boolean;
@@ -464,6 +478,7 @@ export type Database = {
           created_at?: string;
           date_format?: string;
           email_reminders?: boolean;
+          id?: string;
           language?: string;
           notify_backup?: boolean;
           notify_deadline?: boolean;

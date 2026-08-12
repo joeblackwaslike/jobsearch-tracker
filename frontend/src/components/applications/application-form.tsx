@@ -84,6 +84,7 @@ const applicationFormSchema = z.object({
   interest: z.string().default("medium"),
   source: z.string().default(""),
   tags: z.array(z.string()).default([]),
+  notes: z.string().default(""),
 });
 
 type ApplicationFormValues = z.infer<typeof applicationFormSchema>;
@@ -125,6 +126,7 @@ function applicationToFormValues(app: ApplicationWithCompany): ApplicationFormVa
     interest: app.interest ?? "medium",
     source: app.source ?? "",
     tags: Array.isArray(app.tags) ? (app.tags as string[]) : [],
+    notes: app.notes ?? "",
   };
 }
 
@@ -148,6 +150,7 @@ function formValuesToPayload(values: ApplicationFormValues) {
     interest: values.interest || null,
     source: values.source || null,
     tags: values.tags.length > 0 ? values.tags : null,
+    notes: values.notes || null,
   };
 }
 
@@ -193,6 +196,7 @@ export function ApplicationForm({
       interest: "medium",
       source: "",
       tags: [],
+      notes: "",
     },
   });
 
@@ -392,6 +396,16 @@ export function ApplicationForm({
                   <TagInput
                     value={watch("tags") ?? []}
                     onChange={(tags) => setValue("tags", tags)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-notes">Notes</Label>
+                  <textarea
+                    id="edit-notes"
+                    className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Private notes about this application..."
+                    {...register("notes")}
                   />
                 </div>
               </fieldset>

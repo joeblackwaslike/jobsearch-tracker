@@ -1,0 +1,107 @@
+# Board fixture capture configuration
+# Each entry defines a stable job URL for capturing HTML snapshots
+#
+# Auth-gated boards (LinkedIn, Wellfound, TeamBlind) require --user-data-dir
+# pointing to a Chrome profile with active sessions.
+#
+# For all other boards, pick jobs at large, stable companies that are unlikely
+# to be deleted. Update URLs periodically if jobs expire.
+
+boards:
+  # ─── Auth Required ───────────────────────────────────────────────────────────
+  linkedin:
+    url: "https://www.linkedin.com/jobs/view/4147967890"  # Example - update as needed
+    wait_for: ".jobs-unified-top-card"
+    requires_auth: true
+
+  wellfound:
+    url: "https://wellfound.com/jobs?job_listing_slug=3898377-senior-backend-software-engineer"
+    wait_for: "h1"
+    requires_auth: true
+
+  blind:
+    url: "https://www.teamblind.com/jobs/311478158?page=1&remoteOnly=1&searchKeyword=Software+Engineer"
+    wait_for: "article"
+    requires_auth: true
+
+  # ─── Public Boards ───────────────────────────────────────────────────────────
+  greenhouse:
+    url: "https://job-boards.greenhouse.io/reddit/jobs/7624311"
+    wait_for: "h1.section-header"
+
+  greenhouse-careers:
+    url: "https://careers.withwaymo.com/jobs/software-engineer-multiverse-mountain-view-california-united-states-san-francisco-new-york-city-new-york?gh_jid=7531397"
+    wait_for: "form"
+
+  ashby:
+    url: "https://jobs.ashbyhq.com/ramp/ed2e9a94-f58e-4ff8-8853-afd977850d43"
+    wait_for: "h1"  # Changed from "form" - form only appears after clicking Apply
+
+  lever:
+    url: "https://jobs.lever.co/OpenAI/research-engineer"
+    wait_for: ".posting-headline h2, h2.posting-title"
+
+  workable:
+    url: "https://apply.workable.com/huggingface/j/0BD8C06DB3"
+    wait_for: "h1"
+
+  workday:
+    url: "https://nvidia.wd5.myworkdayjobs.com/en-US/NVIDIAExternalCareerSite/job/Software-Engineer--Distributed-Systems---New-College-Grad-2026_JR2013681"
+    wait_for: "[data-automation-id='jobPostingHeader']"
+
+  builtin:
+    url: "https://www.builtinnyc.com/job/software-engineer-new-grads-new-york/8554050"
+    wait_for: "h1"
+
+  levels:
+    url: "https://www.levels.fyi/jobs?locationSlug=united-states&jobId=95431004121899718"
+    wait_for: "h1"
+
+  github-careers:
+    url: "https://www.github.careers/careers-home/jobs/4193"
+    wait_for: "h1"
+
+  github:
+    url: "https://github.com/about/careers"
+    wait_for: "h1"
+
+  google:
+    url: "https://www.google.com/search?q=software%20engineer%20jobs&udm=8#vhid=vt%3D20/docid%3DXoCkUOEkLwCJ-EkkAAAAAA%3D%3D"
+    wait_for: ".p0SU6b"
+
+  welcometothejungle:
+    url: "https://www.welcometothejungle.com/en/companies/datadog/jobs/software-engineer_new-york"
+    wait_for: "h1"
+
+  workatastartup:
+    url: "https://www.workatastartup.com/jobs/91550"
+    wait_for: "h1"
+
+  hackernews:
+    # SKIP - .itemlist selector timeout. HN jobs page may load dynamically or have changed structure.
+    url: "https://news.ycombinator.com/jobs"
+    wait_for: ".itemlist"
+
+  ycombinator:
+    url: "https://www.ycombinator.com/companies/structured-ai/jobs/3cQY6Cu-mechanical-design-engineer-founding-team-consultant"
+    wait_for: "h1"
+
+  aijobs:
+    url: "https://aijobs.net/job/software-engineer-usds-san-jose-california-united-states-10150"
+    wait_for: "h1"
+
+  startupjobs:
+    url: "https://startup.jobs/software-engineer-enterprise-zone-backend-full-stack-multiple-levels-zapier-3-7772194"
+    wait_for: "h1"
+
+  indeed:
+    url: "https://www.indeed.com/viewjob?jk=123456"  # Example - update as needed
+    wait_for: "h1"
+
+  dice:
+    url: "https://www.dice.com/jobs/detail/123456"  # Example - update as needed
+    wait_for: "h1"
+
+  ziprecruiter:
+    url: "https://www.ziprecruiter.com/c/Example/Job/Senior-Engineer/-in-San-Francisco,CA?jid=123456"  # Example - update as needed
+    wait_for: "h1"

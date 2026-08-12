@@ -219,7 +219,9 @@ export function FullApplicationForm({
 
     async function autoCreate() {
       try {
-        const result = await createCompany.mutateAsync({ name: importData?.companyName ?? "" });
+        const result = await createCompany.mutateAsync({
+          name: importData?.companyName ?? "",
+        });
         if (!cancelled) {
           setValue("company_id", result.id, { shouldValidate: true });
           setValue("company_name", result.name);

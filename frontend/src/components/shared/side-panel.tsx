@@ -53,7 +53,7 @@ export function SidePanel({
           aria-label="Dismiss panel"
           onClick={onClose}
         />
-        <div className="relative flex w-full flex-col border-t bg-background shadow-xl max-h-[80vh]">
+        <div className="relative flex w-full flex-col border-t border-border bg-card shadow-xl max-h-[80vh]">
           <div className="flex shrink-0 items-center justify-end gap-1 border-b p-2">
             {headerActions}
             <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close">
@@ -79,7 +79,7 @@ export function SidePanel({
       />
       <aside
         className={cn(
-          "fixed inset-y-0 z-50 flex flex-col border-l bg-background shadow-xl",
+          "fixed inset-y-0 z-50 flex flex-col border-l border-border bg-card shadow-xl",
           WIDTH_CLASSES[width],
           positionClass,
         )}

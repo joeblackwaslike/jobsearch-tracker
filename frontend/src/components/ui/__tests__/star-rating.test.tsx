@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { render, screen, fireEvent } from "@/test/test-utils";
+import { fireEvent, render, screen } from "@/test/test-utils";
 import { StarRating } from "../star-rating";
 
 describe("StarRating", () => {

@@ -44,6 +44,9 @@ export function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
       const { error: authError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
       });
       if (authError) {
         setError(authError.message);
@@ -51,7 +54,7 @@ export function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
       }
       // If email confirmation is enabled, show a message
       setMessage("Account created! Check your email to confirm your account, then sign in.");
-      toast.success("Welcome to THRIVE!");
+      toast.success("Account created successfully!");
       onSuccess?.();
     } catch {
       setError("An unexpected error occurred. Please try again.");

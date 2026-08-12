@@ -19,7 +19,10 @@ vi.mock("@/lib/queries/applications", () => ({
 }));
 vi.mock("@/lib/queries/companies", () => ({
   useSearchCompanies: () => ({ data: [], isLoading: false }),
-  useCreateCompany: () => ({ mutateAsync: mockCreateCompanyMutateAsync, isPending: false }),
+  useCreateCompany: () => ({
+    mutateAsync: mockCreateCompanyMutateAsync,
+    isPending: false,
+  }),
 }));
 vi.mock("@/lib/queries/documents", () => ({
   useDocuments: () => ({ data: [], isLoading: false }),
@@ -153,7 +156,9 @@ describe("auto-create company on import", () => {
     );
 
     await waitFor(() => {
-      expect(mockCreateCompanyMutateAsync).toHaveBeenCalledWith({ name: "Acme Corp" });
+      expect(mockCreateCompanyMutateAsync).toHaveBeenCalledWith({
+        name: "Acme Corp",
+      });
     });
   });
 

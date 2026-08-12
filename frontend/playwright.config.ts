@@ -17,7 +17,7 @@ export default defineConfig({
   ],
   webServer: {
     command: "pnpm dev",
-    url: "http://localhost:3000",
+    url: "http://localhost:3000/api/openapi",
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
     env: {

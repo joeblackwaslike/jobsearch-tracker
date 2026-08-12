@@ -9,16 +9,20 @@ interface StarRatingProps {
   className?: string;
 }
 
-export function StarRating({ value, onChange, "aria-label": ariaLabel, className }: StarRatingProps) {
+export function StarRating({
+  value,
+  onChange,
+  "aria-label": ariaLabel,
+  className,
+}: StarRatingProps) {
   const [hovered, setHovered] = useState<number | null>(null);
 
   const active = hovered ?? value ?? 0;
 
   return (
-    <div
-      role="group"
+    <fieldset
       aria-label={ariaLabel}
-      className={cn("flex items-center gap-1", className)}
+      className={cn("flex items-center gap-1 border-0 p-0 m-0", className)}
     >
       {[1, 2, 3, 4, 5].map((star) => (
         <button
@@ -40,6 +44,6 @@ export function StarRating({ value, onChange, "aria-label": ariaLabel, className
           />
         </button>
       ))}
-    </div>
+    </fieldset>
   );
 }

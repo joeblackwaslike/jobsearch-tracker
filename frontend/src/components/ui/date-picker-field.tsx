@@ -15,7 +15,11 @@ interface DatePickerFieldProps {
 function formatDisplay(value: string): string {
   if (!value) return "";
   const d = new Date(`${value}T00:00:00`);
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 function toDate(value: string): Date | undefined {
@@ -44,7 +48,11 @@ export function DatePickerField({
         <Button
           type="button"
           variant="outline"
-          className={cn("w-full justify-start font-normal", !value && "text-muted-foreground", className)}
+          className={cn(
+            "w-full justify-start font-normal",
+            !value && "text-muted-foreground",
+            className,
+          )}
         >
           <CalendarIcon className="mr-2 size-4" />
           {value ? formatDisplay(value) : placeholder}

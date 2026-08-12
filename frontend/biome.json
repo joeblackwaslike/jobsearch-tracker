@@ -17,7 +17,8 @@
     "enabled": true,
     "indentStyle": "space",
     "indentWidth": 2,
-    "lineWidth": 100
+    "lineWidth": 100,
+    "useEditorconfig": true
   },
   "files": {
     "includes": [
@@ -25,13 +26,37 @@
       "!!**/node_modules",
       "!!**/dist",
       "!!**/.output",
-      "!!**/src/components/ui",
-      "!!src/routeTree.gen.ts"
+      "!!src/routeTree.gen.ts",
+      "!!test-results"
     ]
   },
   "css": {
     "parser": {
       "tailwindDirectives": true
+    },
+    "formatter": {
+      "enabled": true,
+      "indentStyle": "space"
+    }
+  },
+  "json": {
+    "parser": {
+      "allowComments": true,
+      "allowTrailingCommas": true
+    },
+    "formatter": {
+      "enabled": true,
+      "indentStyle": "space",
+      "indentWidth": 2,
+      "lineWidth": 100,
+      "trailingCommas": "none",
+      "expand": "always"
+    },
+    "linter": {
+      "enabled": true
+    },
+    "assist": {
+      "enabled": true
     }
   }
 }

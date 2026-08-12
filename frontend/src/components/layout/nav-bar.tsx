@@ -18,7 +18,7 @@ export function NavBar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 border-b border-border bg-background/95 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex h-14 max-w-7xl items-center px-4 md:px-6">
         {/* Left: Logo */}
         <Link to="/dashboard" className="mr-8 text-lg font-bold tracking-wider">
@@ -32,7 +32,7 @@ export function NavBar() {
               <Link
                 to={to}
                 activeProps={{
-                  className: "text-foreground bg-accent",
+                  className: "text-primary bg-accent",
                 }}
                 inactiveProps={{
                   className: "text-muted-foreground",

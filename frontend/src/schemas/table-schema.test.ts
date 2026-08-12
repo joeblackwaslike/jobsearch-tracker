@@ -6,7 +6,13 @@ describe("TableSchema Types", () => {
     const schema: TableSchema<{ id: string; name: string; status: string }> = {
       columns: [
         { id: "id", header: "ID", type: "text", sortable: true, minWidth: 100 },
-        { id: "name", header: "Name", type: "text", sortable: true, minWidth: 200 },
+        {
+          id: "name",
+          header: "Name",
+          type: "text",
+          sortable: true,
+          minWidth: 200,
+        },
         {
           id: "status",
           header: "Status",
@@ -43,8 +49,20 @@ describe("TableSchema Types", () => {
   it("type-level test for SchemaData type extraction", () => {
     const schema: TableSchema<{ name: string; age: number }> = {
       columns: [
-        { id: "name", header: "Name", type: "text", sortable: true, minWidth: 100 },
-        { id: "age", header: "Age", type: "number", sortable: true, minWidth: 100 },
+        {
+          id: "name",
+          header: "Name",
+          type: "text",
+          sortable: true,
+          minWidth: 100,
+        },
+        {
+          id: "age",
+          header: "Age",
+          type: "number",
+          sortable: true,
+          minWidth: 100,
+        },
       ],
     };
 
@@ -171,8 +189,21 @@ describe("TableSchema Types", () => {
     }> = {
       columns: [
         { id: "id", header: "ID", type: "text", sortable: true, minWidth: 100 },
-        { id: "name", header: "Name", type: "text", sortable: true, minWidth: 200, grow: 2 },
-        { id: "createdAt", header: "Created At", type: "datetime", sortable: true, minWidth: 150 },
+        {
+          id: "name",
+          header: "Name",
+          type: "text",
+          sortable: true,
+          minWidth: 200,
+          grow: 2,
+        },
+        {
+          id: "createdAt",
+          header: "Created At",
+          type: "datetime",
+          sortable: true,
+          minWidth: 150,
+        },
         {
           id: "status",
           header: "Status",

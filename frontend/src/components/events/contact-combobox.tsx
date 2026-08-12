@@ -36,10 +36,18 @@ interface ContactComboboxProps {
 
 type ContactMethod = "email" | "phone" | "linkedin_url";
 
-const CONTACT_METHOD_OPTIONS: { value: ContactMethod; label: string; placeholder: string }[] = [
+const CONTACT_METHOD_OPTIONS: {
+  value: ContactMethod;
+  label: string;
+  placeholder: string;
+}[] = [
   { value: "email", label: "Email", placeholder: "email@example.com" },
   { value: "phone", label: "Phone", placeholder: "+1 555-0100" },
-  { value: "linkedin_url", label: "LinkedIn", placeholder: "linkedin.com/in/..." },
+  {
+    value: "linkedin_url",
+    label: "LinkedIn",
+    placeholder: "linkedin.com/in/...",
+  },
 ];
 
 // ---------------------------------------------------------------------------

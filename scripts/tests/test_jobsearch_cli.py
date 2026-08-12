@@ -10,7 +10,7 @@ from rich.text import Text
 
 def load_script():
     """Import the script module without executing main()."""
-    path = pathlib.Path(__file__).parent.parent / "jobsearch-ts-nyc.py"
+    path = pathlib.Path(__file__).parent.parent / "js-nyc.py"
     spec = importlib.util.spec_from_file_location("jobsearch", path)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)

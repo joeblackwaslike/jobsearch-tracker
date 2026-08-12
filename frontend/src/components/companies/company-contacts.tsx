@@ -5,9 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   type Contact,
+  useArchiveContact,
   useContacts,
   useCreateContact,
-  useDeleteContact,
   useUpdateContact,
 } from "@/lib/queries/contacts";
 
@@ -25,6 +25,7 @@ interface ContactFormData {
   email: string;
   phone: string;
   linkedin_url: string;
+  source: string;
   notes: string;
 }
 
@@ -34,6 +35,7 @@ const emptyForm: ContactFormData = {
   email: "",
   phone: "",
   linkedin_url: "",
+  source: "",
   notes: "",
 };
 
@@ -130,6 +132,18 @@ function ContactForm({
           value={form.linkedin_url}
           onChange={(e) => handleChange("linkedin_url", e.target.value)}
           placeholder="https://linkedin.com/in/..."
+          className="h-8 text-sm"
+        />
+      </div>
+      <div className="space-y-1">
+        <Label htmlFor="contact-source" className="text-xs">
+          Source
+        </Label>
+        <Input
+          id="contact-source"
+          value={form.source}
+          onChange={(e) => handleChange("source", e.target.value)}
+          placeholder="LinkedIn, Apollo, Referral..."
           className="h-8 text-sm"
         />
       </div>
@@ -256,7 +270,7 @@ export function CompanyContacts({ companyId }: CompanyContactsProps) {
   const { data: contacts = [], isLoading } = useContacts(companyId);
   const createContact = useCreateContact();
   const updateContact = useUpdateContact();
-  const deleteContact = useDeleteContact();
+  const archiveContact = useArchiveContact();
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -269,6 +283,7 @@ export function CompanyContacts({ companyId }: CompanyContactsProps) {
       email: data.email || null,
       phone: data.phone || null,
       linkedin_url: data.linkedin_url || null,
+      source: data.source || null,
       notes: data.notes || null,
     });
     setShowAddForm(false);
@@ -282,13 +297,14 @@ export function CompanyContacts({ companyId }: CompanyContactsProps) {
       email: data.email || null,
       phone: data.phone || null,
       linkedin_url: data.linkedin_url || null,
+      source: data.source || null,
       notes: data.notes || null,
     });
     setEditingId(null);
   };
 
   const handleDelete = async (id: string) => {
-    await deleteContact.mutateAsync(id);
+    await archiveContact.mutateAsync(id);
   };
 
   if (isLoading) {
@@ -311,6 +327,7 @@ export function CompanyContacts({ companyId }: CompanyContactsProps) {
               email: contact.email ?? "",
               phone: contact.phone ?? "",
               linkedin_url: contact.linkedin_url ?? "",
+              source: contact.source ?? "",
               notes: contact.notes ?? "",
             }}
             onSubmit={(data) => handleUpdate(contact.id, data)}
@@ -323,7 +340,7 @@ export function CompanyContacts({ companyId }: CompanyContactsProps) {
             contact={contact}
             onEdit={() => setEditingId(contact.id)}
             onDelete={() => handleDelete(contact.id)}
-            isDeleting={deleteContact.isPending}
+            isDeleting={archiveContact.isPending}
           />
         ),
       )}

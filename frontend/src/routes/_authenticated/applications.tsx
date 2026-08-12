@@ -223,7 +223,10 @@ function ApplicationsPage() {
       onDetailClose={() =>
         navigate({
           to: "/applications",
-          search: (prev: ApplicationsSearch) => ({ ...prev, detail: undefined }),
+          search: (prev: ApplicationsSearch) => ({
+            ...prev,
+            detail: undefined,
+          }),
           replace: true,
         })
       }
@@ -307,7 +310,10 @@ function ApplicationsPage() {
               onArchived={() =>
                 navigate({
                   to: "/applications",
-                  search: (prev: ApplicationsSearch) => ({ ...prev, detail: undefined }),
+                  search: (prev: ApplicationsSearch) => ({
+                    ...prev,
+                    detail: undefined,
+                  }),
                   replace: true,
                 })
               }

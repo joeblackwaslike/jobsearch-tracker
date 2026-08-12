@@ -1,31 +1,20 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
-    "defaultMode": "bypassPermissions",
     "allow": [
-      "Read",
-      "Edit",
-      "MultiEdit",
-      "Write",
-      "Glob",
       "Agent",
-      "TodoRead",
-      "TodoWrite",
-      "WebSearch",
-      "WebFetch",
-      "Skill",
-      "Task",
-      "Bash(arch *)",
-      "Bash(asdf *)",
       "Bash(apt *)",
       "Bash(apt-cache *)",
       "Bash(apt-config *)",
       "Bash(apt-file *)",
       "Bash(apt-get *)",
       "Bash(apt-key *)",
+      "Bash(arch *)",
+      "Bash(asdf *)",
       "Bash(awk *)",
       "Bash(base64 *)",
-      "Bash(bash *)",
       "Bash(basename *)",
+      "Bash(bash *)",
       "Bash(bat *)",
       "Bash(bc *)",
       "Bash(biome *)",
@@ -110,9 +99,9 @@
       "Bash(ps *)",
       "Bash(psql *)",
       "Bash(pwd *)",
+      "Bash(pytest *)",
       "Bash(python *)",
       "Bash(python3 *)",
-      "Bash(pytest *)",
       "Bash(readlink *)",
       "Bash(redis-cli *)",
       "Bash(renice *)",
@@ -195,7 +184,8 @@
       "Bash(zcat *)",
       "Bash(zip *)",
       "Bash(zsh *)",
-      "Skill(superpowers-chrome:browsing)",
+      "Edit",
+      "Glob",
       "mcp__chrome-devtools__navigate_page",
       "mcp__chrome-devtools__take_screenshot",
       "mcp__chrome-devtools__take_snapshot",
@@ -208,7 +198,16 @@
       "mcp__plugin_chrome-devtools-mcp_chrome-devtools__navigate_page",
       "mcp__plugin_chrome-devtools-mcp_chrome-devtools__take_screenshot",
       "mcp__plugin_chrome-devtools-mcp_chrome-devtools__take_snapshot",
-      "mcp__plugin_superpowers-chrome_chrome__use_browser"
+      "mcp__plugin_superpowers-chrome_chrome__use_browser",
+      "MultiEdit",
+      "Read",
+      "Skill",
+      "Skill(superpowers-chrome:browsing)",
+      "Task",
+      "TodoWrite",
+      "WebFetch",
+      "WebSearch",
+      "Write"
     ],
     "deny": [
       "Bash(dd *)",
@@ -216,6 +215,17 @@
       "Bash(su *)",
       "Bash(sudo *)",
       "Bash(visudo *)"
+    ],
+    "defaultMode": "bypassPermissions",
+    "additionalDirectories": [
+      "/Users/joeblack/.claude"
     ]
+  },
+  "env": {
+    "DISABLE_TELEMETRY": "1",
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "CLAUDE_ENV_FILE": "/Users/joeblack/.env",
+    "ENABLE_EXPERIMENTAL_MCP_CLI": "true"
   }
 }

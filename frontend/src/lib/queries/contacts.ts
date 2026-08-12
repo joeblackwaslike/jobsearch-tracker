@@ -23,7 +23,11 @@ export function contactsQueryOptions(companyId?: string) {
   return queryOptions({
     queryKey: ["contacts", { companyId }],
     queryFn: async () => {
-      let query = supabase.from("contacts").select("*").order("name", { ascending: true });
+      let query = supabase
+        .from("contacts")
+        .select("*")
+        .is("archived_at", null)
+        .order("name", { ascending: true });
 
       if (companyId) {
         query = query.eq("company_id", companyId);
@@ -45,6 +49,7 @@ export function searchContactsQueryOptions(term: string, companyId?: string) {
       let query = supabase
         .from("contacts")
         .select("*")
+        .is("archived_at", null)
         .ilike("name", `%${term}%`)
         .order("name", { ascending: true })
         .limit(20);
@@ -134,6 +139,36 @@ export function useUpdateContact() {
     },
     onError: () => {
       toast.error("Failed to update contact.");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["contacts"] });
+    },
+  });
+}
+
+export function useArchiveContact() {
+  const supabase = createClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { error } = await supabase
+        .from("contacts")
+        .update({ archived_at: new Date().toISOString() })
+        .eq("id", id)
+        .eq("user_id", user.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Contact removed.");
+    },
+    onError: () => {
+      toast.error("Failed to remove contact.");
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["contacts"] });

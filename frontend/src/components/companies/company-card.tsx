@@ -30,12 +30,12 @@ export function CompanyCard({ company, onClick }: CompanyCardProps) {
               {company.industry}
             </span>
           )}
-          {company.location && (
+          {(company.locations as string[] | undefined)?.length ? (
             <span className="flex items-center gap-1">
               <MapPin className="size-3" />
-              {company.location}
+              {(company.locations as string[]).join(", ")}
             </span>
-          )}
+          ) : null}
         </CardDescription>
       </CardHeader>
 

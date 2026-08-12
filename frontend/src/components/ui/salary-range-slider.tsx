@@ -1,4 +1,5 @@
 import * as SliderPrimitive from "@radix-ui/react-slider";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -6,7 +7,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 
 const PERIOD_OPTIONS = [
   { value: "yearly", label: "Annual" },
@@ -30,7 +30,13 @@ function formatSalary(value: number, period: string): string {
   return `$${value}`;
 }
 
-export function SalaryRangeSlider({ period, currency, min, max, onChange }: SalaryRangeSliderProps) {
+export function SalaryRangeSlider({
+  period,
+  currency,
+  min,
+  max,
+  onChange,
+}: SalaryRangeSliderProps) {
   const isYearly = period === "yearly";
   const sliderMin = isYearly ? 100_000 : 0;
   const sliderMax = isYearly ? 600_000 : 500;

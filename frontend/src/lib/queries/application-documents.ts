@@ -7,6 +7,7 @@ import type { Tables } from "@/lib/supabase/types";
 // ---------------------------------------------------------------------------
 
 type ApplicationDocument = Tables<"application_documents">;
+
 export type { ApplicationDocument };
 
 // ---------------------------------------------------------------------------

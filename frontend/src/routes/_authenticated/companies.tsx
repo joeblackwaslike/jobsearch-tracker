@@ -236,7 +236,10 @@ function CompaniesPage() {
           onRowClick={(company) =>
             navigate({
               to: "/companies",
-              search: (prev: CompaniesSearch) => ({ ...prev, detail: (company as Company).id }),
+              search: (prev: CompaniesSearch) => ({
+                ...prev,
+                detail: (company as Company).id,
+              }),
             })
           }
           selectedId={searchParams.detail ?? null}
