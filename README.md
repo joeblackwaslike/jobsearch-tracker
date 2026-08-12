@@ -1,5 +1,7 @@
 # `jobsearch-tracker`
 
+[![Discord](https://img.shields.io/discord/1486035859747897414?logo=discord&label=Discord&color=5865F2)](https://discord.com/channels/1486035859747897414/1509515354047643668) [![Join Discord](https://img.shields.io/badge/Discord-Join%20Server-5865F2?logo=discord&logoColor=white)](https://discord.gg/Fjc9zYHZyV)
+
 A full-featured job search tracking application to manage applications, companies, interviews, documents, and contacts from a single dashboard.
 
 ## Features

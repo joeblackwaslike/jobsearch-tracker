@@ -1,4 +1,5 @@
 {
+  "ignoreCommand": "git diff HEAD^ HEAD --quiet -- frontend/",
   "buildCommand": "pnpm build",
   "outputDirectory": "dist/client",
   "installCommand": "pnpm install",
