@@ -58,10 +58,10 @@ Implementation plans paired with design documents. Most recent first.
 | 2026-02-21 | Next Iteration 2 | [design](./plans/2026-02-21-next-iteration-2-design.md) | [plan](./plans/2026-02-21-next-iteration-2.md) |
 | 2026-02-21 | Modal Overflow & Interview Duration Fixes | [design](./plans/2026-02-21-modal-overflow-and-interview-fixes-design.md) | [plan](./plans/2026-02-21-modal-overflow-and-interview-fixes.md) |
 | 2026-02-21 | Frontend Iteration | [design](./plans/2026-02-21-frontend-iteration-design.md) | [plan](./plans/2026-02-21-frontend-iteration.md) |
-| 2026-02-20 | Thrive Iteration — Companies, Applications, Interviews | [design](./plans/2026-02-20-thrive-iteration-design.md) | [plan](./plans/2026-02-20-thrive-iteration.md) |
+| 2026-02-20 | Iteration — Companies, Applications, Interviews | [design](./plans/2026-02-20-thrive-iteration-design.md) | [plan](./plans/2026-02-20-thrive-iteration.md) |
 | 2026-02-18 | JobSearch CLI Enhancements | [design](./plans/2026-02-18-jobsearch-cli-enhancements-design.md) | [plan](./plans/2026-02-18-jobsearch-cli-enhancements.md) |
 | 2026-02-17 | Durable Test Coverage | — | [plan](./plans/2026-02-17-durable-test-coverage-plan.md) |
 | 2026-02-17 | Contacts & Application Documents | [design](./plans/2026-02-17-contacts-and-app-documents-design.md) | [plan](./plans/2026-02-17-contacts-and-app-documents-plan.md) |
-| 2026-02-16 | THRIVE Clone | [design](./plans/2026-02-16-thrive-clone-design.md) | [plan](./plans/2026-02-16-thrive-clone-implementation.md) |
+| 2026-02-16 | Initial Implementation | [design](./plans/2026-02-16-thrive-clone-design.md) | [plan](./plans/2026-02-16-thrive-clone-implementation.md) |
 
 ---

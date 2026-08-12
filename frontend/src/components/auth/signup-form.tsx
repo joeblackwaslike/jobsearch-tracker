@@ -54,7 +54,7 @@ export function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
       }
       // If email confirmation is enabled, show a message
       setMessage("Account created! Check your email to confirm your account, then sign in.");
-      toast.success("Welcome to THRIVE!");
+      toast.success("Account created successfully!");
       onSuccess?.();
     } catch {
       setError("An unexpected error occurred. Please try again.");
