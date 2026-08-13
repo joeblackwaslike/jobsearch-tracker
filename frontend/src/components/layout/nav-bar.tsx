@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { Menu } from "lucide-react";
 import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { usePendingTaskCount } from "@/lib/queries/tasks";
 import { ThemeToggle } from "./theme-toggle";
 import { UserMenu } from "./user-menu";
 
@@ -16,6 +18,7 @@ const navLinks = [
 
 export function NavBar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { data: pendingCount = 0 } = usePendingTaskCount();
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -46,6 +49,11 @@ export function NavBar() {
 
         {/* Right: Theme toggle + User menu (desktop only) */}
         <div className="hidden md:flex items-center gap-1">
+          {pendingCount > 0 && (
+            <Badge variant="warning" className="mr-1 text-xs">
+              {pendingCount} pending
+            </Badge>
+          )}
           <ThemeToggle />
           <UserMenu />
         </div>

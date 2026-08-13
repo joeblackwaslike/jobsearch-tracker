@@ -297,6 +297,8 @@ export type Database = {
           name: string;
           parent_id: string | null;
           revision: string | null;
+          source: Database["public"]["Enums"]["document_source"];
+          status: Database["public"]["Enums"]["document_status"];
           tags: Json | null;
           type: string;
           updated_at: string;
@@ -312,6 +314,8 @@ export type Database = {
           name: string;
           parent_id?: string | null;
           revision?: string | null;
+          source?: Database["public"]["Enums"]["document_source"];
+          status?: Database["public"]["Enums"]["document_status"];
           tags?: Json | null;
           type?: string;
           updated_at?: string;
@@ -327,6 +331,8 @@ export type Database = {
           name?: string;
           parent_id?: string | null;
           revision?: string | null;
+          source?: Database["public"]["Enums"]["document_source"];
+          status?: Database["public"]["Enums"]["document_status"];
           tags?: Json | null;
           type?: string;
           updated_at?: string;
@@ -435,8 +441,105 @@ export type Database = {
           },
         ];
       };
+      tasks: {
+        Row: {
+          id: string;
+          user_id: string;
+          application_id: string;
+          event_id: string | null;
+          type: Database["public"]["Enums"]["task_type"];
+          status: Database["public"]["Enums"]["task_status"];
+          payload: Json;
+          metadata: Json;
+          termination_reason: string | null;
+          document_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          application_id: string;
+          event_id?: string | null;
+          type: Database["public"]["Enums"]["task_type"];
+          status?: Database["public"]["Enums"]["task_status"];
+          payload?: Json;
+          metadata?: Json;
+          termination_reason?: string | null;
+          document_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          application_id?: string;
+          event_id?: string | null;
+          type?: Database["public"]["Enums"]["task_type"];
+          status?: Database["public"]["Enums"]["task_status"];
+          payload?: Json;
+          metadata?: Json;
+          termination_reason?: string | null;
+          document_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "tasks_application_id_fkey";
+            columns: ["application_id"];
+            isOneToOne: false;
+            referencedRelation: "applications";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "tasks_event_id_fkey";
+            columns: ["event_id"];
+            isOneToOne: false;
+            referencedRelation: "events";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "tasks_document_id_fkey";
+            columns: ["document_id"];
+            isOneToOne: false;
+            referencedRelation: "documents";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      user_consents: {
+        Row: {
+          id: string;
+          user_id: string;
+          consent_type: string;
+          granted: boolean;
+          version: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          consent_type: string;
+          granted: boolean;
+          version: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          consent_type?: string;
+          granted?: boolean;
+          version?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       user_settings: {
         Row: {
+          ai_company_research: boolean;
+          ai_features_enabled: boolean;
+          anthropic_api_key: string | null;
           calendar_type: string;
           compact_mode: boolean;
           created_at: string;
@@ -455,6 +558,9 @@ export type Database = {
           user_id: string;
         };
         Insert: {
+          ai_company_research?: boolean;
+          ai_features_enabled?: boolean;
+          anthropic_api_key?: string | null;
           calendar_type?: string;
           compact_mode?: boolean;
           created_at?: string;
@@ -473,6 +579,9 @@ export type Database = {
           user_id: string;
         };
         Update: {
+          ai_company_research?: boolean;
+          ai_features_enabled?: boolean;
+          anthropic_api_key?: string | null;
           calendar_type?: string;
           compact_mode?: boolean;
           created_at?: string;
@@ -500,7 +609,19 @@ export type Database = {
       get_dashboard_stats: { Args: never; Returns: Json };
     };
     Enums: {
-      [_ in never]: never;
+      document_source: "user" | "ai_generated";
+      document_status: "draft" | "approved" | "sent" | "archived";
+      task_status:
+        | "pending"
+        | "running"
+        | "needs_input"
+        | "blocked"
+        | "awaiting_approval"
+        | "approved"
+        | "terminated"
+        | "completed"
+        | "failed";
+      task_type: "company_research" | "email_draft" | "contact_research" | "thank_you_draft";
     };
     CompositeTypes: {
       [_ in never]: never;

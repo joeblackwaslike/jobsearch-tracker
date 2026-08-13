@@ -1,4 +1,14 @@
-import { DownloadIcon, FileTextIcon, SaveIcon, Trash2Icon } from "lucide-react";
+import {
+  BotIcon,
+  CheckIcon,
+  DownloadIcon,
+  FileTextIcon,
+  LoaderIcon,
+  MessageSquareIcon,
+  SaveIcon,
+  Trash2Icon,
+  XIcon,
+} from "lucide-react";
 import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,7 +29,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { useDeleteDocument, useDocument, useUpdateDocument } from "@/lib/queries/documents";
+import { useApproveTask, useRefineDocument, useTerminateTask } from "@/lib/queries/tasks";
 import { createClient } from "@/lib/supabase/client";
 
 // ---------------------------------------------------------------------------
@@ -103,12 +115,40 @@ export function DocumentEditor({ documentId, onDeleted }: DocumentEditorProps) {
   const { data: doc, isLoading } = useDocument(documentId ?? "");
   const updateDocument = useUpdateDocument();
   const deleteDocument = useDeleteDocument();
+  const approveTaskMutation = useApproveTask();
+  const terminateTaskMutation = useTerminateTask();
+  const refineDocumentMutation = useRefineDocument();
 
   const [name, setName] = React.useState("");
   const [type, setType] = React.useState("other");
   const [content, setContent] = React.useState("");
   const [tags, setTags] = React.useState("");
   const [confirmDelete, setConfirmDelete] = React.useState(false);
+  const [showFeedback, setShowFeedback] = React.useState(false);
+  const [feedback, setFeedback] = React.useState("");
+  const [taskForDoc, setTaskForDoc] = React.useState<{
+    id: string;
+    status: string;
+    metadata: unknown;
+  } | null>(null);
+
+  React.useEffect(() => {
+    if (!doc || doc.source !== "ai_generated") {
+      setTaskForDoc(null);
+      return;
+    }
+
+    const supabase = createClient();
+    supabase
+      .from("tasks")
+      .select("id, status, metadata")
+      .eq("document_id", doc.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .then(({ data }) => {
+        setTaskForDoc(data?.[0] ?? null);
+      });
+  }, [doc]);
 
   // Sync local state when doc loads
   React.useEffect(() => {
@@ -236,6 +276,104 @@ export function DocumentEditor({ documentId, onDeleted }: DocumentEditorProps) {
           className="h-8 text-sm"
         />
       </div>
+
+      {/* AI approval bar */}
+      {doc.source === "ai_generated" && taskForDoc && taskForDoc.status === "awaiting_approval" && (
+        <div className="border-b bg-muted/50 px-4 py-3 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm">
+              <BotIcon className="size-4 text-muted-foreground" />
+              <span className="font-medium">AI-generated document</span>
+              {doc.revision && <Badge variant="secondary">{doc.revision}</Badge>}
+              {typeof (taskForDoc.metadata as Record<string, unknown>)?.revision_count ===
+                "number" && (
+                <Badge variant="outline">
+                  {String((taskForDoc.metadata as Record<string, unknown>).revision_count)}{" "}
+                  revision(s)
+                </Badge>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                onClick={() => approveTaskMutation.mutate(taskForDoc.id)}
+                disabled={approveTaskMutation.isPending}
+              >
+                {approveTaskMutation.isPending ? (
+                  <LoaderIcon className="size-4 animate-spin" />
+                ) : (
+                  <CheckIcon className="size-4" />
+                )}
+                Approve
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => setShowFeedback(!showFeedback)}>
+                <MessageSquareIcon className="size-4" />
+                Request Changes
+              </Button>
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={() =>
+                  terminateTaskMutation.mutate({
+                    taskId: taskForDoc.id,
+                    reason: "User rejected",
+                  })
+                }
+                disabled={terminateTaskMutation.isPending}
+              >
+                {terminateTaskMutation.isPending ? (
+                  <LoaderIcon className="size-4 animate-spin" />
+                ) : (
+                  <XIcon className="size-4" />
+                )}
+                Terminate
+              </Button>
+            </div>
+          </div>
+          {showFeedback && (
+            <div className="space-y-2">
+              <Textarea
+                placeholder="Describe the changes you'd like..."
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                className="min-h-20"
+              />
+              <div className="flex justify-end gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setShowFeedback(false);
+                    setFeedback("");
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    refineDocumentMutation.mutate(
+                      { taskId: taskForDoc.id, feedback },
+                      {
+                        onSuccess: () => {
+                          setShowFeedback(false);
+                          setFeedback("");
+                        },
+                      },
+                    );
+                  }}
+                  disabled={!feedback.trim() || refineDocumentMutation.isPending}
+                >
+                  {refineDocumentMutation.isPending ? (
+                    <LoaderIcon className="size-4 animate-spin" />
+                  ) : null}
+                  Submit Feedback
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Content area */}
       <div className="flex-1 overflow-auto p-4">

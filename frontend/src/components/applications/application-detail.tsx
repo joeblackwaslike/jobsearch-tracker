@@ -1,5 +1,15 @@
 import { Link } from "@tanstack/react-router";
-import { BuildingIcon, ChevronRightIcon, ExternalLinkIcon, PlusIcon } from "lucide-react";
+import {
+  BotIcon,
+  BuildingIcon,
+  CheckCircleIcon,
+  ChevronRightIcon,
+  ClockIcon,
+  ExternalLinkIcon,
+  LoaderIcon,
+  PlusIcon,
+  XCircleIcon,
+} from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,6 +18,8 @@ import { MarkdownContent } from "@/components/ui/markdown-content";
 import { Separator } from "@/components/ui/separator";
 import type { ApplicationWithCompany } from "@/lib/queries/applications";
 import { useEvents } from "@/lib/queries/events";
+import { useSettings } from "@/lib/queries/settings";
+import { useGenerateResearch, useTasksForApplication } from "@/lib/queries/tasks";
 import { AddEventDialog } from "./add-event-dialog";
 import { ApplicationDocuments } from "./application-documents";
 import { EventTimeline } from "./event-timeline";
@@ -91,6 +103,14 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
   const [addEventOpen, setAddEventOpen] = useState(false);
 
   const { data: events = [], isLoading: eventsLoading } = useEvents(application.id);
+  const { data: settings } = useSettings();
+  const { data: tasks = [] } = useTasksForApplication(application.id);
+  const generateResearch = useGenerateResearch();
+
+  const aiResearchEnabled = settings?.ai_features_enabled && settings?.ai_company_research;
+  const researchTask = tasks.find((t) => t.type === "company_research");
+  const isResearchRunning =
+    researchTask?.status === "pending" || researchTask?.status === "running";
 
   const salary = formatSalary(application.salary as Record<string, unknown> | null);
   const tags = Array.isArray(application.tags) ? (application.tags as string[]) : [];
@@ -135,6 +155,58 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
               View Company
             </Link>
           </Button>
+
+          {aiResearchEnabled && !researchTask && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => generateResearch.mutate(application.id)}
+              disabled={generateResearch.isPending}
+            >
+              {generateResearch.isPending ? (
+                <LoaderIcon className="size-4 animate-spin" />
+              ) : (
+                <BotIcon className="size-4" />
+              )}
+              {generateResearch.isPending ? "Generating..." : "Generate Research"}
+            </Button>
+          )}
+
+          {researchTask && (
+            <div className="flex items-center gap-2">
+              {isResearchRunning && (
+                <Badge variant="secondary" className="gap-1">
+                  <LoaderIcon className="size-3 animate-spin" />
+                  Generating research...
+                </Badge>
+              )}
+              {researchTask.status === "awaiting_approval" && (
+                <Badge variant="warning" className="gap-1">
+                  <ClockIcon className="size-3" />
+                  Awaiting review
+                </Badge>
+              )}
+              {researchTask.status === "approved" && (
+                <Badge variant="success" className="gap-1">
+                  <CheckCircleIcon className="size-3" />
+                  Research approved
+                </Badge>
+              )}
+              {researchTask.status === "failed" && (
+                <Badge variant="error" className="gap-1">
+                  <XCircleIcon className="size-3" />
+                  Research failed
+                </Badge>
+              )}
+              {researchTask.document_id && (
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/documents" search={{ doc: researchTask.document_id }}>
+                    View Document
+                  </Link>
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
