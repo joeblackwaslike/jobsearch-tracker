@@ -324,6 +324,77 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
       {/* Documents */}
       <ApplicationDocuments applicationId={application.id} />
 
+      {/* AI Activity */}
+      {tasks.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <BotIcon className="size-4" />
+              AI Activity
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {tasks.map((task) => {
+                const statusConfig: Record<
+                  string,
+                  { label: string; variant: "secondary" | "warning" | "success" | "error" }
+                > = {
+                  pending: { label: "Queued", variant: "secondary" },
+                  running: { label: "Running", variant: "secondary" },
+                  awaiting_approval: { label: "Awaiting Review", variant: "warning" },
+                  approved: { label: "Approved", variant: "success" },
+                  completed: { label: "Completed", variant: "success" },
+                  terminated: { label: "Terminated", variant: "secondary" },
+                  failed: { label: "Failed", variant: "error" },
+                  blocked: { label: "Blocked", variant: "error" },
+                };
+                const config = statusConfig[task.status] ?? statusConfig.pending;
+                const typeLabels: Record<string, string> = {
+                  company_research: "Company Research",
+                  contact_research: "Contact Research",
+                  email_draft: "Email Draft",
+                  thank_you_draft: "Thank-You Note",
+                };
+
+                return (
+                  <div key={task.id} className="flex items-center justify-between gap-4 py-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-sm font-medium">
+                        {typeLabels[task.type] ?? task.type}
+                      </span>
+                      <Badge variant={config.variant}>
+                        {task.status === "running" ? (
+                          <LoaderIcon className="mr-1 size-3 animate-spin" />
+                        ) : null}
+                        {config.label}
+                      </Badge>
+                      {task.termination_reason && (
+                        <span className="text-xs text-muted-foreground truncate">
+                          {task.termination_reason}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-xs text-muted-foreground">
+                        {formatDate(task.created_at)}
+                      </span>
+                      {task.document_id && (
+                        <Button variant="outline" size="xs" asChild>
+                          <Link to="/documents" search={{ doc: task.document_id }}>
+                            View
+                          </Link>
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Separator />
 
       {/* Events / Timeline */}

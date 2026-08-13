@@ -7,10 +7,19 @@ import type { Tables } from "@/lib/supabase/types";
 
 type Task = Tables<"tasks">;
 
+export type TaskWithApplication = Task & {
+  application: {
+    id: string;
+    position: string;
+    company: { id: string; name: string } | null;
+  };
+};
+
 export type { Task };
 
 export const taskKeys = {
   all: ["tasks"] as const,
+  inbox: ["tasks", "inbox"] as const,
   forApplication: (applicationId: string) => ["tasks", { applicationId }] as const,
   pendingCount: ["tasks", "pending-count"] as const,
 };
@@ -47,6 +56,26 @@ export function pendingTaskCountQueryOptions() {
       return count ?? 0;
     },
   });
+}
+
+export function inboxTasksQueryOptions() {
+  const supabase = createClient();
+
+  return queryOptions({
+    queryKey: taskKeys.inbox,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("tasks")
+        .select("*, application:applications(id, position, company:companies(id, name))")
+        .order("updated_at", { ascending: false });
+      if (error) throw error;
+      return data as TaskWithApplication[];
+    },
+  });
+}
+
+export function useInboxTasks() {
+  return useQuery(inboxTasksQueryOptions());
 }
 
 export function useTasksForApplication(applicationId: string) {

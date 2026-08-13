@@ -10,6 +10,7 @@ import { UserMenu } from "./user-menu";
 
 const navLinks = [
   { to: "/dashboard", label: "Dashboard" },
+  { to: "/inbox", label: "Inbox" },
   { to: "/applications", label: "Applications" },
   { to: "/events", label: "Events" },
   { to: "/documents", label: "Documents" },
@@ -42,6 +43,11 @@ export function NavBar() {
                 }}
               >
                 {label}
+                {to === "/inbox" && pendingCount > 0 && (
+                  <Badge variant="warning" className="ml-1 text-xs px-1.5 py-0">
+                    {pendingCount}
+                  </Badge>
+                )}
               </Link>
             </Button>
           ))}
@@ -49,11 +55,6 @@ export function NavBar() {
 
         {/* Right: Theme toggle + User menu (desktop only) */}
         <div className="hidden md:flex items-center gap-1">
-          {pendingCount > 0 && (
-            <Badge variant="warning" className="mr-1 text-xs">
-              {pendingCount} pending
-            </Badge>
-          )}
           <ThemeToggle />
           <UserMenu />
         </div>
