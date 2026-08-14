@@ -59,6 +59,15 @@ vi.mock("@/lib/queries/contacts", () => ({
   useArchiveContact: () => ({ mutateAsync: vi.fn(), isPending: false }),
 }));
 
+vi.mock("@/lib/queries/settings", () => ({
+  useSettings: () => ({ data: { ai_features_enabled: false }, isLoading: false }),
+}));
+
+vi.mock("@/lib/queries/tasks", () => ({
+  useTasksForApplication: () => ({ data: [], isLoading: false }),
+  useGenerateResearch: () => ({ mutateAsync: vi.fn(), isPending: false }),
+}));
+
 // ---------------------------------------------------------------------------
 // Fixtures
 // ---------------------------------------------------------------------------
