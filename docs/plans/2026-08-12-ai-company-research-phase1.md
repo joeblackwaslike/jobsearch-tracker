@@ -37,22 +37,55 @@ Build the data model, query layer, UI shell, and real AI integration for company
 - [x] Route tree updated for `/inbox`
 - [x] Tests: `inbox-list.test.tsx` (7 tests)
 
+### Commit 3: DB migrations — integrations, OAuth, rename, triggers, banner column ✅
+
+- [x] `user_integrations` table with RLS and provider UNIQUE constraint
+- [x] `user_oauth_tokens` table with RLS (for future Google OAuth)
+- [x] `application_documents` → `application_events_documents` rename + `event_id` FK
+- [x] Initial event triggers: auto-create `bookmarked`/`applied` events on application INSERT/UPDATE
+- [x] `ai_setup_banner_dismissed` column on `user_settings`
+
+### Commit 4: Frontend application_documents rename ✅
+
+- [x] Query key and `.from()` updates in `application-documents.ts` and `documents.ts`
+
+### Commit 5: Integrations query hooks + Settings tab (TDD) ✅
+
+- [x] `integrations.ts` query hooks (CRUD for `user_integrations`)
+- [x] `integrations-tab.tsx` with 4 provider cards (Anthropic active, 3 coming soon)
+- [x] Settings route wired to use `<IntegrationsTab />`
+- [x] Tests: `integrations-tab.test.tsx` (5 tests, TDD red-green)
+
+### Commit 6: Dashboard AI discovery banner (TDD) ✅
+
+- [x] `ai-discovery-banner.tsx` — shows when AI disabled + not dismissed
+- [x] Dashboard route wired with `<AiDiscoveryBanner />` between header and StatsCards
+- [x] Tests: `ai-discovery-banner.test.tsx` (6 tests, TDD red-green)
+
+### Commit 7: Seed data ✅
+
+- [x] Renamed `application_documents` inserts to `application_events_documents`
+- [x] Disabled/re-enabled event triggers during seeding
+- [x] Added `user_integrations` rows (4 providers, unconfigured)
+- [x] Added `tasks` rows (3: completed, awaiting_approval, running)
+- [x] Added AI-generated research documents (2)
+
+### Commit 8: Plan doc update ✅
+
+- [x] Updated this file
+
 ## Deferred to later branches
 
 - Contact research (Apollo integration)
 - Email drafts (Anthropic + Gmail)
 - Thank-you notes
-- Settings → Integrations section (`user_integrations` table, health checks)
 - Gmail OAuth flow + send
-- `user_oauth_tokens` table
-- `application_documents` → `application_events_documents` rename
-- Initial event triggers (auto-create `bookmarked`/`applied` events)
-- Seed data with AI tasks
-- AI features discovery banner on dashboard
 - Pending task digest emails
+- Migrating AI tab's Anthropic key to use `user_integrations` (dual storage is intentional for Phase 1)
 
 ## Architecture Notes
 
 - Company research runs synchronously via `createServerFn` — no background job queue yet. Inngest is planned for Phase 2.
-- Anthropic API key stored in `user_settings.anthropic_api_key` (plain text with RLS). `user_integrations` table with proper health checks is deferred.
+- Anthropic API key stored in `user_settings.anthropic_api_key` (plain text with RLS). `user_integrations` table exists but AI tab and Integrations tab operate independently for now.
 - Document refinement creates a new document with `parent_id` pointing to the previous version.
+- Event triggers fire on application INSERT/UPDATE to auto-create bookmarked/applied events. Triggers are disabled during seeding to avoid duplicates.

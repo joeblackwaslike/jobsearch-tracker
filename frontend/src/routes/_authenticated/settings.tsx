@@ -3,6 +3,7 @@ import { z } from "zod";
 import { useTheme } from "@/components/layout/theme-provider";
 import { AiTab } from "@/components/settings/ai-tab";
 import { GeneralTab } from "@/components/settings/general-tab";
+import { IntegrationsTab } from "@/components/settings/integrations-tab";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUpdateSettings } from "@/lib/queries/settings";
@@ -95,9 +96,7 @@ function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="integrations">
-          <div className="flex items-center justify-center py-12">
-            <p className="text-muted-foreground">Coming soon...</p>
-          </div>
+          <IntegrationsTab />
         </TabsContent>
 
         <TabsContent value="about">
