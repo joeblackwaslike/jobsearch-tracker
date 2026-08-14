@@ -1,13 +1,15 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 import { useTheme } from "@/components/layout/theme-provider";
+import { AiTab } from "@/components/settings/ai-tab";
 import { GeneralTab } from "@/components/settings/general-tab";
+import { IntegrationsTab } from "@/components/settings/integrations-tab";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUpdateSettings } from "@/lib/queries/settings";
 
 const searchSchema = z.object({
-  tab: z.enum(["general", "data", "integrations", "about"]).catch("general"),
+  tab: z.enum(["general", "ai", "data", "integrations", "about"]).catch("general"),
 });
 
 export const Route = createFileRoute("/_authenticated/settings")({
@@ -65,6 +67,9 @@ function SettingsPage() {
           <TabsTrigger value="general" className="flex-1 sm:flex-initial">
             General
           </TabsTrigger>
+          <TabsTrigger value="ai" className="flex-1 sm:flex-initial">
+            AI
+          </TabsTrigger>
           <TabsTrigger value="data" className="flex-1 sm:flex-initial">
             Data
           </TabsTrigger>
@@ -80,6 +85,10 @@ function SettingsPage() {
           <GeneralTab />
         </TabsContent>
 
+        <TabsContent value="ai">
+          <AiTab />
+        </TabsContent>
+
         <TabsContent value="data">
           <div className="flex items-center justify-center py-12">
             <p className="text-muted-foreground">Coming soon...</p>
@@ -87,9 +96,7 @@ function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="integrations">
-          <div className="flex items-center justify-center py-12">
-            <p className="text-muted-foreground">Coming soon...</p>
-          </div>
+          <IntegrationsTab />
         </TabsContent>
 
         <TabsContent value="about">

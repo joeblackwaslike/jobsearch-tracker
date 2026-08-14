@@ -6,7 +6,7 @@ import type { Tables } from "@/lib/supabase/types";
 // Types
 // ---------------------------------------------------------------------------
 
-type ApplicationDocument = Tables<"application_documents">;
+type ApplicationDocument = Tables<"application_events_documents">;
 
 export type { ApplicationDocument };
 
@@ -18,10 +18,10 @@ export function applicationDocumentsQueryOptions(applicationId: string) {
   const supabase = createClient();
 
   return queryOptions({
-    queryKey: ["application_documents", { applicationId }],
+    queryKey: ["application_events_documents", { applicationId }],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("application_documents")
+        .from("application_events_documents")
         .select("*")
         .eq("application_id", applicationId)
         .order("linked_at", { ascending: false });
@@ -50,14 +50,14 @@ export function useDetachDocument() {
 
   return useMutation({
     mutationFn: async ({ id, applicationId }: { id: string; applicationId: string }) => {
-      const { error } = await supabase.from("application_documents").delete().eq("id", id);
+      const { error } = await supabase.from("application_events_documents").delete().eq("id", id);
       if (error) throw error;
       return { id, applicationId };
     },
     onSettled: (_data, _error, variables) => {
       if (variables?.applicationId) {
         queryClient.invalidateQueries({
-          queryKey: ["application_documents", { applicationId: variables.applicationId }],
+          queryKey: ["application_events_documents", { applicationId: variables.applicationId }],
         });
       }
     },

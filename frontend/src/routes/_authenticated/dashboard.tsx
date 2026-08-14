@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { AiDiscoveryBanner } from "@/components/dashboard/ai-discovery-banner";
 import {
   ApplicationTrendsChart,
   DistributionChart,
@@ -20,6 +21,8 @@ function DashboardPage() {
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <p className="text-muted-foreground">Overview of your job search progress</p>
       </div>
+
+      <AiDiscoveryBanner />
 
       {/* Stats cards row */}
       <StatsCards />

@@ -238,9 +238,9 @@ export function useSnapshotDocument() {
         .single();
       if (fetchError) throw fetchError;
 
-      // Create a snapshot in application_documents
+      // Create a snapshot in application_events_documents
       const { data, error } = await supabase
-        .from("application_documents")
+        .from("application_events_documents")
         .insert({
           application_id: applicationId,
           document_id: documentId,
@@ -258,7 +258,7 @@ export function useSnapshotDocument() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: ["application_documents"],
+        queryKey: ["application_events_documents"],
       });
     },
   });

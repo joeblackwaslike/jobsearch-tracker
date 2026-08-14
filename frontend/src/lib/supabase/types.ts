@@ -28,11 +28,12 @@ export type Database = {
   };
   public: {
     Tables: {
-      application_documents: {
+      application_events_documents: {
         Row: {
           application_id: string;
           content: string | null;
           document_id: string;
+          event_id: string | null;
           id: string;
           linked_at: string;
           mime_type: string | null;
@@ -45,6 +46,7 @@ export type Database = {
           application_id: string;
           content?: string | null;
           document_id: string;
+          event_id?: string | null;
           id?: string;
           linked_at?: string;
           mime_type?: string | null;
@@ -57,6 +59,7 @@ export type Database = {
           application_id?: string;
           content?: string | null;
           document_id?: string;
+          event_id?: string | null;
           id?: string;
           linked_at?: string;
           mime_type?: string | null;
@@ -78,6 +81,13 @@ export type Database = {
             columns: ["document_id"];
             isOneToOne: false;
             referencedRelation: "documents";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "application_events_documents_event_id_fkey";
+            columns: ["event_id"];
+            isOneToOne: false;
+            referencedRelation: "events";
             referencedColumns: ["id"];
           },
         ];
@@ -297,6 +307,8 @@ export type Database = {
           name: string;
           parent_id: string | null;
           revision: string | null;
+          source: Database["public"]["Enums"]["document_source"];
+          status: Database["public"]["Enums"]["document_status"];
           tags: Json | null;
           type: string;
           updated_at: string;
@@ -312,6 +324,8 @@ export type Database = {
           name: string;
           parent_id?: string | null;
           revision?: string | null;
+          source?: Database["public"]["Enums"]["document_source"];
+          status?: Database["public"]["Enums"]["document_status"];
           tags?: Json | null;
           type?: string;
           updated_at?: string;
@@ -327,6 +341,8 @@ export type Database = {
           name?: string;
           parent_id?: string | null;
           revision?: string | null;
+          source?: Database["public"]["Enums"]["document_source"];
+          status?: Database["public"]["Enums"]["document_status"];
           tags?: Json | null;
           type?: string;
           updated_at?: string;
@@ -435,8 +451,184 @@ export type Database = {
           },
         ];
       };
+      tasks: {
+        Row: {
+          application_id: string;
+          created_at: string;
+          document_id: string | null;
+          event_id: string | null;
+          id: string;
+          metadata: Json | null;
+          payload: Json | null;
+          status: Database["public"]["Enums"]["task_status"];
+          termination_reason: string | null;
+          type: Database["public"]["Enums"]["task_type"];
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          application_id: string;
+          created_at?: string;
+          document_id?: string | null;
+          event_id?: string | null;
+          id?: string;
+          metadata?: Json | null;
+          payload?: Json | null;
+          status?: Database["public"]["Enums"]["task_status"];
+          termination_reason?: string | null;
+          type: Database["public"]["Enums"]["task_type"];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          application_id?: string;
+          created_at?: string;
+          document_id?: string | null;
+          event_id?: string | null;
+          id?: string;
+          metadata?: Json | null;
+          payload?: Json | null;
+          status?: Database["public"]["Enums"]["task_status"];
+          termination_reason?: string | null;
+          type?: Database["public"]["Enums"]["task_type"];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "tasks_application_id_fkey";
+            columns: ["application_id"];
+            isOneToOne: false;
+            referencedRelation: "applications";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "tasks_document_id_fkey";
+            columns: ["document_id"];
+            isOneToOne: false;
+            referencedRelation: "documents";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "tasks_event_id_fkey";
+            columns: ["event_id"];
+            isOneToOne: false;
+            referencedRelation: "events";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      user_consents: {
+        Row: {
+          consent_type: string;
+          created_at: string;
+          granted: boolean;
+          id: string;
+          user_id: string;
+          version: string;
+        };
+        Insert: {
+          consent_type: string;
+          created_at?: string;
+          granted: boolean;
+          id?: string;
+          user_id: string;
+          version: string;
+        };
+        Update: {
+          consent_type?: string;
+          created_at?: string;
+          granted?: boolean;
+          id?: string;
+          user_id?: string;
+          version?: string;
+        };
+        Relationships: [];
+      };
+      user_integrations: {
+        Row: {
+          api_key: string | null;
+          created_at: string;
+          error_class: string | null;
+          id: string;
+          last_checked_at: string | null;
+          last_error: string | null;
+          provider: string;
+          retry_after: string | null;
+          status: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          api_key?: string | null;
+          created_at?: string;
+          error_class?: string | null;
+          id?: string;
+          last_checked_at?: string | null;
+          last_error?: string | null;
+          provider: string;
+          retry_after?: string | null;
+          status?: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          api_key?: string | null;
+          created_at?: string;
+          error_class?: string | null;
+          id?: string;
+          last_checked_at?: string | null;
+          last_error?: string | null;
+          provider?: string;
+          retry_after?: string | null;
+          status?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      user_oauth_tokens: {
+        Row: {
+          access_token: string;
+          created_at: string;
+          granted_scopes: string[] | null;
+          id: string;
+          provider: string;
+          refresh_token: string | null;
+          token_expiry: string | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          access_token: string;
+          created_at?: string;
+          granted_scopes?: string[] | null;
+          id?: string;
+          provider: string;
+          refresh_token?: string | null;
+          token_expiry?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          access_token?: string;
+          created_at?: string;
+          granted_scopes?: string[] | null;
+          id?: string;
+          provider?: string;
+          refresh_token?: string | null;
+          token_expiry?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       user_settings: {
         Row: {
+          ai_company_research: boolean;
+          ai_features_enabled: boolean;
+          ai_setup_banner_dismissed: boolean;
+          anthropic_api_key: string | null;
           calendar_type: string;
           compact_mode: boolean;
           created_at: string;
@@ -455,6 +647,10 @@ export type Database = {
           user_id: string;
         };
         Insert: {
+          ai_company_research?: boolean;
+          ai_features_enabled?: boolean;
+          ai_setup_banner_dismissed?: boolean;
+          anthropic_api_key?: string | null;
           calendar_type?: string;
           compact_mode?: boolean;
           created_at?: string;
@@ -473,6 +669,10 @@ export type Database = {
           user_id: string;
         };
         Update: {
+          ai_company_research?: boolean;
+          ai_features_enabled?: boolean;
+          ai_setup_banner_dismissed?: boolean;
+          anthropic_api_key?: string | null;
           calendar_type?: string;
           compact_mode?: boolean;
           created_at?: string;
@@ -500,7 +700,19 @@ export type Database = {
       get_dashboard_stats: { Args: never; Returns: Json };
     };
     Enums: {
-      [_ in never]: never;
+      document_source: "user" | "ai_generated";
+      document_status: "draft" | "approved" | "sent" | "archived";
+      task_status:
+        | "pending"
+        | "running"
+        | "needs_input"
+        | "blocked"
+        | "awaiting_approval"
+        | "approved"
+        | "terminated"
+        | "completed"
+        | "failed";
+      task_type: "company_research" | "email_draft" | "contact_research" | "thank_you_draft";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -628,6 +840,21 @@ export const Constants = {
     Enums: {},
   },
   public: {
-    Enums: {},
+    Enums: {
+      document_source: ["user", "ai_generated"],
+      document_status: ["draft", "approved", "sent", "archived"],
+      task_status: [
+        "pending",
+        "running",
+        "needs_input",
+        "blocked",
+        "awaiting_approval",
+        "approved",
+        "terminated",
+        "completed",
+        "failed",
+      ],
+      task_type: ["company_research", "email_draft", "contact_research", "thank_you_draft"],
+    },
   },
 } as const;
